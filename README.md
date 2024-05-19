@@ -1,7 +1,7 @@
-# EXT-Website
+# EXT-Website - Extented for MMM-GoogleAssistant
 
-  EXT-Website is an embedded application.
-  This application is available directly through your browser.
+  EXT-Website is an embedded application.<br>  
+  This application is available directly through your browser.<br>  
   It can be used locally or remotely over the internet.
 
   * Allows to Install / delete all EXT plugins
