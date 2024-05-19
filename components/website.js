@@ -152,7 +152,7 @@ class website {
 
     await this.createWebsite();
     console.log("[WEBSITE] Website Ready!");
-    this.sendSocketNotification("WEBSITE-INIT");
+    this.server();
   }
 
   server () {
@@ -160,6 +160,7 @@ class website {
     this.startServer((cb) => {
       if (cb) {
         console.log("[WEBSITE] Server Ready!");
+        this.sendSocketNotification("INITIALIZED");
       }
     });
   }
@@ -1017,16 +1018,6 @@ class website {
           res.sendFile(`${this.WebsitePath}/Gateway/robots.txt`);
         });
 
-      if (!this.config.CLIENT_ID) {
-        this.website.app
-          .use("/smarthome/assets", express.static(`${this.WebsitePath}/assets`, options))
-          .get("/smarthome/login/", (req, res) => {
-            res.sendFile(`${this.WebsitePath}/SmartHome/disabled.html`);
-          })
-          .get("/smarthome/", (req, res) => {
-            res.sendFile(`${this.WebsitePath}/SmartHome/disabled.html`);
-          });
-      }
       resolve();
     });
   }
@@ -1044,11 +1035,6 @@ class website {
   async startServer (callback = () => {}) {
 
     /** Error 404 **/
-    this.website.app
-      .get("/smarthome/*", (req, res) => {
-        console.warn("[WEBSITE] [SMARTHOME] Don't find:", req.url);
-        res.status(404).sendFile(`${this.WebsitePath}/SmartHome/404.html`);
-      });
     this.website.app
       .get("/*", (req, res) => {
         console.warn("[WEBSITE] Don't find:", req.url);

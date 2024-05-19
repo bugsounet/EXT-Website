@@ -19,12 +19,6 @@ module.exports = NodeHelper.create({
         this.config = payload;
         this.initialize();
         break;
-      case "SMARTHOME-INIT":
-        var smarthome = await this.parseSmarthome();
-        if (smarthome) await this.smarthome.init();
-        this.website.server();
-        this.sendSocketNotification("INITIALIZED");
-        break;
       case "EXT_DB-UPDATE":
         if (this.website) this.website.setActiveVersion(payload);
         else {
@@ -35,7 +29,6 @@ module.exports = NodeHelper.create({
       case "EXT_STATUS":
         if (this.website) {
           this.website.setEXTStatus(payload);
-          this.updateSmartHome();
         } else {
           // library is not loaded ... retry (not needed but...)
           setTimeout(() => { this.socketNotificationReceived("EXT_STATUS", payload); }, 1000);
@@ -67,8 +60,7 @@ module.exports = NodeHelper.create({
       let WebsiteHelperConfig = {
         config: {
           username: this.config.username,
-          password: this.config.password,
-          CLIENT_ID: this.config.CLIENT_ID
+          password: this.config.password
         },
         debug: this.config.debug,
         lib: this.lib
@@ -77,44 +69,6 @@ module.exports = NodeHelper.create({
       this.website = new this.lib.website(WebsiteHelperConfig, (...args) => this.sendSocketNotification(...args));
       resolve();
     });
-  },
-
-  async parseSmarthome () {
-    if (!this.config.CLIENT_ID) return false;
-    const bugsounet = await this.libraries("smarthome");
-    return new Promise((resolve) => {
-      if (bugsounet) return this.bugsounetError(bugsounet, "Smarthome");
-
-      let SmarthomeHelperConfig = {
-        config: {
-          username: this.config.username,
-          password: this.config.password,
-          CLIENT_ID: this.config.CLIENT_ID
-        },
-        debug: this.config.debug,
-        lang: config.language,
-        website: this.website
-      };
-
-      let smarthomeCallbacks = {
-        sendSocketNotification: (...args) => {
-          log("Smarthome callback:", ...args);
-          this.sendSocketNotification(...args);
-        },
-        restart: () => this.website.restartMM()
-      };
-
-      this.smarthome = new this.lib.smarthome(SmarthomeHelperConfig, smarthomeCallbacks);
-      resolve(true);
-    });
-  },
-
-  updateSmartHome () {
-    if (!this.smarthome || !this.config.CLIENT_ID) return;
-    if (this.smarthome.SmartHome.use && this.smarthome.SmartHome.init) {
-      this.smarthome.refreshData();
-      this.smarthome.updateGraph();
-    }
   },
 
   libraries (type) {
@@ -126,19 +80,12 @@ module.exports = NodeHelper.create({
       { "./components/website.js": "website" }
     ];
 
-    let smarthome = [
-      { "./components/smarthome.js": "smarthome" }
-    ];
     let errors = 0;
 
     switch (type) {
       case "website":
         log("Loading website Libraries...");
         Libraries = website;
-        break;
-      case "smarthome":
-        log("Loading smarhome Libraries...");
-        Libraries = smarthome;
         break;
       default:
         console.log(`${type}: Unknow library database...`);
