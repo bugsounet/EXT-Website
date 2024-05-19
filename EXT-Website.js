@@ -8,8 +8,7 @@ Module.register("EXT-Website", {
   defaults: {
     debug: false,
     username: "admin",
-    password: "admin",
-    CLIENT_ID: null
+    password: "admin"
   },
 
   start () {
@@ -24,9 +23,6 @@ Module.register("EXT-Website", {
       case "INITIALIZED":
         this.ready = true;
         this.sendNotification("EXT_HELLO", this.name);
-        break;
-      case "WEBSITE-INIT":
-        this.sendSocketNotification("SMARTHOME-INIT");
         break;
       case "SendNoti":
         console.log("---> SendNoti:", payload);

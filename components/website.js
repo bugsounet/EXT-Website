@@ -152,7 +152,7 @@ class website {
 
     await this.createWebsite();
     console.log("[WEBSITE] Website Ready!");
-    this.sendSocketNotification("WEBSITE-INIT");
+    this.server();
   }
 
   server () {
@@ -160,6 +160,7 @@ class website {
     this.startServer((cb) => {
       if (cb) {
         console.log("[WEBSITE] Server Ready!");
+        this.sendSocketNotification("INITIALIZED");
       }
     });
   }
