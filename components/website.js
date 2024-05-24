@@ -853,10 +853,10 @@ class website {
               payload: {
                 type: "information",
                 message: data,
-                sender: req.user ? req.user.username : "MMM-GoogleAssistant",
+                sender: req.user ? req.user.username : "EXT-Website",
                 timer: 30 * 1000,
-                sound: "modules/MMM-GoogleAssistant/website/tools/message.mp3",
-                icon: "modules/MMM-GoogleAssistant/website/assets/img/GA_Small.png"
+                sound: "modules/EXT-Website/website/tools/message.mp3",
+                icon: "modules/EXT-Website/website/assets/img/GA_Small.png"
               }
             });
             res.send("ok");
