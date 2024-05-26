@@ -222,7 +222,7 @@ class website {
           error: (err, req, res) => {
             console.error("[WEBSITE] Proxy ERROR", err);
             if (!this.website.EXTStatus["EXT-SmartHome"].hello) {
-              res.redirect('/404');
+              res.redirect("/404");
             } else {
               res.writeHead(500, {
                 "Content-Type": "text/plain"
@@ -1070,7 +1070,7 @@ class website {
 
         .get("/*", (req, res) => {
           console.warn("[WEBSITE] Don't find:", req.url);
-          res.redirect('/404');
+          res.redirect("/404");
         });
 
       resolve();
