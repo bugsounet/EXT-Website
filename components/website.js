@@ -17,6 +17,7 @@ const session = require("express-session");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const Socket = require("socket.io");
+const { createProxyMiddleware } = require("http-proxy-middleware");
 
 var log = (...args) => { /* do nothing */ };
 
@@ -48,6 +49,7 @@ const mainBranch = {
   "EXT-Spotify": "master",
   "EXT-SpotifyCanvasLyrics": "main",
   "EXT-StreamDeck": "main",
+  "EXT-SmartHome": "dev",
   "EXT-TelegramBot": "master",
   "EXT-Updates": "master",
   "EXT-VLCServer": "main",
@@ -188,17 +190,61 @@ class website {
   /** GA Middleware **/
   createWebsite () {
     return new Promise((resolve) => {
+      const ProxyRequestLogger = (proxyServer, options) => {
+        proxyServer.on("proxyReq", (proxyReq, req, res) => {
+          var ip = req.headers["x-forwarded-for"] || req.connection.remoteAddress;
+          log(`[${ip}] [${req.method}] [PROXY] /smarthome${req.url}`);
+        });
+      };
+      const SmartHomeProxy = createProxyMiddleware({
+        target: "http://127.0.0.1:8083",
+        changeOrigin: false,
+        pathFilter: ["/smarthome"],
+        pathRewrite: { "^/smarthome" : "" },
+        plugins: [ProxyRequestLogger],
+        on: {
+          onProxyReq : (proxyReq, req, res) => {
+            if (req.method === "POST" && req.body) {
+              let body = req.body;
+              let newBody = "";
+              delete req.body;
+
+              try {
+                newBody = JSON.stringify(body);
+                proxyReq.setHeader("content-length", Buffer.byteLength(newBody, "utf8"));
+                proxyReq.write(newBody);
+                proxyReq.end();
+              } catch (e) {
+                console.error("[WEBSITE] Stringify error", e);
+              }
+            }
+          },
+          error: (err, req, res) => {
+            console.error("[WEBSITE] Proxy ERROR", err);
+            if (!this.website.EXTStatus["EXT-SmartHome"].hello) {
+              res.redirect("/404");
+            } else {
+              res.writeHead(500, {
+                "Content-Type": "text/plain"
+              });
+              res.end(`${err.message}`);
+            }
+          }
+        }
+      });
       this.passportConfig();
       this.website.app = express();
       this.website.server = http.createServer(this.website.app);
 
-      var urlencodedParser = bodyParser.urlencoded({ extended: true });
       log("Create website needed routes...");
       this.website.app.use(session({
         secret: "some-secret",
         saveUninitialized: false,
         resave: true
       }));
+
+      // reverse proxy For EXT-SmartHome
+      this.website.app.use(SmartHomeProxy);
 
       // For parsing post request's data/body
       this.website.app.use(bodyParser.json());
@@ -807,10 +853,10 @@ class website {
               payload: {
                 type: "information",
                 message: data,
-                sender: req.user ? req.user.username : "MMM-GoogleAssistant",
+                sender: req.user ? req.user.username : "EXT-Website",
                 timer: 30 * 1000,
-                sound: "modules/MMM-GoogleAssistant/website/tools/message.mp3",
-                icon: "modules/MMM-GoogleAssistant/website/assets/img/GA_Small.png"
+                sound: "modules/EXT-Website/website/tools/message.mp3",
+                icon: "modules/EXT-Website/website/assets/img/GA_Small.png"
               }
             });
             res.send("ok");
@@ -1016,6 +1062,15 @@ class website {
 
         .get("/robots.txt", (req, res) => {
           res.sendFile(`${this.WebsitePath}/robots.txt`);
+        })
+
+        .get("/404", (req, res) => {
+          res.status(404).sendFile(`${this.WebsitePath}/404.html`);
+        })
+
+        .get("/*", (req, res) => {
+          console.warn("[WEBSITE] Don't find:", req.url);
+          res.redirect("/404");
         });
 
       resolve();
@@ -1033,15 +1088,6 @@ class website {
   /** Start Server **/
   /******************/
   async startServer (callback = () => {}) {
-
-    /** Error 404 **/
-    this.website.app
-      .get("/*", (req, res) => {
-        console.warn("[WEBSITE] Don't find:", req.url);
-        res.status(404).sendFile(`${this.WebsitePath}/404.html`);
-      });
-
-    /** Create Server **/
     this.config.listening = await this.purposeIP();
     this.website.server
       .listen(8081, "0.0.0.0", () => {
