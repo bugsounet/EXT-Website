@@ -1,6 +1,6 @@
 {
   "name": "EXT-Website",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "rev": "240527",
   "description": "GA EXT-Website Module",
   "main": "EXT-Website.js",
@@ -37,6 +37,7 @@
     "jsoneditor": "^10.0.3",
     "node-pty": "^1.0.0",
     "passport": "^0.7.0",
+    "passport-http": "^0.3.0",
     "passport-local": "^1.0.0",
     "pm2": "^5.4.0",
     "prompt": "^1.3.0",

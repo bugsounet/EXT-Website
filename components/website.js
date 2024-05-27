@@ -12,6 +12,7 @@ const pm2 = require("pm2");
 const semver = require("semver");
 const passport = require("passport");
 const LocalStrategy = require("passport-local");
+const BasicStrategy = require("passport-http").BasicStrategy;
 const express = require("express");
 const session = require("express-session");
 const bodyParser = require("body-parser");
@@ -178,6 +179,17 @@ class website {
       }
     ));
 
+    passport.use(new BasicStrategy(
+      (username, password, done) => {
+        if (username === this.website.user.username && password === this.website.user.password) {
+          return done(null, this.website.user);
+        } else {
+          console.warn(`[WEBSITE] [API] Bad credentials for ${username}`);
+          done(null, false);
+        }
+      }
+    ));
+
     passport.serializeUser((user, done) => {
       done(null, user._id);
     });
@@ -297,6 +309,7 @@ class website {
           else res.redirect("/login");
         })
 
+        // API DONE
         .get("/version", (req, res) => {
           let remoteFile = "https://raw.githubusercontent.com/bugsounet/MMM-GoogleAssistant/prod/package.json";
           var result = {
@@ -320,6 +333,7 @@ class website {
             });
         })
 
+        // API DONE
         .get("/systemInformation", async (req, res) => {
           if (req.user) {
             this.website.systemInformation.result = await this.website.systemInformation.lib.Get();
@@ -327,6 +341,7 @@ class website {
           } else res.status(403).sendFile(`${this.WebsitePath}/403.html`);
         })
 
+        // API DONE
         .get("/translation", (req, res) => {
           res.send(this.website.translation);
         })
@@ -1068,6 +1083,18 @@ class website {
           res.status(404).sendFile(`${this.WebsitePath}/404.html`);
         })
 
+        /** API using **/
+        .get("/api/", (req,res) => {
+          res.send("- MMM-GoogleAssistant API - Hello World!");
+        })
+
+        .get("/api/*", (req,res,next) => {
+          if (req.user) this.websiteAPI(req,res);
+          else next();
+        })
+
+        .get("/api/*", passport.authenticate("basic"), (req, res) => this.websiteAPI(req,res))
+
         .get("/*", (req, res) => {
           console.warn("[WEBSITE] Don't find:", req.url);
           res.redirect("/404");
@@ -1768,6 +1795,62 @@ class website {
 
   getEXTStatus () {
     return this.website.EXTStatus;
+  }
+
+  /** Website API **/
+  async websiteAPI (req, res) {
+    var APIResult = {};
+    switch (req.url) {
+      case "/api/version":
+        APIResult = {
+          version: {
+            version: require(`${this.GAPath}/package.json`).version,
+            rev: require(`${this.GAPath}/package.json`).rev,
+            lang: this.website.language,
+            last: 0,
+            imperial: (this.website.MMConfig.units === "imperial") ? true : false,
+            needUpdate: false
+          }
+        };
+        let remoteFile = "https://raw.githubusercontent.com/bugsounet/MMM-GoogleAssistant/prod/package.json";
+        fetch(remoteFile)
+          .then((response) => response.json())
+          .then((data) => {
+            APIResult.version.last = data.version;
+            if (semver.gt(APIResult.version.last, APIResult.version.version)) APIResult.version.needUpdate = true;
+            res.json(APIResult);
+          })
+          .catch((e) => {
+            console.error("[WEBSITE] Error on fetch last version number");
+            APIResult.error = "Error on fetch last version number";
+            res.json(APIResult);
+          });
+        break;
+      case "/api/translations":
+        APIResult = {
+          translation: this.website.translation
+        };
+        res.json(APIResult);
+        break;
+      case "/api/homeText":
+        APIResult = {
+          homeText: this.website.homeText
+        };
+        res.json(APIResult);
+        break;
+      case "/api/systemInformation":
+        this.website.systemInformation.result = await this.website.systemInformation.lib.Get();
+        APIResult = {
+          systemInformation: this.website.systemInformation.result
+        };
+        res.json(APIResult);
+        break;
+      default:
+        APIResult = {
+          error: "You Are Lost in Space"
+        };
+        res.json(APIResult);
+    }
   }
 }
 
