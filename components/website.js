@@ -368,11 +368,6 @@ class website {
           else res.status(403).sendFile(`${this.WebsitePath}/403.html`);
         })
 
-        .get("/GetMMConfig", (req, res) => {
-          if (req.user) res.send(this.website.MMConfig);
-          else res.status(403).sendFile(`${this.WebsitePath}/403.html`);
-        })
-
         .get("/Terminal", (req, res) => {
           if (req.user) {
             var ip = req.headers["x-forwarded-for"] || req.connection.remoteAddress;
@@ -519,6 +514,11 @@ class website {
             }
             else res.status(404).sendFile(`${this.WebsitePath}/404.html`);
           }
+          else res.status(403).sendFile(`${this.WebsitePath}/403.html`);
+        })
+
+        .get("/MMConfig", (req, res) => {
+          if (req.user) res.sendFile(`${this.WebsitePath}/mmconfig.html`);
           else res.status(403).sendFile(`${this.WebsitePath}/403.html`);
         })
 
