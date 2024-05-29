@@ -166,9 +166,9 @@ function loadDataDescriptionEXT () {
 
 function loadMMConfig () {
   return new Promise((resolve) => {
-    $.getJSON("/GetMMConfig", (config) => {
+    $.getJSON("/api/MMConfig", (config) => {
       //console.log("MMConfig", config)
-      resolve(config);
+      resolve(config.MMConfig);
     })
       .fail(function (err) {
         if (!err.status) alertify.error("Connexion Lost!");

@@ -522,11 +522,6 @@ class website {
           else res.status(403).sendFile(`${this.WebsitePath}/403.html`);
         })
 
-        .get("/MMConfig", (req, res) => {
-          if (req.user) res.sendFile(`${this.WebsitePath}/mmconfig.html`);
-          else res.status(403).sendFile(`${this.WebsitePath}/403.html`);
-        })
-
         .get("/EXTCreateConfig", (req, res) => {
           if (req.user) {
             if (req.query.ext
@@ -1783,6 +1778,12 @@ class website {
       case "/api/EXTVersions":
         APIResult = {
           EXTVersions: this.website.EXTVersions
+        };
+        res.json(APIResult);
+        break;
+      case "/api/MMConfig":
+        APIResult = {
+          MMConfig: this.website.MMConfig
         };
         res.json(APIResult);
         break;
