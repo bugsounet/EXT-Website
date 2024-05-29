@@ -1,5 +1,3 @@
-/* global forceMobileRotate, window, getGatewayVersion, loadTranslation, $, doTranslateNavBar, checkSystem, getActiveVersion */
-
 /** EXT System
 * @bugsounet
 **/
@@ -16,7 +14,7 @@ var versionGW = {};
 var System = {};
 var SystemInterval = null;
 var SystemFirstScan = true;
-var activeVersion = [];
+var EXTVersions = [];
 var system = {};
 
 // Load rules
@@ -35,7 +33,7 @@ async function doSystem (cb = null) {
   SystemInterval = null;
 
   system = await checkSystem();
-  activeVersion = await getActiveVersion();
+  EXTVersions = await getEXTVersions();
 
   progressOrText(system);
   window.addEventListener("resize", function () {
@@ -161,10 +159,10 @@ async function doSystem (cb = null) {
     $("#LoadText").addClass("text-google-red");
   }
 
-  if (Object.entries(activeVersion).length) {
+  if (Object.entries(EXTVersions).length) {
     $("#CurrentlyRunning").text(translation.System_CurrentlyRunning);
     $("#Plugins-Table").removeClass("visually-hidden");
-    Object.entries(activeVersion).forEach(([key, value]) => {
+    Object.entries(EXTVersions).forEach(([key, value]) => {
       if (!$(`#Plugins-${key}`).html()) {
         var plugin = document.createElement("tr");
         plugin.id = `Plugins-${key}`;
@@ -550,7 +548,7 @@ function doStatic () {
   $("#NamePlugin").text(translation.System_NamePlugin);
   $("#VersionPlugin").text(translation.System_VersionPlugin);
   $("#RevPlugin").text(translation.System_RevPlugin);
-  if (Object.entries(activeVersion).length) $("#CurrentlyRunning").text(translation.System_CurrentlyRunning);
+  if (Object.entries(EXTVersions).length) $("#CurrentlyRunning").text(translation.System_CurrentlyRunning);
   else $("#CurrentlyRunning").text(translation.System_NoPlugins);
   if (system.GPU) {
     $("#GPU").removeClass("animated");

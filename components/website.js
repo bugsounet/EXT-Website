@@ -76,6 +76,7 @@ class website {
       EXTConfigured: [], // configured EXT in config
       EXTInstalled: [], // installed EXT in MM
       EXTStatus: {}, // status of EXT
+      EXTVersions: {},
       user: { _id: 1, username: "admin", password: "admin" },
       initialized: false,
       app: null,
@@ -92,7 +93,6 @@ class website {
         lib: null,
         result: {}
       },
-      activeVersion: {},
       homeText: null,
       errorInit: false
     };
@@ -1025,11 +1025,6 @@ class website {
           else res.status(403).sendFile(`${this.WebsitePath}/403.html`);
         })
 
-        .get("/activeVersion", (req, res) => {
-          if (req.user) res.send(this.website.activeVersion);
-          else res.status(403).sendFile(`${this.WebsitePath}/403.html`);
-        })
-
         .get("/download/*", (req, res) => {
           healthDownloader(req, res);
         })
@@ -1641,36 +1636,36 @@ class website {
   }
 
   /** set plugin as used and search version/rev **/
-  async setActiveVersion (module) {
-    if (this.website.activeVersion[module] !== undefined) {
+  async setEXTVersions (module) {
+    if (this.website.EXTVersions[module] !== undefined) {
       this.sendSocketNotification("ERROR", `Already Activated: ${module}`);
       console.error(`Already Activated: ${module}`);
       return;
     }
     else log("Detected:", module);
-    this.website.activeVersion[module] = {
+    this.website.EXTVersions[module] = {
       version: require(`../../${module}/package.json`).version,
       rev: require(`../../${module}/package.json`).rev
     };
 
-    let scanUpdate = await this.checkUpdate(module, this.website.activeVersion[module].version);
-    this.website.activeVersion[module].last = scanUpdate.last;
-    this.website.activeVersion[module].update = scanUpdate.update;
-    this.website.activeVersion[module].beta = scanUpdate.beta;
+    let scanUpdate = await this.checkUpdate(module, this.website.EXTVersions[module].version);
+    this.website.EXTVersions[module].last = scanUpdate.last;
+    this.website.EXTVersions[module].update = scanUpdate.update;
+    this.website.EXTVersions[module].beta = scanUpdate.beta;
 
     // scan every 60secs or every 15secs with GA app
     // I'm afraid about lag time...
     // maybe 60 secs is better
     setInterval(() => {
-      this.checkUpdateInterval(module, this.website.activeVersion[module].version);
+      this.checkUpdateInterval(module, this.website.EXTVersions[module].version);
     }, 1000 * 60);
   }
 
   async checkUpdateInterval (module, version) {
     let scanUpdate = await this.checkUpdate(module, version);
-    this.website.activeVersion[module].last = scanUpdate.last;
-    this.website.activeVersion[module].update = scanUpdate.update;
-    this.website.activeVersion[module].beta = scanUpdate.beta;
+    this.website.EXTVersions[module].last = scanUpdate.last;
+    this.website.EXTVersions[module].update = scanUpdate.update;
+    this.website.EXTVersions[module].beta = scanUpdate.beta;
   }
 
   checkUpdate (module, version) {
@@ -1766,31 +1761,11 @@ class website {
   /** Website API **/
   async websiteAPI (req, res) {
     var APIResult = {};
+
     switch (req.url) {
       case "/api/version":
-        APIResult = {
-          version: {
-            version: require(`${this.GAPath}/package.json`).version,
-            rev: require(`${this.GAPath}/package.json`).rev,
-            lang: this.website.language,
-            last: 0,
-            imperial: (this.website.MMConfig.units === "imperial") ? true : false,
-            needUpdate: false
-          }
-        };
-        let remoteFile = "https://raw.githubusercontent.com/bugsounet/MMM-GoogleAssistant/prod/package.json";
-        fetch(remoteFile)
-          .then((response) => response.json())
-          .then((data) => {
-            APIResult.version.last = data.version;
-            if (semver.gt(APIResult.version.last, APIResult.version.version)) APIResult.version.needUpdate = true;
-            res.json(APIResult);
-          })
-          .catch((e) => {
-            console.error("[WEBSITE] Error on fetch last version number");
-            APIResult.error = "Error on fetch last version number";
-            res.json(APIResult);
-          });
+        APIResult = await this.searchVersion();
+        res.json(APIResult);
         break;
       case "/api/homeText":
         APIResult = {
@@ -1805,13 +1780,61 @@ class website {
         };
         res.json(APIResult);
         break;
+      case "/api/EXTVersions":
+        APIResult = {
+          EXTVersions: this.website.EXTVersions
+        };
+        res.json(APIResult);
+        break;
+      case "/api/all":
+        let version = await this.searchVersion();
+        APIResult = {
+          error: [],
+          version: version.version,
+          translations: this.website.translation,
+          homeText: this.website.homeText,
+          sysInfo: this.website.systemInformation.result,
+          EXTVersions: this.website.EXTVersions
+        };
+
+        if (version.error) APIResult.error.push(version.error);
+        res.json(APIResult);
+        break;
       default:
         APIResult = {
           error: "You Are Lost in Space"
         };
         res.json(APIResult);
+        break;
     }
   }
-}
 
+  searchVersion () {
+    var APIResult = {
+      version: {
+        version: require(`${this.GAPath}/package.json`).version,
+        rev: require(`${this.GAPath}/package.json`).rev,
+        lang: this.website.language,
+        last: 0,
+        imperial: (this.website.MMConfig.units === "imperial") ? true : false,
+        needUpdate: false
+      }
+    };
+    let remoteFile = "https://raw.githubusercontent.com/bugsounet/MMM-GoogleAssistant/prod/package.json";
+    return new Promise((resolve) => {
+      fetch(remoteFile)
+        .then((response) => response.json())
+        .then((data) => {
+          APIResult.version.last = data.version;
+          if (semver.gt(APIResult.version.last, APIResult.version.version)) APIResult.version.needUpdate = true;
+          resolve(APIResult);
+        })
+        .catch((e) => {
+          console.error("[WEBSITE] [API] Error on fetch last version number");
+          APIResult.error = "Error on fetch last version number";
+          resolve(APIResult);
+        });
+    });
+  }
+}
 module.exports = website;

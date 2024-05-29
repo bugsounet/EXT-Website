@@ -330,14 +330,14 @@ function doTranslateNavBar () {
   $(`a[href="${path}"]`).closest("a").addClass("active");
 }
 
-function getActiveVersion () {
+function getEXTVersions () {
   return new Promise((resolve) => {
-    $.getJSON("/activeVersion", (activeVersion) => {
-      resolve(activeVersion);
+    $.getJSON("/api/EXTVersions", (EXTs) => {
+      resolve(EXTs.EXTVersions);
     })
       .fail(function (err) {
         if (!err.status) alertify.error("Connexion Lost!");
-        else alertify.warning(`[getActiveVersion] Server return Error ${err.status} (${err.statusText})`);
+        else alertify.warning(`[getEXTVersions] Server return Error ${err.status} (${err.statusText})`);
       });
   });
 }

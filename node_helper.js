@@ -20,7 +20,7 @@ module.exports = NodeHelper.create({
         this.initialize();
         break;
       case "EXT_DB-UPDATE":
-        if (this.website) this.website.setActiveVersion(payload);
+        if (this.website) this.website.setEXTVersions(payload);
         else {
           // library is not loaded
           setTimeout(() => { this.socketNotificationReceived("EXT_DB-UPDATE", payload); }, 1000);
