@@ -12,14 +12,14 @@ var PleaseRotateOptions = {
 
 // define all vars
 var translation = {};
-var versionGW = {};
+var versionGA = {};
 
 // Load rules
 window.addEventListener("load", async (event) => {
-  versionGW = await getGatewayVersion();
+  versionGA = await getGatewayVersion();
   translation = await loadTranslation();
 
-  $("html").prop("lang", versionGW.lang);
+  $("html").prop("lang", versionGA.lang);
   forceMobileRotate();
   GatewaySetting();
 
@@ -30,9 +30,9 @@ function GatewaySetting () {
   //translate parts
   $(document).prop("title", translation.About);
   $("#about_title").text(translation.About_Title);
-  $("#version").text(versionGW.v);
-  $("#rev").text(versionGW.rev);
-  $("#language").text(versionGW.lang);
+  $("#version").text(versionGA.version);
+  $("#rev").text(versionGA.rev);
+  $("#language").text(versionGA.lang);
 
   $("#byHeader").text(translation.About_Info_by);
   $("#SupportHeader").text(translation.About_Info_Support);

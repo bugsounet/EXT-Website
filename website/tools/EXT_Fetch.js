@@ -3,8 +3,9 @@
 /** fetch datas **/
 function getHomeText () {
   return new Promise((resolve) => {
-    $.getJSON("/homeText", (homeText) => {
-      resolve(homeText);
+    $.getJSON("/api/homeText", (homeText) => {
+      //console.log("homeText", homeText)
+      resolve(homeText.homeText);
     })
       .fail(function (err) {
         if (!err.status) alertify.error("Connexion Lost!");
@@ -15,9 +16,9 @@ function getHomeText () {
 
 function getGatewayVersion () {
   return new Promise((resolve) => {
-    $.getJSON("/version", (versionGW) => {
-      //console.log("Version", versionGW)
-      resolve(versionGW);
+    $.getJSON("/api/version", (versionGA) => {
+      //console.log("Version", versionGA)
+      resolve(versionGA.version);
     })
       .fail(function (err) {
         if (!err.status) alertify.error("Connexion Lost!");
@@ -41,12 +42,12 @@ function loadPluginCurrentConfig (plugin) {
 
 function checkSystem () {
   return new Promise((resolve) => {
-    $.getJSON("/systemInformation", (system) => {
-      resolve(system);
+    $.getJSON("/api/sysInfo", (system) => {
+      resolve(system.sysInfo);
     })
       .fail(function (err) {
         if (!err.status) alertify.error("Connexion Lost!");
-        else alertify.warning(`[systemInformation] Server return Error ${err.status} (${err.statusText})`);
+        else alertify.warning(`[sysInfo] Server return Error ${err.status} (${err.statusText})`);
       });
   });
 }
@@ -100,9 +101,9 @@ function checkEXTStatus () {
 
 function loadTranslation () {
   return new Promise((resolve) => {
-    $.getJSON("/translation", (tr) => {
+    $.getJSON("/api/translations", (tr) => {
       //console.log("Translation", tr)
-      resolve(tr);
+      resolve(tr.translations);
     })
       .fail(function (err) {
         if (!err.status) alertify.error("Connexion Lost!");

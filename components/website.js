@@ -309,47 +309,6 @@ class website {
           else res.redirect("/login");
         })
 
-        // API DONE
-        .get("/version", (req, res) => {
-          let remoteFile = "https://raw.githubusercontent.com/bugsounet/MMM-GoogleAssistant/prod/package.json";
-          var result = {
-            v: require(`${this.GAPath}/package.json`).version,
-            rev: require(`${this.GAPath}/package.json`).rev,
-            lang: this.website.language,
-            last: 0,
-            imperial: (this.website.MMConfig.units === "imperial") ? true : false,
-            needUpdate: false
-          };
-          fetch(remoteFile)
-            .then((response) => response.json())
-            .then((data) => {
-              result.last = data.version;
-              if (semver.gt(result.last, result.v)) result.needUpdate = true;
-              res.send(result);
-            })
-            .catch((e) => {
-              console.error("[WEBSITE] Error on fetch last version number");
-              res.send(result);
-            });
-        })
-
-        // API DONE
-        .get("/systemInformation", async (req, res) => {
-          if (req.user) {
-            this.website.systemInformation.result = await this.website.systemInformation.lib.Get();
-            res.send(this.website.systemInformation.result);
-          } else res.status(403).sendFile(`${this.WebsitePath}/403.html`);
-        })
-
-        // API DONE
-        .get("/translation", (req, res) => {
-          res.send(this.website.translation);
-        })
-
-        .get("/homeText", (req, res) => {
-          res.send({ text: this.website.homeText });
-        })
-
         .get("/EXT", (req, res) => {
           if (req.user) res.sendFile(`${this.WebsitePath}/EXT.html`);
           else res.redirect("/login");
@@ -1086,6 +1045,13 @@ class website {
         /** API using **/
         .get("/api/", (req,res) => {
           res.send("- MMM-GoogleAssistant API - Hello World!");
+        })
+
+        .get("/api/translations", (req, res) => {
+          const APIResult = {
+            translations: this.website.translation
+          };
+          res.json(APIResult);
         })
 
         .get("/api/*", (req,res,next) => {
@@ -1826,22 +1792,16 @@ class website {
             res.json(APIResult);
           });
         break;
-      case "/api/translations":
-        APIResult = {
-          translation: this.website.translation
-        };
-        res.json(APIResult);
-        break;
       case "/api/homeText":
         APIResult = {
           homeText: this.website.homeText
         };
         res.json(APIResult);
         break;
-      case "/api/systemInformation":
+      case "/api/sysInfo":
         this.website.systemInformation.result = await this.website.systemInformation.lib.Get();
         APIResult = {
-          systemInformation: this.website.systemInformation.result
+          sysInfo: this.website.systemInformation.result
         };
         res.json(APIResult);
         break;
