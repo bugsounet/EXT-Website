@@ -12,13 +12,16 @@ const pm2 = require("pm2");
 const semver = require("semver");
 const passport = require("passport");
 const LocalStrategy = require("passport-local");
-const BasicStrategy = require("passport-http").BasicStrategy;
 const express = require("express");
 const session = require("express-session");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const Socket = require("socket.io");
 const { createProxyMiddleware } = require("http-proxy-middleware");
+
+const JwtStrategy = require("passport-jwt").Strategy;
+const ExtractJwt = require("passport-jwt").ExtractJwt;
+const jwt = require("jsonwebtoken");
 
 var log = (...args) => { /* do nothing */ };
 
@@ -179,16 +182,18 @@ class website {
       }
     ));
 
-    passport.use(new BasicStrategy(
-      (username, password, done) => {
-        if (username === this.website.user.username && password === this.website.user.password) {
-          return done(null, this.website.user);
-        } else {
-          console.warn(`[WEBSITE] [API] Bad credentials for ${username}`);
-          done(null, false);
-        }
+    const jwtOptions = {
+      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+      secretOrKey: "some-secret"
+    };
+
+    passport.use(new JwtStrategy(jwtOptions, (jwtPayload, done) => {
+      if (jwtPayload.user === this.website.user.username) {
+        done(null, { id: this.website.user.username });
+      } else {
+        done(null, false);
       }
-    ));
+    }));
 
     passport.serializeUser((user, done) => {
       done(null, user._id);
@@ -323,16 +328,16 @@ class website {
           var ip = req.headers["x-forwarded-for"] || req.connection.remoteAddress;
           passport.authenticate("login", (err, user, info) => {
             if (err) {
-              console.log(`[WEBSITE] [${ip}] Error`, err);
+              console.error(`[WEBSITE] [${ip}] Error`, err);
               return next(err);
             }
             if (!user) {
-              console.log(`[WEBSITE] [${ip}] Bad Login`, info);
+              console.warn(`[WEBSITE] [${ip}] Bad Login`, info);
               return res.send({ err: info });
             }
             req.logIn(user, (err) => {
               if (err) {
-                console.log(`[WEBSITE] [${ip}] Login error:`, err);
+                console.warn(`[WEBSITE] [${ip}] Login error:`, err);
                 return res.send({ err: err });
               }
               console.log(`[WEBSITE] [${ip}] Welcome ${user.username}, happy to serve you!`);
@@ -1044,12 +1049,63 @@ class website {
           res.json(APIResult);
         })
 
+        .post("/api/login", (req, res) => {
+          var ip = req.headers["x-forwarded-for"] || req.connection.remoteAddress;
+          const authorization = req.headers.authorization;
+          const params = authorization?.split(" ");
+          var APIResult = {
+            error: "Invalid credentials"
+          };
+
+          if (!authorization) {
+            console.warn(`[WEBSITE] [API] [${ip}] Bad Login: missing authorization type`);
+            APIResult.message = "missing authorization type";
+            return res.status(401).json(APIResult);
+          };
+
+          if (params[0] !== "Basic") {
+            console.warn(`[WEBSITE] [API] [${ip}] Bad Login: Basic authorization type only`);
+            APIResult.message = "authorization type Basic only";
+            return res.status(401).json(APIResult);
+          }
+
+          if (!params[1]) { // must never happen
+            console.warn(`[WEBSITE] [API] [${ip}] Bad Login: missing Basic params`);
+            APIResult.message = "missing Basic params";
+            return res.status(401).json(APIResult);
+          }
+
+          const base64Credentials = atob(params[1]);
+          const [ username, password ] = base64Credentials.split(":");
+
+          if (username === this.website.user.username && password === this.website.user.password) {
+            const token = jwt.sign(
+              {
+                user: this.website.user.username
+              },
+              "some-secret",
+              { expiresIn: "1h" }
+            );
+            APIResult = {
+              access_token: token,
+              token_type: "Bearer",
+              expires_in: 3600
+            };
+            console.log(`[WEBSITE] [API] [${ip}] Welcome ${username}, happy to serve you!`);
+            res.json(APIResult);
+          } else {
+            console.warn(`[WEBSITE] [API] [${ip}] Bad Login: Invalid username or password`);
+            APIResult.message = "Invalid username or password";
+            res.status(401).json(APIResult);
+          }
+        })
+
         .get("/api/*", (req,res,next) => {
           if (req.user) this.websiteAPI(req,res);
           else next();
         })
 
-        .get("/api/*", passport.authenticate("basic"), (req, res) => this.websiteAPI(req,res))
+        .get("/api/*", passport.authenticate("jwt", { session: false }), (req, res) => this.websiteAPI(req,res))
 
         .get("/*", (req, res) => {
           console.warn("[WEBSITE] Don't find:", req.url);
@@ -1787,21 +1843,8 @@ class website {
         };
         res.json(APIResult);
         break;
-      case "/api/all":
-        let version = await this.searchVersion();
-        APIResult = {
-          error: [],
-          version: version.version,
-          translations: this.website.translation,
-          homeText: this.website.homeText,
-          sysInfo: this.website.systemInformation.result,
-          EXTVersions: this.website.EXTVersions
-        };
-
-        if (version.error) APIResult.error.push(version.error);
-        res.json(APIResult);
-        break;
       default:
+        console.warn("[WEBSITE] Don't find:", req.url);
         APIResult = {
           error: "You Are Lost in Space"
         };
