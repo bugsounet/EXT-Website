@@ -1,0 +1,96 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "description": "Testing EXT-Website with API",
+    "version": "1.0.0",
+    "title": "MMM-GoogleAssistant"
+  },
+  "servers": [
+    {
+      "url": "http://127.0.0.1:8081"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Test",
+      "description": "Testing tool"
+    },
+    {
+      "name": "Authentification",
+      "description": "Authentification to API Server"
+    },
+    {
+      "name": "Tools",
+      "description": "Helper Tools"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "Basic": {
+        "type": "http",
+        "scheme": "basic",
+        "description": "Basic credentials for Authentication."
+      },
+      "Bearer": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "Bearer Token sended on login."
+      }
+    }
+  },
+  "paths": {
+    "/api/v1/test": {
+      "get": {
+        "tags": [
+          "Test"
+        ],
+        "summary": "Test API path",
+        "responses": {
+          "200": {
+            "description": "To complete..."
+          }
+        }
+      }
+    },
+    "/api/v1/login": {
+      "post": {
+        "tags": [
+          "Authentification"
+        ],
+        "security": [
+          {
+            "Basic": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "To complete..."
+          },
+          "401": {
+            "description": "Error..." 
+          }
+        }
+      }
+    },
+    "/api/v1/version": {
+      "get": {
+        "tags": [
+          "Tools"
+        ],
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "To complete..."
+          },
+          "401": {
+            "description": "Error..." 
+          }
+        }
+      }
+    }
+  }
+}

@@ -23,6 +23,9 @@ const JwtStrategy = require("passport-jwt").Strategy;
 const ExtractJwt = require("passport-jwt").ExtractJwt;
 const jwt = require("jsonwebtoken");
 
+const swaggerUi = require("swagger-ui-express");
+const APIDocs = require("../website/api/swagger.json");
+
 var log = (...args) => { /* do nothing */ };
 
 const mainBranch = {
@@ -1038,15 +1041,14 @@ class website {
         })
 
         /** API using **/
-        .get("/api/", (req,res) => {
-          res.send("- MMM-GoogleAssistant API - Hello World!");
+        .get("/api/test", (req,res) => {
+          res.json({ test: "OK" });
         })
 
+        .use("/api/docs", swaggerUi.serve, swaggerUi.setup(APIDocs))
+
         .get("/api/translations", (req, res) => {
-          const APIResult = {
-            translations: this.website.translation
-          };
-          res.json(APIResult);
+          res.json({ translations: this.website.translation });
         })
 
         .post("/api/login", (req, res) => {
