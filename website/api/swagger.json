@@ -39,7 +39,7 @@
     }
   },
   "paths": {
-    "/api/test": {
+    "/api": {
       "get": {
         "tags": [
           "Test"

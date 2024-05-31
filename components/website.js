@@ -1058,8 +1058,8 @@ class website {
 
         .use("/api/docs", swaggerUi.serve, this.website.APIDocs ? swaggerUi.setup(APIDocs) : (req,res,next) => res.status(401).send("Unauthorized"))
 
-        .get("/api/test", (req,res) => {
-          res.json({ test: "OK" });
+        .get("/api", (req,res) => {
+          res.json({ api: "OK" });
         })
 
         .get("/api/translations", (req, res) => {
