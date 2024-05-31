@@ -1056,7 +1056,16 @@ class website {
 
       /** API using **/
 
-        .use("/api/docs", swaggerUi.serve, this.website.APIDocs ? swaggerUi.setup(APIDocs) : (req,res,next) => res.status(401).send("Unauthorized"))
+
+        .use("/api/docs", swaggerUi.serve, this.website.APIDocs ?
+          swaggerUi.setup(APIDocs, {
+            swaggerOptions: {
+              defaultModelsExpandDepth: -1
+            },
+            customCss: ".swagger-ui .topbar { display: none }"
+          }) :
+          (req,res,next) => res.status(401).send("Unauthorized")
+        )
 
         .get("/api", (req,res) => {
           res.json({ api: "OK" });
@@ -1076,19 +1085,19 @@ class website {
 
           if (!authorization) {
             console.warn(`[WEBSITE] [API] [${ip}] Bad Login: missing authorization type`);
-            APIResult.description = "missing authorization type";
+            APIResult.description = "Missing authorization type";
             return res.status(401).json(APIResult);
           };
 
           if (params[0] !== "Basic") {
             console.warn(`[WEBSITE] [API] [${ip}] Bad Login: Basic authorization type only`);
-            APIResult.description = "authorization type Basic only";
+            APIResult.description = "Authorization type Basic only";
             return res.status(401).json(APIResult);
           }
 
           if (!params[1]) { // must never happen
             console.warn(`[WEBSITE] [API] [${ip}] Bad Login: missing Basic params`);
-            APIResult.description = "missing Basic params";
+            APIResult.description = "Missing Basic params";
             return res.status(401).json(APIResult);
           }
 

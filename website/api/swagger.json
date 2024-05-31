@@ -1,9 +1,9 @@
 {
   "openapi": "3.1.0",
   "info": {
-    "description": "Testing EXT-Website with API",
+    "description": "Control MMM-GoogleAssistant from API",
     "version": "1.0.0",
-    "title": "MMM-GoogleAssistant"
+    "title": "EXT-Website API"
   },
   "servers": [
     {
@@ -24,20 +24,6 @@
       "description": "Helper Tools"
     }
   ],
-  "components": {
-    "securitySchemes": {
-      "Basic": {
-        "type": "http",
-        "scheme": "basic",
-        "description": "Basic credentials for Authentication."
-      },
-      "Bearer": {
-        "type": "http",
-        "scheme": "bearer",
-        "description": "Bearer Token sended on login."
-      }
-    }
-  },
   "paths": {
     "/api": {
       "get": {
@@ -47,7 +33,14 @@
         "summary": "Test API path",
         "responses": {
           "200": {
-            "description": "To complete..."
+            "description": "Return api state",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Test"
+                }
+              }
+            }
           }
         }
       }
@@ -57,6 +50,7 @@
         "tags": [
           "Authentification"
         ],
+        "summary": "Basic Authentification with EXT-Website credentials",
         "security": [
           {
             "Basic": []
@@ -64,10 +58,24 @@
         ],
         "responses": {
           "200": {
-            "description": "To complete..."
+            "description": "Return `access_token`, `token_type` and `expire_in` values",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Login"
+                }
+              }
+            }
           },
           "401": {
-            "description": "Error..."
+            "description": "Return `error` and `description`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoginError"
+                }
+              }
+            }
           }
         }
       }
@@ -79,7 +87,7 @@
         ],
         "responses": {
           "200": {
-            "description": "To complete..."
+            "description": "Send collection of translations part"
           },
           "401": {
             "description": "Error..."
@@ -99,7 +107,7 @@
         ],
         "responses": {
           "200": {
-            "description": "To complete..."
+            "description": "Send EXT-Website and MMM-GoogleAssistant version"
           },
           "401": {
             "description": "Error..."
@@ -119,7 +127,7 @@
         ],
         "responses": {
           "200": {
-            "description": "To complete..."
+            "description": "Send translated home text HTML page"
           },
           "401": {
             "description": "Error..."
@@ -139,7 +147,7 @@
         ],
         "responses": {
           "200": {
-            "description": "To complete..."
+            "description": "Send system information collection"
           },
           "401": {
             "description": "Error..."
@@ -159,7 +167,7 @@
         ],
         "responses": {
           "200": {
-            "description": "To complete..."
+            "description": "Send version of EXTs actually used"
           },
           "401": {
             "description": "Error..."
@@ -179,11 +187,72 @@
         ],
         "responses": {
           "200": {
-            "description": "To complete..."
+            "description": "Send MagicMirror configuration"
           },
           "401": {
             "description": "Error..."
           }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "Basic": {
+        "type": "http",
+        "scheme": "basic",
+        "description": "`EXT-Website` credentials for Authentication."
+      },
+      "Bearer": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "`access_token` sended on login."
+      }
+    },
+    "schemas": {
+      "Test": {
+        "type": "object",
+        "properties": {
+          "api": {
+            "type": "string"
+          }
+        },
+        "example": {
+          "api": "OK"
+        }
+      },
+      "Login": {
+        "type": "object",
+        "properties": {
+          "access_token": {
+            "type": "string"
+          },
+          "token_type": {
+            "type": "string"
+          },
+          "expire_in": {
+            "type": "number"
+          }
+        },
+        "example": {
+          "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiYnVnc291bmV0IiwiaWF0IjoxNzE3MTU3NDg1LCJleHAiOjE3MTcxNjEwODV9.ZFoliD-dZXFI5w9TPBt7nnjEy1vP6YGP9jdUf_i-660",
+          "token_type": "Bearer",
+          "expire_in": 3600
+        }
+      },
+      "LoginError": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          }
+        },
+        "example": {
+          "error": "Invalid credentials",
+          "description": "Invalid username or password"
         }
       }
     }
