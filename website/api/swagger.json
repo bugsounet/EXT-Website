@@ -72,7 +72,102 @@
         }
       }
     },
+    "/api/translations": {
+      "get": {
+        "tags": [
+          "Tools"
+        ],
+        "responses": {
+          "200": {
+            "description": "To complete..."
+          },
+          "401": {
+            "description": "Error..."
+          }
+        }
+      }
+    },
     "/api/version": {
+      "get": {
+        "tags": [
+          "Tools"
+        ],
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "To complete..."
+          },
+          "401": {
+            "description": "Error..."
+          }
+        }
+      }
+    },
+    "/api/homeText": {
+      "get": {
+        "tags": [
+          "Tools"
+        ],
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "To complete..."
+          },
+          "401": {
+            "description": "Error..."
+          }
+        }
+      }
+    },
+    "/api/sysInfo": {
+      "get": {
+        "tags": [
+          "Tools"
+        ],
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "To complete..."
+          },
+          "401": {
+            "description": "Error..."
+          }
+        }
+      }
+    },
+    "/api/EXTVersions": {
+      "get": {
+        "tags": [
+          "Tools"
+        ],
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "To complete..."
+          },
+          "401": {
+            "description": "Error..."
+          }
+        }
+      }
+    },
+    "/api/MMConfig": {
       "get": {
         "tags": [
           "Tools"

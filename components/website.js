@@ -100,7 +100,9 @@ class website {
         result: {}
       },
       homeText: null,
-      errorInit: false
+      errorInit: false,
+      listening: "127.0.0.1",
+      APIDocs: false
     };
     this.MMVersion = global.version;
     this.root_path = global.root_path;
@@ -152,12 +154,16 @@ class website {
 
     this.website.EXTConfigured = this.searchConfigured();
     this.website.EXTInstalled = this.searchInstalled();
+    this.website.listening = await this.purposeIP();
+    this.website.APIDocs = data.useAPIDocs;
 
     log("EXT plugins in database:", this.website.EXT.length);
     log("Find", this.website.EXTInstalled.length, "installed plugins in MagicMirror");
     log("Find", this.website.EXTConfigured.length, "configured plugins in config file");
     log("webviewTag Configured:", this.website.webviewTag);
-    log("Language set", this.website.language);
+    log("Language set:", this.website.language);
+    log("Listening:", this.website.listening);
+    log("APIDocs:", this.website.APIDocs);
 
     await this.createWebsite();
     console.log("[WEBSITE] Website Ready!");
@@ -257,6 +263,14 @@ class website {
       this.website.server = http.createServer(this.website.app);
 
       log("Create website needed routes...");
+
+      // add current server IP to APIDocs
+      if (this.website.APIDocs) {
+        APIDocs.servers[1] = {
+          url : `http://${this.website.listening}:8081`
+        };
+      }
+
       this.website.app.use(session({
         secret: "some-secret",
         saveUninitialized: false,
@@ -1040,12 +1054,13 @@ class website {
           res.status(404).sendFile(`${this.WebsitePath}/404.html`);
         })
 
-        /** API using **/
+      /** API using **/
+
+        .use("/api/docs", swaggerUi.serve, this.website.APIDocs ? swaggerUi.setup(APIDocs) : (req,res,next) => res.status(401).send("Unauthorized"))
+
         .get("/api/test", (req,res) => {
           res.json({ test: "OK" });
         })
-
-        .use("/api/docs", swaggerUi.serve, swaggerUi.setup(APIDocs))
 
         .get("/api/translations", (req, res) => {
           res.json({ translations: this.website.translation });
@@ -1061,19 +1076,19 @@ class website {
 
           if (!authorization) {
             console.warn(`[WEBSITE] [API] [${ip}] Bad Login: missing authorization type`);
-            APIResult.message = "missing authorization type";
+            APIResult.description = "missing authorization type";
             return res.status(401).json(APIResult);
           };
 
           if (params[0] !== "Basic") {
             console.warn(`[WEBSITE] [API] [${ip}] Bad Login: Basic authorization type only`);
-            APIResult.message = "authorization type Basic only";
+            APIResult.description = "authorization type Basic only";
             return res.status(401).json(APIResult);
           }
 
           if (!params[1]) { // must never happen
             console.warn(`[WEBSITE] [API] [${ip}] Bad Login: missing Basic params`);
-            APIResult.message = "missing Basic params";
+            APIResult.description = "missing Basic params";
             return res.status(401).json(APIResult);
           }
 
@@ -1097,7 +1112,7 @@ class website {
             res.json(APIResult);
           } else {
             console.warn(`[WEBSITE] [API] [${ip}] Bad Login: Invalid username or password`);
-            APIResult.message = "Invalid username or password";
+            APIResult.description = "Invalid username or password";
             res.status(401).json(APIResult);
           }
         })
@@ -1129,11 +1144,11 @@ class website {
   /** Start Server **/
   /******************/
   async startServer (callback = () => {}) {
-    this.config.listening = await this.purposeIP();
+    //this.config.listening = await this.purposeIP();
     this.website.server
       .listen(8081, "0.0.0.0", () => {
         console.log("[WEBSITE] [SERVER] Start listening on port 8081");
-        console.log(`[WEBSITE] [SERVER] Available locally at http://${this.config.listening}:8081`);
+        console.log(`[WEBSITE] [SERVER] Available locally at http://${this.website.listening}:8081`);
         this.website.initialized = true;
         callback(true);
       })
