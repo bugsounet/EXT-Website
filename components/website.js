@@ -1057,15 +1057,14 @@ class website {
       /** API using **/
 
 
-        .use("/api/docs", swaggerUi.serve, this.website.APIDocs ?
-          swaggerUi.setup(APIDocs, {
+        .use("/api/docs", swaggerUi.serve, this.website.APIDocs
+          ? swaggerUi.setup(APIDocs, {
             swaggerOptions: {
               defaultModelsExpandDepth: -1
             },
             customCss: ".swagger-ui .topbar { display: none }"
-          }) :
-          (req,res,next) => res.status(401).send("Unauthorized")
-        )
+          })
+          : (req,res,next) => res.status(401).send("Unauthorized"))
 
         .get("/api", (req,res) => {
           res.json({ api: "OK" });
