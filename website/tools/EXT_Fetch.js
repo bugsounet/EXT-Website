@@ -3,9 +3,9 @@
 /** fetch datas **/
 function getHomeText () {
   return new Promise((resolve) => {
-    $.getJSON("/api/homeText", (homeText) => {
-      //console.log("homeText", homeText)
-      resolve(homeText.homeText);
+    $.getJSON("/api/homeText", (text) => {
+      //console.log("homeText", text)
+      resolve(text.homeText);
     })
       .fail(function (err) {
         if (!err.status) alertify.error("Connexion Lost!");
@@ -16,9 +16,9 @@ function getHomeText () {
 
 function getGatewayVersion () {
   return new Promise((resolve) => {
-    $.getJSON("/api/version", (versionGA) => {
-      //console.log("Version", versionGA)
-      resolve(versionGA.version);
+    $.getJSON("/api/version", (ver) => {
+      //console.log("Version", ver)
+      resolve(ver);
     })
       .fail(function (err) {
         if (!err.status) alertify.error("Connexion Lost!");
@@ -43,7 +43,7 @@ function loadPluginCurrentConfig (plugin) {
 function checkSystem () {
   return new Promise((resolve) => {
     $.getJSON("/api/sysInfo", (system) => {
-      resolve(system.sysInfo);
+      resolve(system);
     })
       .fail(function (err) {
         if (!err.status) alertify.error("Connexion Lost!");
@@ -103,7 +103,7 @@ function loadTranslation () {
   return new Promise((resolve) => {
     $.getJSON("/api/translations", (tr) => {
       //console.log("Translation", tr)
-      resolve(tr.translations);
+      resolve(tr);
     })
       .fail(function (err) {
         if (!err.status) alertify.error("Connexion Lost!");
@@ -168,7 +168,7 @@ function loadMMConfig () {
   return new Promise((resolve) => {
     $.getJSON("/api/MMConfig", (config) => {
       //console.log("MMConfig", config)
-      resolve(config.MMConfig);
+      resolve(config);
     })
       .fail(function (err) {
         if (!err.status) alertify.error("Connexion Lost!");
@@ -333,7 +333,7 @@ function doTranslateNavBar () {
 function getEXTVersions () {
   return new Promise((resolve) => {
     $.getJSON("/api/EXTVersions", (EXTs) => {
-      resolve(EXTs.EXTVersions);
+      resolve(EXTs);
     })
       .fail(function (err) {
         if (!err.status) alertify.error("Connexion Lost!");

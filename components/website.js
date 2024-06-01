@@ -1071,7 +1071,7 @@ class website {
         })
 
         .get("/api/translations", (req, res) => {
-          res.json({ translations: this.website.translation });
+          res.json(this.website.translation);
         })
 
         .post("/api/login", (req, res) => {
@@ -1841,7 +1841,11 @@ class website {
     switch (req.url) {
       case "/api/version":
         APIResult = await this.searchVersion();
-        res.json(APIResult);
+        if (APIResult.error) {
+          res.status(206).json(APIResult);
+        } else {
+          res.json(APIResult);
+        }
         break;
       case "/api/homeText":
         APIResult = {
@@ -1851,22 +1855,13 @@ class website {
         break;
       case "/api/sysInfo":
         this.website.systemInformation.result = await this.website.systemInformation.lib.Get();
-        APIResult = {
-          sysInfo: this.website.systemInformation.result
-        };
-        res.json(APIResult);
+        res.json(this.website.systemInformation.result);
         break;
       case "/api/EXTVersions":
-        APIResult = {
-          EXTVersions: this.website.EXTVersions
-        };
-        res.json(APIResult);
+        res.json(this.website.EXTVersions);
         break;
       case "/api/MMConfig":
-        APIResult = {
-          MMConfig: this.website.MMConfig
-        };
-        res.json(APIResult);
+        res.json(this.website.MMConfig);
         break;
       default:
         console.warn("[WEBSITE] Don't find:", req.url);
@@ -1880,21 +1875,19 @@ class website {
 
   searchVersion () {
     var APIResult = {
-      version: {
-        version: require(`${this.WebsiteModulePath}/package.json`).version,
-        rev: require(`${this.WebsiteModulePath}/package.json`).rev,
-        lang: this.website.language,
-        last: 0,
-        needUpdate: false
-      }
+      version: require(`${this.WebsiteModulePath}/package.json`).version,
+      rev: require(`${this.WebsiteModulePath}/package.json`).rev,
+      lang: this.website.language,
+      last: "0.0.0",
+      needUpdate: false
     };
     let remoteFile = "https://raw.githubusercontent.com/bugsounet/EXT-Website/main/package.json";
     return new Promise((resolve) => {
       fetch(remoteFile)
         .then((response) => response.json())
         .then((data) => {
-          APIResult.version.last = data.version;
-          if (semver.gt(APIResult.version.last, APIResult.version.version)) APIResult.version.needUpdate = true;
+          APIResult.last = data.version;
+          if (semver.gt(APIResult.last, APIResult.version)) APIResult.needUpdate = true;
           resolve(APIResult);
         })
         .catch((e) => {

@@ -1,5 +1,5 @@
 {
-  "openapi": "3.1.0",
+  "openapi": "3.0.0",
   "info": {
     "description": "Control MMM-GoogleAssistant from API",
     "version": "1.0.0",
@@ -58,7 +58,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Return `access_token`, `token_type` and `expire_in` values",
+            "description": "Returns `access_token`, `token_type` and `expire_in` values",
             "content": {
               "application/json": {
                 "schema": {
@@ -68,7 +68,7 @@
             }
           },
           "401": {
-            "description": "Return `error` and `description`",
+            "description": "Returns `error` and `description`",
             "content": {
               "application/json": {
                 "schema": {
@@ -85,12 +85,17 @@
         "tags": [
           "Tools"
         ],
+        "summary": "Returns current translations collection",
         "responses": {
           "200": {
-            "description": "Send collection of translations part"
-          },
-          "401": {
-            "description": "Error..."
+            "description": "Send collection of translations part",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Translations"
+                }
+              }
+            }
           }
         }
       }
@@ -100,6 +105,7 @@
         "tags": [
           "Tools"
         ],
+        "summary": "Returns EXT-Website current version, revision, language, ...",
         "security": [
           {
             "Bearer": []
@@ -107,10 +113,34 @@
         ],
         "responses": {
           "200": {
-            "description": "Send EXT-Website and MMM-GoogleAssistant version"
+            "description": "Send EXT-Website version tools",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Version"
+                }
+              }
+            }
+          },
+          "206": {
+            "description": "Send Partial EXT-Website version",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Version206Error"
+                }
+              }
+            }
           },
           "401": {
-            "description": "Error..."
+            "description": "Missing valid authentication token",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "$ref": "#/components/schemas/401Error"
+                }
+              }
+            }
           }
         }
       }
@@ -254,6 +284,256 @@
           "error": "Invalid credentials",
           "description": "Invalid username or password"
         }
+      },
+      "Translations": {
+        "type": "object",
+        "example": {
+          "Rotate_Msg": "Veuillez faire pivoter votre appareil",
+          "Rotate_Continue": "Pour continuer...",
+          "Login_Welcome": "Bienvenue",
+          "Login_Username": "Entrez votre nom d'utilisateur...",
+          "Login_Password": "Mot de passe",
+          "Login_Error": "Erreur: L'identification a échouée.",
+          "Login_Login": "Se Connecter",
+          "Home": "Accueil",
+          "Home_Welcome": "Bienvenue sur MMM-GoogleAssistant",
+          "Plugins": "Gestionnaire de plugins",
+          "Plugins_Welcome": "Gestionnaire de plugins EXT",
+          "Plugins_Table_Reset": "Reinitialiser les filtres",
+          "Plugins_Table_Showing": "Affiche ",
+          "Plugins_Table_Plugins": " Plugin(s)",
+          "Plugins_Table_Name": "Noms des plugins",
+          "Plugins_Table_Description": "Descriptions",
+          "Plugins_Table_Actions": "Requêtes",
+          "Plugins_Table_Configuration": "Configurations",
+          "Plugins_Table_Search": "Rechercher...",
+          "Plugins_Table_Wiki": "Ouvrir le wiki de",
+          "Plugins_Table_Install": "Installer",
+          "Plugins_Table_Delete": "Désinstaller",
+          "Plugins_Table_Modify": "Modifier la configuration",
+          "Plugins_Table_Configure": "Prêt à être configuré !",
+          "Plugins_Table_DeleteConfig": "Supprimer la configuration",
+          "Plugins_Delete_TerminalHeader": "MagicMirror² Terminal",
+          "Plugins_Delete_Message": "Voulez-vous supprimer ce plugin ?",
+          "Plugins_Delete_Progress": "Suppression en cours...",
+          "Plugins_Delete_Confirmed": "Suppression effectuée !",
+          "Plugins_Install_TerminalHeader": "MagicMirror² Terminal",
+          "Plugins_Install_Message": "Voulez-vous installer ce plugin ?",
+          "Plugins_Install_Progress": "Installation en cours...",
+          "Plugins_Install_Confirmed": "Installation effectuée !",
+          "Plugins_Initial_Title": "Configuration initiale de",
+          "Plugins_DeleteConfig_Title": "Supprimer la configuration de",
+          "Plugins_DeleteConfig_Confirmed": "Configuration supprimée !",
+          "Plugins_Modify_Title": "Modification de la configuration de",
+          "Plugins_Error_Snowboy": "n'est la compatible avec le detecteur de type Snowboy",
+          "Plugins_Error_Porcupine": "n'est la compatible avec le detecteur de type Porcupine",
+          "Terminal": "Visionner le Terminal",
+          "TerminalOpen": "Ouvrir un Terminal",
+          "TerminalGW": "MMM-GoogleAssistant Terminal",
+          "Configuration": "Config. de MagicMirror²",
+          "Configuration_Welcome": "Configuration actuelle de MagicMirror²",
+          "Configuration_EditLoad": "Editer ou Charger une sauvegarde",
+          "Configuration_Edit_Title": "Editeur de la configuration de MagicMirror²",
+          "Configuration_Edit_AcualConfig": "Configuration Actuelle",
+          "Tools": "Outils",
+          "Tools_Welcome": "Boite à outils",
+          "Tools_subTitle": "MMM-GoogleAssistant peut vous offrir plus de contrôle ! (Les fonctions disponibles sont uniquement affichées)",
+          "Tools_Restart": "Redémarrer MagicMirror²",
+          "Tools_Restart_Text1": "Veuillez patienter...",
+          "Tools_Restart_Text2": "Redémarrage",
+          "Tools_Die": "Arrêter MagicMirror²",
+          "Tools_Die_Text1": "À bientôt !",
+          "Tools_Die_Text2": "Pour une meilleure utilisation...",
+          "Tools_Die_Text3": "de MMM-GoogleAssistant et de MagicMirror²!",
+          "Tools_Webview_Header": "Modifier les options d'électron pour une utilisation correcte avec les plugins EXT",
+          "Tools_Webview_Needed": "Nécessaire pour:",
+          "Tools_Backup_Found": "sauvegardes trouvées",
+          "Tools_Backup_Text": "Supprimer toutes les sauvegardes",
+          "Tools_Backup_Deleted": "Toutes les sauvegardes ont bien été supprimées!",
+          "Tools_Screen_Text": "Allumer ou éteindre votre écran",
+          "Tools_GoogleAssistant_Text": "Active MMM-GoogleAssistant avec votre demande",
+          "Tools_GoogleAssistant_Query": "Entrez votre demande",
+          "Tools_Alert_Text": "Affiche un message sur votre mirroir",
+          "Tools_Alert_Query": "Entrez votre message",
+          "Tools_Volume_Text_Record": "Defini le volume d'enregistrement du microphone",
+          "Tools_Volume_Text": "Defini le volume sonore de votre mirroir",
+          "Tools_Volume_Text2": "Niveau actuel:",
+          "Tools_Volume_Text3": "Définir sur",
+          "Tools_Spotify_Text": "Contrôleur du lecteur Spotify",
+          "Tools_Spotify_Text2": "Type de recherche:",
+          "Tools_Spotify_Query": "Entrez votre recherche",
+          "Tools_Spotify_Artist": "Artiste",
+          "Tools_Spotify_Track": "Piste",
+          "Tools_Spotify_Album": "Album",
+          "Tools_Spotify_Playlist": "Play Liste",
+          "Tools_Update_Header": "Mises à jour disponibles",
+          "Tools_Update_Text": "Modules et EXT Plugins:",
+          "Tools_Update_Text2": "Dépendences NPM:",
+          "Tools_YouTube_Text": "Lance une vidéo YouTube",
+          "Tools_YouTube_Query": "Entrez votre recherche sur YouTube",
+          "Tools_Stop_Text": "Arrête tous les plugins en fonctionnement",
+          "Tools_Radio_Text": "Ecouter la Radio",
+          "Tools_Radio_Text2": "No radio found!",
+          "About": "À Propos",
+          "About_Title": "À Propos de MMM-GoogleAssistant",
+          "About_Info_by": "par @bugsounet",
+          "About_Info_Support": "Support",
+          "About_Info_Donate": "Faire un don",
+          "About_Info_Donate_Text": "Juste petit café... et je code mieux!",
+          "About_Info_About": "À propos de la version",
+          "About_Info_Translator": "Traducteur(s):",
+          "About_Info_Translator1": "@bugsounet",
+          "About_Info_Translator2": "@pitchx",
+          "About_Info_Translator3": "",
+          "About_Info_Translator4": "",
+          "About_Info_Translator5": "",
+          "About_Info_Translator6": "",
+          "About_Info_Translator7": "",
+          "About_Info_Translator8": "",
+          "About_Info_Translator9": "",
+          "About_Info_Translator10": "",
+          "System": "Système",
+          "System_Box_Shutdown": "Eteindre votre système",
+          "System_Shutdown": "Eteindre",
+          "System_Box_Restart": "Redémarrer votre système",
+          "System_Restart": "Redémarrer",
+          "System_Box_Version": "Versions",
+          "System_GPUAcceleration_Disabled": "Rendu accéléré par GPU désactivé",
+          "System_GPUAcceleration_Enabled": "Rendu accéléré par GPU activé",
+          "System_NodeVersion": "Node:",
+          "System_NPMVersion": "NPM:",
+          "System_OSVersion": "OS:",
+          "System_KernelVersion": "Kernel:",
+          "System_CPUSystem": "Processeur",
+          "System_TypeCPU": "Type:",
+          "System_SpeedCPU": "Vitesse:",
+          "System_CurrentLoadCPU": "Charge:",
+          "System_GovernorCPU": "Gouverneur:",
+          "System_TempCPU": "Température:",
+          "System_MemorySystem": "Mémoire",
+          "System_TypeMemory": "Active:",
+          "System_SwapMemory": "Swap:",
+          "System_NetworkSystem": "Réseau",
+          "System_IPNetwork": "IP:",
+          "System_InterfaceNetwork": "Interface:",
+          "System_SpeedNetwork": "Vitesse:",
+          "System_DuplexNetwork": "Duplex:",
+          "System_WirelessInfo": "Informations",
+          "System_SSIDNetwork": "Nom:",
+          "System_RateNetwork": "Vitesse:",
+          "System_FrequencyNetwork": "Fréquence:",
+          "System_SignalNetwork": "Signal:",
+          "System_QualityNetwork": "Qualité:",
+          "System_StorageSystem": "Stockage",
+          "System_MountStorage": "Montage",
+          "System_UsedStorage": "Utilisation",
+          "System_PercentStorage": "Pourcentage",
+          "System_TotalStorage": "Total",
+          "System_UptimeSystem": "Disponibilité",
+          "System_CurrentUptime": "Actuelle",
+          "System_System": "Système:",
+          "System_RecordUptime": "Record",
+          "System_DAY": "jour",
+          "System_DAYS": "jours",
+          "System_HOUR": "heure",
+          "System_HOURS": "heures",
+          "System_MINUTE": "minute",
+          "System_MINUTES": "minutes",
+          "System_ProcessSystem": "Processus",
+          "System_CPU": "processeur:",
+          "System_Memory": "mémoire:",
+          "System_CurrentlyRunning": "En cours d'exécution",
+          "System_NoPlugins": "Aucun plugin installé",
+          "System_NamePlugin": "Nom",
+          "System_VersionPlugin": "Version",
+          "System_RevPlugin": "Révision",
+          "Logout": "Déconnexion",
+          "Delete": "Supprimer",
+          "Install": "Installer",
+          "Configure": "Configurer",
+          "Modify": "Modifier",
+          "Save": "Appliquer",
+          "Wait": "Patientez...",
+          "Done": "Terminer",
+          "Error": "Erreur",
+          "Cancel": "Annuler",
+          "Confirm": "Confirmer",
+          "Load": "Charger",
+          "Restart": "Veuillez redémarrer MagicMirror² pour appliquer la nouvelle configuration !",
+          "ErrModule": "Nom du module: doit être",
+          "Warn_Error": "Attention: Des erreurs ont été détectées",
+          "LoadDefault": "Recharger la Config. par défaut",
+          "MergeDefault": "Fusionner avec les valeurs par défaut",
+          "Send": "Envoyer",
+          "TurnOn": "Allumer",
+          "TurnOff": "Eteindre",
+          "RequestDone": "La commande a été envoyée avec succès",
+          "Listen": "Ecouter",
+          "Update": "Une mise à jour est disponible",
+          "Start": "Démarrer"
+        }
+      },
+      "Version": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "type": "string"
+          },
+          "rev": {
+            "type": "string"
+          },
+          "lang": {
+            "type": "string"
+          },
+          "last": {
+            "type": "string"
+          },
+          "needUpdate": {
+            "type": "boolean"
+          }
+        },
+        "example": {
+          "version": "1.1.0",
+          "rev": "240106",
+          "lang": "fr",
+          "last": "1.0.0",
+          "needUpdate": true
+        }
+      },
+      "Version206Error": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string"
+          },
+          "version": {
+            "type": "string"
+          },
+          "rev": {
+            "type": "string"
+          },
+          "lang": {
+            "type": "string"
+          },
+          "last": {
+            "type": "string"
+          },
+          "needUpdate": {
+            "type": "boolean"
+          }
+        },
+        "example": {
+          "error": "Error on fetch last version number",
+          "version": "1.1.0",
+          "rev": "240106",
+          "lang": "fr",
+          "last": "0.0.0",
+          "needUpdate": false
+        }
+      },
+      "401Error": {
+        "type": "string",
+        "example": "Unauthorized"
       }
     }
   }
