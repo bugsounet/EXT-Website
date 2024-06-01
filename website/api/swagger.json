@@ -150,6 +150,7 @@
         "tags": [
           "Tools"
         ],
+        "summary": "Returns home text translated content in HTML",
         "security": [
           {
             "Bearer": []
@@ -157,10 +158,24 @@
         ],
         "responses": {
           "200": {
-            "description": "Send translated home text HTML page"
+            "description": "Send translated home text HTML",
+            "content" : {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/homeText"
+                }
+              }
+            }
           },
           "401": {
-            "description": "Error..."
+            "description": "Missing valid authentication token",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "$ref": "#/components/schemas/401Error"
+                }
+              }
+            }
           }
         }
       }
@@ -180,7 +195,14 @@
             "description": "Send system information collection"
           },
           "401": {
-            "description": "Error..."
+            "description": "Missing valid authentication token",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "$ref": "#/components/schemas/401Error"
+                }
+              }
+            }
           }
         }
       }
@@ -200,7 +222,14 @@
             "description": "Send version of EXTs actually used"
           },
           "401": {
-            "description": "Error..."
+            "description": "Missing valid authentication token",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "$ref": "#/components/schemas/401Error"
+                }
+              }
+            }
           }
         }
       }
@@ -220,7 +249,14 @@
             "description": "Send MagicMirror configuration"
           },
           "401": {
-            "description": "Error..."
+            "description": "Missing valid authentication token",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "$ref": "#/components/schemas/401Error"
+                }
+              }
+            }
           }
         }
       }
@@ -534,6 +570,17 @@
       "401Error": {
         "type": "string",
         "example": "Unauthorized"
+      },
+      "homeText": {
+        "type": "object",
+        "properties": {
+          "homeText": {
+            "type": "string"
+          }
+        },
+        "example": {
+          "homeText": "<p>Bonjour, bienvenue sur MMM-GoogleAssistant</p>\n<p>Cet outil va aider à configurer ou à gérer votre miroir</p>\n<p>Que peut vraiment faire cet outil ?</p>\n<ul>\n  <li>Permet d'avoir un contrôle à distance (localement ou internet)</li>\n  <li>Permet d'installer/supprimer les plugins EXTs</li>\n  <li>Permet de configurer/modifier votre EXT avec un exemple de configuration</li>\n  <li>Permet de configurer MagicMirror²</li>\n  <li>Permet de créer une sauvegarde de votre fichier de configuration à chaque modification</li>\n  <li>Permet d'afficher des journaux MagicMirror² en temps réel</li>\n  <li>Permet de vous connecter à votre système grace au terminal intégré</li>\n  <li>Permet de redémarrer ou d'arrêter manuellement MagicMirror²</li>\n  <li>Permet d'éteindre ou d'allumer votre écran</li>\n  <li>Permet d'afficher divers informations système</li>\n  <li>...</li>\n</ul>\n<br>\n<p>Merci aux traducteurs:</p>\n<ul>\n  <li>@CalcU (Espagnol)</li>\n  <li>@lxne (Allemand)</li>\n  <li>@bitass (Néerlandais)</li>\n  <li>@pitchx (Français revu)</li>\n  <li>@maxmax (Espagnol)</li>\n  <li>@dvbit (Italien)</li>\n  <li>@toramanderler (Turc)</li>\n</ul>\n<p>Je vous souhaite une agréable découverte!</p>\n<p>Bonne utilisation,<br>@bugsounet</p>\n"
+        }
       }
     }
   }
