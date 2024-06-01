@@ -220,6 +220,7 @@
         "tags": [
           "Tools"
         ],
+        "summary": "Returns the version of the connected EXTs",
         "security": [
           {
             "Bearer": []
@@ -227,7 +228,14 @@
         ],
         "responses": {
           "200": {
-            "description": "Send version of EXTs actually used"
+            "description": "Sends the version of the EXTs currently used",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref" : "#/components/schemas/EXTVersions"
+                }
+              }
+            }
           },
           "401": {
             "description": "Missing valid authentication token",
@@ -247,6 +255,7 @@
         "tags": [
           "Tools"
         ],
+        "summary": "Returns current MagicMirror² configuration",
         "security": [
           {
             "Bearer": []
@@ -254,7 +263,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Send MagicMirror configuration"
+            "description": "Sends MagicMirror² configuration"
           },
           "401": {
             "description": "Missing valid authentication token",
@@ -288,7 +297,8 @@
         "type": "object",
         "properties": {
           "api": {
-            "type": "string"
+            "type": "string",
+            "description": "API state"
           }
         },
         "example": {
@@ -299,13 +309,16 @@
         "type": "object",
         "properties": {
           "access_token": {
-            "type": "string"
+            "type": "string",
+            "description": "Access Token for this API"
           },
           "token_type": {
-            "type": "string"
+            "type": "string",
+            "description": "Token type"
           },
           "expire_in": {
-            "type": "number"
+            "type": "number",
+            "description": "Expiration time in sec"
           }
         },
         "example": {
@@ -318,10 +331,12 @@
         "type": "object",
         "properties": {
           "error": {
-            "type": "string"
+            "type": "string",
+            "description": "Error name"
           },
           "description": {
-            "type": "string"
+            "type": "string",
+            "description": "Description of this error"
           }
         },
         "example": {
@@ -331,6 +346,558 @@
       },
       "translations": {
         "type": "object",
+        "description": "Translated message",
+        "properties": {
+          "Rotate_Msg": {
+            "type": "string"
+          },
+          "Rotate_Continue": {
+            "type": "string"
+          },
+          "Login_Welcome": {
+            "type": "string"
+          },
+          "Login_Username": {
+            "type": "string"
+          },
+          "Login_Password": {
+            "type": "string"
+          },
+          "Login_Error": {
+            "type": "string"
+          },
+          "Login_Login": {
+            "type": "string"
+          },
+          "Home": {
+            "type": "string"
+          },
+          "Home_Welcome": {
+            "type": "string"
+          },
+          "Plugins": {
+            "type": "string"
+          },
+          "Plugins_Welcome": {
+            "type": "string"
+          },
+          "Plugins_Table_Reset": {
+            "type": "string"
+          },
+          "Plugins_Table_Showing": {
+            "type": "string"
+          },
+          "Plugins_Table_Plugins": {
+            "type": "string"
+          },
+          "Plugins_Table_Name": {
+            "type": "string"
+          },
+          "Plugins_Table_Description":{
+            "type": "string"
+          },
+          "Plugins_Table_Actions": {
+            "type": "string"
+          },
+          "Plugins_Table_Configuration": {
+            "type": "string"
+          },
+          "Plugins_Table_Search": {
+            "type": "string"
+          },
+          "Plugins_Table_Wiki": {
+            "type": "string"
+          },
+          "Plugins_Table_Install": {
+            "type": "string"
+          },
+          "Plugins_Table_Delete": {
+            "type": "string"
+          },
+          "Plugins_Table_Modify": {
+            "type": "string"
+          },
+          "Plugins_Table_Configure": {
+            "type": "string"
+          },
+          "Plugins_Table_DeleteConfig": {
+            "type": "string"
+          },
+          "Plugins_Delete_TerminalHeader": {
+            "type": "string"
+          },
+          "Plugins_Delete_Message": {
+            "type": "string"
+          },
+          "Plugins_Delete_Progress": {
+            "type": "string"
+          },
+          "Plugins_Delete_Confirmed": {
+            "type": "string"
+          },
+          "Plugins_Install_TerminalHeader": {
+            "type": "string"
+          },
+          "Plugins_Install_Message": {
+            "type": "string"
+          },
+          "Plugins_Install_Progress": {
+            "type": "string"
+          },
+          "Plugins_Install_Confirmed": {
+            "type": "string"
+          },
+          "Plugins_Initial_Title": {
+            "type": "string"
+          },
+          "Plugins_DeleteConfig_Title": {
+            "type": "string"
+          },
+          "Plugins_DeleteConfig_Confirmed": {
+            "type": "string"
+          },
+          "Plugins_Modify_Title": {
+            "type": "string"
+          },
+          "Plugins_Error_Snowboy": {
+            "type": "string"
+          },
+          "Plugins_Error_Porcupine": {
+            "type": "string"
+          },
+          "Terminal": {
+            "type": "string"
+          },
+          "TerminalOpen": {
+            "type": "string"
+          },
+          "TerminalGW": {
+            "type": "string"
+          },
+          "Configuration": {
+            "type": "string"
+          },
+          "Configuration_Welcome": {
+            "type": "string"
+          },
+          "Configuration_EditLoad": {
+            "type": "string"
+          },
+          "Configuration_Edit_Title": {
+            "type": "string"
+          },
+          "Configuration_Edit_AcualConfig": {
+            "type": "string"
+          },
+          "Tools": {
+            "type": "string"
+          },
+          "Tools_Welcome": {
+            "type": "string"
+          },
+          "Tools_subTitle": {
+            "type": "string"
+          },
+          "Tools_Restart": {
+            "type": "string"
+          },
+          "Tools_Restart_Text1": {
+            "type": "string"
+          },
+          "Tools_Restart_Text2": {
+            "type": "string"
+          },
+          "Tools_Die": {
+            "type": "string"
+          },
+          "Tools_Die_Text1": {
+            "type": "string"
+          },
+          "Tools_Die_Text2": {
+            "type": "string"
+          },
+          "Tools_Die_Text3": {
+            "type": "string"
+          },
+          "Tools_Webview_Header": {
+            "type": "string"
+          },
+          "Tools_Webview_Needed": {
+            "type": "string"
+          },
+          "Tools_Backup_Found": {
+            "type": "string"
+          },
+          "Tools_Backup_Text":{
+            "type": "string"
+          },
+          "Tools_Backup_Deleted": {
+            "type": "string"
+          },
+          "Tools_Screen_Text": {
+            "type": "string"
+          },
+          "Tools_GoogleAssistant_Text": {
+            "type": "string"
+          },
+          "Tools_GoogleAssistant_Query": {
+            "type": "string"
+          },
+          "Tools_Alert_Text": {
+            "type": "string"
+          },
+          "Tools_Alert_Query": {
+            "type": "string"
+          },
+          "Tools_Volume_Text_Record": {
+            "type": "string"
+          },
+          "Tools_Volume_Text": {
+            "type": "string"
+          },
+          "Tools_Volume_Text2": {
+            "type": "string"
+          },
+          "Tools_Volume_Text3": {
+            "type": "string"
+          },
+          "Tools_Spotify_Text": {
+            "type": "string"
+          },
+          "Tools_Spotify_Text2": {
+            "type": "string"
+          },
+          "Tools_Spotify_Query": {
+            "type": "string"
+          },
+          "Tools_Spotify_Artist": {
+            "type": "string"
+          },
+          "Tools_Spotify_Track": {
+            "type": "string"
+          },
+          "Tools_Spotify_Album": {
+            "type": "string"
+          },
+          "Tools_Spotify_Playlist": {
+            "type": "string"
+          },
+          "Tools_Update_Header": {
+            "type": "string"
+          },
+          "Tools_Update_Text": {
+            "type": "string"
+          },
+          "Tools_Update_Text2": {
+            "type": "string"
+          },
+          "Tools_YouTube_Text": {
+            "type": "string"
+          },
+          "Tools_YouTube_Query": {
+            "type": "string"
+          },
+          "Tools_Stop_Text": {
+            "type": "string"
+          },
+          "Tools_Radio_Text": {
+            "type": "string"
+          },
+          "Tools_Radio_Text2": {
+            "type": "string"
+          },
+          "About":{
+            "type": "string"
+          },
+          "About_Title": {
+            "type": "string"
+          },
+          "About_Info_by":{
+            "type": "string"
+          },
+          "About_Info_Support": {
+            "type": "string"
+          },
+          "About_Info_Donate": {
+            "type": "string"
+          },
+          "About_Info_Donate_Text": {
+            "type": "string"
+          },
+          "About_Info_About": {
+            "type": "string"
+          },
+          "About_Info_Translator": {
+            "type": "string"
+          },
+          "About_Info_Translator1": {
+            "type": "string"
+          },
+          "About_Info_Translator2": {
+            "type": "string"
+          },
+          "About_Info_Translator3": {
+            "type": "string"
+          },
+          "About_Info_Translator4": {
+            "type": "string"
+          },
+          "About_Info_Translator5": {
+            "type": "string"
+          },
+          "About_Info_Translator6": {
+            "type": "string"
+          },
+          "About_Info_Translator7": {
+            "type": "string"
+          },
+          "About_Info_Translator8": {
+            "type": "string"
+          },
+          "About_Info_Translator9": {
+            "type": "string"
+          },
+          "About_Info_Translator10": {
+            "type": "string"
+          },
+          "System": {
+            "type": "string"
+          },
+          "System_Box_Shutdown": {
+            "type": "string"
+          },
+          "System_Shutdown": {
+            "type": "string"
+          },
+          "System_Box_Restart": {
+            "type": "string"
+          },
+          "System_Restart": {
+            "type": "string"
+          },
+          "System_Box_Version": {
+            "type": "string"
+          },
+          "System_GPUAcceleration_Disabled": {
+            "type": "string"
+          },
+          "System_GPUAcceleration_Enabled": {
+            "type": "string"
+          },
+          "System_NodeVersion": {
+            "type": "string"
+          },
+          "System_NPMVersion": {
+            "type": "string"
+          },
+          "System_OSVersion": {
+            "type": "string"
+          },
+          "System_KernelVersion": {
+            "type": "string"
+          },
+          "System_CPUSystem": {
+            "type": "string"
+          },
+          "System_TypeCPU": {
+            "type": "string"
+          },
+          "System_SpeedCPU": {
+            "type": "string"
+          },
+          "System_CurrentLoadCPU": {
+            "type": "string"
+          },
+          "System_GovernorCPU": {
+            "type": "string"
+          },
+          "System_TempCPU": {
+            "type": "string"
+          },
+          "System_MemorySystem": {
+            "type": "string"
+          },
+          "System_TypeMemory": {
+            "type": "string"
+          },
+          "System_SwapMemory": {
+            "type": "string"
+          },
+          "System_NetworkSystem": {
+            "type": "string"
+          },
+          "System_IPNetwork": {
+            "type": "string"
+          },
+          "System_InterfaceNetwork": {
+            "type": "string"
+          },
+          "System_SpeedNetwork": {
+            "type": "string"
+          },
+          "System_DuplexNetwork": {
+            "type": "string"
+          },
+          "System_WirelessInfo": {
+            "type": "string"
+          },
+          "System_SSIDNetwork": {
+            "type": "string"
+          },
+          "System_RateNetwork": {
+            "type": "string"
+          },
+          "System_FrequencyNetwork": {
+            "type": "string"
+          },
+          "System_SignalNetwork": {
+            "type": "string"
+          },
+          "System_QualityNetwork": {
+            "type": "string"
+          },
+          "System_StorageSystem": {
+            "type": "string"
+          },
+          "System_MountStorage": {
+            "type": "string"
+          },
+          "System_UsedStorage": {
+            "type": "string"
+          },
+          "System_PercentStorage": {
+            "type": "string"
+          },
+          "System_TotalStorage": {
+            "type": "string"
+          },
+          "System_UptimeSystem": {
+            "type": "string"
+          },
+          "System_CurrentUptime": {
+            "type": "string"
+          },
+          "System_System": {
+            "type": "string"
+          },
+          "System_RecordUptime": {
+            "type": "string"
+          },
+          "System_DAY": {
+            "type": "string"
+          },
+          "System_DAYS": {
+            "type": "string"
+          },
+          "System_HOUR": {
+            "type": "string"
+          },
+          "System_HOURS": {
+            "type": "string"
+          },
+          "System_MINUTE": {
+            "type": "string"
+          },
+          "System_MINUTES": {
+            "type": "string"
+          },
+          "System_ProcessSystem": {
+            "type": "string"
+          },
+          "System_CPU":{
+            "type": "string"
+          },
+          "System_Memory": {
+            "type": "string"
+          },
+          "System_CurrentlyRunning": {
+            "type": "string"
+          },
+          "System_NoPlugins": {
+            "type": "string"
+          },
+          "System_NamePlugin": {
+            "type": "string"
+          },
+          "System_VersionPlugin": {
+            "type": "string"
+          },
+          "System_RevPlugin": {
+            "type": "string"
+          },
+          "Logout": {
+            "type": "string"
+          },
+          "Delete": {
+            "type": "string"
+          },
+          "Install": {
+            "type": "string"
+          },
+          "Configure": {
+            "type": "string"
+          },
+          "Modify": {
+            "type": "string"
+          },
+          "Save": {
+            "type": "string"
+          },
+          "Wait": {
+            "type": "string"
+          },
+          "Done": {
+            "type": "string"
+          },
+          "Error": {
+            "type": "string"
+          },
+          "Cancel": {
+            "type": "string"
+          },
+          "Confirm": {
+            "type": "string"
+          },
+          "Load": {
+            "type": "string"
+          },
+          "Restart": {
+            "type": "string"
+          },
+          "ErrModule": {
+            "type": "string"
+          },
+          "Warn_Error": {
+            "type": "string"
+          },
+          "LoadDefault": {
+            "type": "string"
+          },
+          "MergeDefault": {
+            "type": "string"
+          },
+          "Send": {
+            "type": "string"
+          },
+          "TurnOn": {
+            "type": "string"
+          },
+          "TurnOff": {
+            "type": "string"
+          },
+          "RequestDone": {
+            "type": "string"
+          },
+          "Listen": {
+            "type": "string"
+          },
+          "Update": {
+            "type": "string"
+          },
+          "Start": {
+            "type": "string"
+          }
+        },
         "example": {
           "Rotate_Msg": "Veuillez faire pivoter votre appareil",
           "Rotate_Continue": "Pour continuer...",
@@ -521,19 +1088,24 @@
         "type": "object",
         "properties": {
           "version": {
-            "type": "string"
+            "type": "string",
+            "description": "EXT-Website version"
           },
           "rev": {
-            "type": "string"
+            "type": "string",
+            "description": "EXT-Website revision"
           },
           "lang": {
-            "type": "string"
+            "type": "string",
+            "description": "EXT-Website language"
           },
           "last": {
-            "type": "string"
+            "type": "string",
+            "description": "EXT-Website last know version"
           },
           "needUpdate": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "EXT-Website needs an update"
           }
         },
         "example": {
@@ -548,22 +1120,28 @@
         "type": "object",
         "properties": {
           "error": {
-            "type": "string"
+            "type": "string",
+            "description": "Error found"
           },
           "version": {
-            "type": "string"
+            "type": "string",
+            "description": "EXT-Website version"
           },
           "rev": {
-            "type": "string"
+            "type": "string",
+            "description": "EXT-Website revision"
           },
           "lang": {
-            "type": "string"
+            "type": "string",
+            "description": "EXT-Website language"
           },
           "last": {
-            "type": "string"
+            "type": "string",
+            "description": "EXT-Website last know version"
           },
           "needUpdate": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "EXT-Website needs an update"
           }
         },
         "example": {
@@ -577,13 +1155,15 @@
       },
       "401Error": {
         "type": "string",
+        "description": "No valid authentication",
         "example": "Unauthorized"
       },
       "homeText": {
         "type": "object",
         "properties": {
           "homeText": {
-            "type": "string"
+            "type": "string",
+            "description": "HTML code of the home text"
           }
         },
         "example": {
@@ -597,33 +1177,42 @@
             "type": "object",
             "properties": {
               "GA": {
-                "type": "string"
+                "type": "string",
+                "description": "MMM-GoogleAssistant version and revision"
               },
               "MagicMirror": {
-                "type": "string"
+                "type": "string",
+                "description": "MagicMirror² version"
               },
               "ELECTRON": {
-                "type": "string"
+                "type": "string",
+                "description": "Electron version"
               },
               "NODEMM": {
-                "type": "string"
+                "type": "string",
+                "description": "Node version used on MagicMirror²"
               },
               "NODECORE": {
-                "type": "string"
+                "type": "string",
+                "description": "Node version used on this system"
               },
               "NPM": {
-                "type": "string"
+                "type": "string",
+                "description": "NPM version used"
               },
               "KERNEL": {
-                "type": "string"
+                "type": "string",
+                "description": "Kernel version"
               },
               "OS": {
-                "type": "string"
+                "type": "string",
+                "description": "Operating System version"
               }
             }
           },
           "HOSTNAME": {
-            "type": "string"
+            "type": "string",
+            "description": "Hostname of your system"
           },
           "NETWORK": {
             "type": "object",
@@ -634,8 +1223,7 @@
               "wired": {
                 "type": "string"
               },
-              "ip":
-              {
+              "ip": {
                 "type": "string"
               },
               "name": {
@@ -713,35 +1301,43 @@
             "type": "object",
             "properties": {
               "usage":  {
-                "type": "string"
+                "type": "string",
+                "description": "CPU use in %"
               },
               "type":  {
-                "type": "string"
+                "type": "string",
+                "description": "Type of CPU"
               },
               "temp":  {
                 "type": "object",
                 "properties": {
                   "imperial": {
-                    "type": "boolean"
+                    "type": "boolean",
+                    "description": "Imperial units used"
                   },
                   "C": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "Current temperature in °C"
                   },
                   "F":{
-                    "type": "string"
+                    "type": "string",
+                    "description": "Current temperature in °F"
                   }
                 }
               },
               "speed": {
-                "type": "string"
+                "type": "string",
+                "description": "CPU Speed"
               },
               "governor": {
-                "type": "string"
+                "type": "string",
+                "description": "Used governor name"
               }
             }
           },
           "GPU": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "GPU renederer enabled"
           },
           "UPTIME": {
             "type": "object",
@@ -779,13 +1375,16 @@
                 "type": "object",
                 "properties": {
                   "pid": {
-                    "type": "number"
+                    "type": "number",
+                    "description": "PID number"
                   },
                   "cpu": {
-                    "type": "number"
+                    "type": "number",
+                    "description": "Used CPU in %"
                   },
                   "mem": {
-                    "type": "number"
+                    "type": "number",
+                    "description": "Used memory in %"
                   }
                 }
               },
@@ -793,13 +1392,16 @@
                 "type": "object",
                 "properties": {
                   "pid": {
-                    "type": "number"
+                    "type": "number",
+                    "description": "PID number"
                   },
                   "cpu": {
-                    "type": "number"
+                    "type": "number",
+                    "description": "Used CPU in %"
                   },
                   "mem": {
-                    "type": "number"
+                    "type": "number",
+                    "description": "Used memory in %"
                   }
                 }
               },
@@ -807,13 +1409,16 @@
                 "type": "object",
                 "properties": {
                   "pid": {
-                    "type": "number"
+                    "type": "number",
+                    "description": "PID number"
                   },
                   "cpu": {
-                    "type": "number"
+                    "type": "number",
+                    "description": "Used CPU in %"
                   },
                   "mem": {
-                    "type": "number"
+                    "type": "number",
+                    "description": "Used memory in %"
                   }
                 }
               },
@@ -821,13 +1426,16 @@
                 "type": "object",
                 "properties": {
                   "pid": {
-                    "type": "number"
+                    "type": "number",
+                    "description": "PID number"
                   },
                   "cpu": {
-                    "type": "number"
+                    "type": "number",
+                    "description": "Used CPU in %"
                   },
                   "mem": {
-                    "type": "number"
+                    "type": "number",
+                    "description": "Used memory in %"
                   }
                 }
               }
@@ -925,6 +1533,88 @@
               "cpu": 0.76,
               "mem": 1.6
             }
+          }
+        }
+      },
+      "EXTVersions" : {
+        "description": "On each connected plugin",
+        "type": "object",
+        "properties": {
+          "EXT-Name": {
+            "type": "object",
+            "properties": {
+              "version": {
+                "type": "string",
+                "description": "Version of the plugin"
+              },
+              "rev": {
+                "type": "string",
+                "description": "Revision date of the plugin"
+              },
+              "last": {
+                "type": "string",
+                "description": "Last version of the plugin"
+              },
+              "update": {
+                "type": "boolean",
+                "description": "Plugin need to be updated"
+              },
+              "beta": {
+                "type": "boolean",
+                "description": "plugin is an beta version"
+              }
+            }
+          }
+        },
+        "example": {
+          "EXT-Alert": {
+            "version": "2.0.1",
+            "rev": "240528",
+            "last": "2.0.1",
+            "update": false,
+            "beta": false
+          },
+          "EXT-Volume": {
+            "version": "2.7.0",
+            "rev": "240501",
+            "last": "2.7.0",
+            "update": false,
+            "beta": false
+          },
+          "EXT-Browser": {
+            "version": "1.4.3",
+            "rev": "240519",
+            "last": "1.4.3",
+            "update": false,
+            "beta": false
+          },
+          "EXT-MusicPlayer": {
+            "version": "1.5.1",
+            "rev": "240519",
+            "last": "1.5.1",
+            "update": false,
+            "beta": false
+          },
+          "EXT-Touch": {
+            "version": "1.0.1",
+            "rev": "240420",
+            "last": "1.0.1",
+            "update": false,
+            "beta": false
+          },
+          "EXT-TelegramBot": {
+            "version": "2.5.5",
+            "rev": "240529",
+            "last": "2.5.5",
+            "update": false,
+            "beta": false
+          },
+          "EXT-Website": {
+            "version": "1.1.0",
+            "rev": "240527",
+            "last": "1.1.0",
+            "update": false,
+            "beta": false
           }
         }
       }
