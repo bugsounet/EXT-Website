@@ -47,6 +47,7 @@ class systemInfo {
         usage: 0,
         type: "unknow",
         temp: {
+          imperial: (units === "imperial") ? true : false,
           C: 0,
           F: 0
         },
@@ -85,8 +86,7 @@ class systemInfo {
           cpu: 0,
           mem: 0
         }
-      },
-      imperial: (units === "imperial") ? true : false
+      }
     };
   }
 
