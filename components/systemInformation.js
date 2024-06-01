@@ -86,7 +86,7 @@ class systemInfo {
           mem: 0
         }
       },
-      imperial: (units === "imperial") ? true : false,
+      imperial: (units === "imperial") ? true : false
     };
   }
 
