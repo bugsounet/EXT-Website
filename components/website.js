@@ -137,7 +137,7 @@ class website {
     this.website.freeTV = await this.readFreeTV();
     this.website.radio = await this.readRadio();
 
-    this.website.systemInformation.lib = new this.lib.SystemInformation(this.website.translation);
+    this.website.systemInformation.lib = new this.lib.SystemInformation(this.website.translation, this.website.MMConfig.units);
     this.website.systemInformation.result = await this.website.systemInformation.lib.initData();
 
     if (!this.config.username && !this.config.password) {
@@ -1881,15 +1881,14 @@ class website {
   searchVersion () {
     var APIResult = {
       version: {
-        version: require(`${this.GAPath}/package.json`).version,
-        rev: require(`${this.GAPath}/package.json`).rev,
+        version: require(`${this.WebsiteModulePath}/package.json`).version,
+        rev: require(`${this.WebsiteModulePath}/package.json`).rev,
         lang: this.website.language,
         last: 0,
-        imperial: (this.website.MMConfig.units === "imperial") ? true : false,
         needUpdate: false
       }
     };
-    let remoteFile = "https://raw.githubusercontent.com/bugsounet/MMM-GoogleAssistant/prod/package.json";
+    let remoteFile = "https://raw.githubusercontent.com/bugsounet/EXT-Website/main/package.json";
     return new Promise((resolve) => {
       fetch(remoteFile)
         .then((response) => response.json())

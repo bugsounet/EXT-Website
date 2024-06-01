@@ -6,7 +6,7 @@ const si = require("systeminformation");
 // see to add fetch from website ?
 
 class systemInfo {
-  constructor (translate) {
+  constructor (translate,units) {
     this.translate = translate;
     this.System = {
       VERSION: {
@@ -85,7 +85,8 @@ class systemInfo {
           cpu: 0,
           mem: 0
         }
-      }
+      },
+      imperial: (units === "imperial") ? true : false,
     };
   }
 
