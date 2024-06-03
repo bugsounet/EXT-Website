@@ -1,18 +1,14 @@
-/* global window, getGatewayVersion, $, loadTranslation */
-/** EXT tools
+/** Die
 * @bugsounet
 **/
 
 // define all vars
 var translation = {};
-var versionGW = {};
 
 // Load rules
 window.addEventListener("load", async (event) => {
-  versionGW = await getGatewayVersion();
   translation = await loadTranslation();
 
-  $("html").prop("lang", versionGW.lang);
   doDie();
 });
 

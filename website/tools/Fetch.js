@@ -1,5 +1,3 @@
-/* global $, alertify, translation, PleaseRotate, location */
-
 /** fetch datas **/
 function getHomeText () {
   return new Promise((resolve) => {

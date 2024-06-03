@@ -1,6 +1,4 @@
-/* global window, getGatewayVersion, loadTranslation, getHomeText, $, forceMobileRotate, doTranslateNavBar */
-
-/** EXT tools
+/** Home
 * @bugsounet
 **/
 

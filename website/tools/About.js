@@ -1,6 +1,4 @@
-/* global window, getGatewayVersion, $, forceMobileRotate, doTranslateNavBar, loadTranslation */
-
-/** EXT About
+/** About
 * @bugsounet
 **/
 

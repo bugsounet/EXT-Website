@@ -1,6 +1,4 @@
-/* global window, getGatewayVersion, loadTranslation, $, forceMobileRotate, doTranslateNavBar, alertify, loadMMConfig, JSONEditor, loadBackupNames, loadBackupConfig, FileReaderJS, saveAs */
-
-/** EXT tools
+/** MMConfig
 * @bugsounet
 **/
 

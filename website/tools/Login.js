@@ -1,12 +1,9 @@
-/* global window, getGatewayVersion, loadTranslation, $, alertify, location */
-
-/** EXT tools
+/** Login
 * @bugsounet
 **/
 
 // define all vars
 var translation = {};
-var versionGW = {};
 
 // Load rules
 window.addEventListener("load", async (event) => {

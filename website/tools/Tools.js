@@ -1,6 +1,4 @@
-/* global forceMobileRotate, alertify, window, getGatewayVersion, loadTranslation, $, doTranslateNavBar, checkWebviewTag, checkEXTStatus, loadBackupNames, loadDataInstalledEXT, loadRadio */
-
-/** EXT tools
+/** Tools
 * @bugsounet
 **/
 

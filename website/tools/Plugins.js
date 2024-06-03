@@ -1,4 +1,4 @@
-/** EXT tools
+/** Plugins
 * @bugsounet
 **/
 

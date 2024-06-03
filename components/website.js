@@ -24,7 +24,6 @@ const ExtractJwt = require("passport-jwt").ExtractJwt;
 const jwt = require("jsonwebtoken");
 
 const swaggerUi = require("swagger-ui-express");
-const APIDocs = require("../website/api/swagger.json");
 
 var log = (...args) => { /* do nothing */ };
 
@@ -110,6 +109,7 @@ class website {
     this.GAPath = `${this.root_path}/modules/MMM-GoogleAssistant`;
     this.WebsiteModulePath = `${this.root_path}/modules/EXT-Website`;
     this.WebsitePath = `${this.root_path}/modules/EXT-Website/website`;
+    this.APIDOCS = {};
   }
 
   async init (data) {
@@ -274,7 +274,8 @@ class website {
 
       // add current server IP to APIDocs
       if (this.website.APIDocs) {
-        APIDocs.servers[1] = {
+        this.APIDocs = require("../website/api/swagger.json");
+        this.APIDocs.servers[1] = {
           url : `http://${this.website.listening}:8081`
         };
       }
@@ -317,17 +318,17 @@ class website {
       this.website.app
         .use(this.logRequest)
         .use(cors({ origin: "*" }))
-        .use("/EXT_Login.js", express.static(`${this.WebsitePath}/tools/EXT_Login.js`))
-        .use("/EXT_Home.js", express.static(`${this.WebsitePath}/tools/EXT_Home.js`))
-        .use("/EXT_Plugins.js", express.static(`${this.WebsitePath}/tools/EXT_Plugins.js`))
-        .use("/EXT_Terminal.js", express.static(`${this.WebsitePath}/tools/EXT_Terminal.js`))
-        .use("/EXT_MMConfig.js", express.static(`${this.WebsitePath}/tools/EXT_MMConfig.js`))
-        .use("/EXT_Tools.js", express.static(`${this.WebsitePath}/tools/EXT_Tools.js`))
-        .use("/EXT_System.js", express.static(`${this.WebsitePath}/tools/EXT_System.js`))
-        .use("/EXT_About.js", express.static(`${this.WebsitePath}/tools/EXT_About.js`))
-        .use("/EXT_Restart.js", express.static(`${this.WebsitePath}/tools/EXT_Restart.js`))
-        .use("/EXT_Die.js", express.static(`${this.WebsitePath}/tools/EXT_Die.js`))
-        .use("/EXT_Fetch.js", express.static(`${this.WebsitePath}/tools/EXT_Fetch.js`))
+        .use("/Login.js", express.static(`${this.WebsitePath}/tools/Login.js`))
+        .use("/Home.js", express.static(`${this.WebsitePath}/tools/Home.js`))
+        .use("/Plugins.js", express.static(`${this.WebsitePath}/tools/Plugins.js`))
+        .use("/Terminal.js", express.static(`${this.WebsitePath}/tools/Terminal.js`))
+        .use("/MMConfig.js", express.static(`${this.WebsitePath}/tools/MMConfig.js`))
+        .use("/Tools.js", express.static(`${this.WebsitePath}/tools/Tools.js`))
+        .use("/System.js", express.static(`${this.WebsitePath}/tools/System.js`))
+        .use("/About.js", express.static(`${this.WebsitePath}/tools/About.js`))
+        .use("/Restart.js", express.static(`${this.WebsitePath}/tools/Restart.js`))
+        .use("/Die.js", express.static(`${this.WebsitePath}/tools/Die.js`))
+        .use("/Fetch.js", express.static(`${this.WebsitePath}/tools/Fetch.js`))
         .use("/3rdParty.js", express.static(`${this.WebsitePath}/tools/3rdParty.js`))
         .use("/assets", express.static(`${this.WebsitePath}/assets`, options))
         .use("/jsoneditor", express.static(`${this.WebsiteModulePath}/node_modules/jsoneditor`))
@@ -1040,7 +1041,7 @@ class website {
       /** API using **/
 
         .use("/api/docs", swaggerUi.serve, this.website.APIDocs
-          ? swaggerUi.setup(APIDocs, {
+          ? swaggerUi.setup(this.APIDocs, {
             swaggerOptions: {
               defaultModelsExpandDepth: -1
             },

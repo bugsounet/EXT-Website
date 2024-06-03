@@ -1,20 +1,15 @@
-/* global window, getGatewayVersion, loadTranslation, $ */
-
-/** EXT tools
+/** Restart
 * @bugsounet
 **/
 
 // define all vars
 var translation = {};
-var versionGW = {};
-var locationGW = window.location.origin;
+var websiteLocation = window.location.origin;
 
 // Load rules
 window.addEventListener("load", async (event) => {
-  versionGW = await getGatewayVersion();
   translation = await loadTranslation();
 
-  $("html").prop("lang", versionGW.lang);
   doRestart();
 });
 
@@ -28,7 +23,7 @@ function doRestart () {
   }
 
   function checkPage (callback) {
-    fetch(locationGW)
+    fetch(websiteLocation)
       .then((response) => {
         if (response.status === 200) return callback();
       })
