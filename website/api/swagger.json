@@ -398,6 +398,41 @@
         }
       }
     },
+    "/api/EXT/descriptions": {
+      "get": {
+        "tags": [
+          "EXT"
+        ],
+        "summary": "Returns descriptions of all EXTs (translated)",
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Sends descriptions of all EXTs",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref" : "#/components/schemas/EXTDescriptions"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing valid authentication token",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "$ref": "#/components/schemas/401Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/MMConfig": {
       "get": {
         "tags": [
@@ -1887,6 +1922,54 @@
           "EXT-YouTube",
           "EXT-YouTubeCast"
         ]
+      },
+      "EXTDescriptions" : {
+        "description": "On each plugin -> description",
+        "type": "object",
+        "properties": {
+          "EXT-Name": {
+            "type": "string"
+          }
+        },
+        "example": {
+          "EXT-Alert": "Affichez tout avertissement, information ou erreur sur votre écran.",
+          "EXT-Background": "Modifiez l'arrière-plan par défaut de l'assistant Google par le vôtre ou avec des gifs animés pour chaque statut de l'assistant.",
+          "EXT-Bring": "Affiche votre liste de courses actuelle de Bring!",
+          "EXT-Browser": "Affiche n'importe quelle page Internet comme un vrai navigateur en plein écran",
+          "EXT-Detector": "Écouteur multi-mots clés pour activer MMM-GoogleAssistant",
+          "EXT-FreeboxTV": "Lecteur des chaines de TV du fournisseur d'accès Internet français: Free",
+          "EXT-GooglePhotos": "Affiche votre répertoire d'albums avec l'API Google photos en arrière-plan ou sur une position defini de MagicMirror²",
+          "EXT-Governor": "Le gouverneur du processeur permet au système d'exploitation d'augmenter ou de réduire la fréquence du processeur afin d'économiser de l'énergie ou d'améliorer les performances.",
+          "EXT-Internet": "Vérifie votre connexion internet, affiche le ping.",
+          "EXT-Keyboard": "Contrôle votre mirror avec un clavier",
+          "EXT-Librespot": "Autorise la lecture de musique Spotify sur votre miroir avec Librespot.",
+          "EXT-Motion": "Contrôle votre écran avec une webcam (detection de mouvements)",
+          "EXT-MusicPlayer": "Joue n'importe quelle musique trouvée sur une clé USB ou depuis un répertoire.",
+          "EXT-Pages": "Ce plugin permet d'avoir plusieures pages animées",
+          "EXT-Photos": "Affichage de toutes les photos découvertes par l'assistant en plein écran",
+          "EXT-Pir": "Contrôle votre écran avec un capteur PIR.",
+          "EXT-RadioPlayer": "Permet d'écouter les stations de radio sur MagicMirror².",
+          "EXT-RemoteControler": "Coming soon: Control your mirror with a remote controler",
+          "EXT-Selfies": "Prenez des selfies depuis la webcam.",
+          "EXT-SelfiesFlash": "Besoin d'un flash pour prendre des selfies ?",
+          "EXT-SelfiesSender": "Envoyez vos selfies sur Telegram, google photos ou par mail.",
+          "EXT-SelfiesViewer": "Diaporama de vos meilleurs selfies.",
+          "EXT-Screen": "Après un temps configuré sans aucune interaction de l'utilisateur, l'écran s'éteindra et masquera tous les modules pour le mode économie.",
+          "EXT-ScreenManager": "Permet d’allumez et éteindre automatiquement votre écran avec des heures définies.",
+          "EXT-ScreenTouch": "Permet d'allumer/éteindre votre écran avec l'écran tactile.",
+          "EXT-Spotify": "Ce plugin affiche la lecture spotify actuelle de tous les appareils.",
+          "EXT-SpotifyCanvasLyrics": "Créez un serveur pour afficher les paroles et les canvas de Spotify",
+          "EXT-StreamDeck": "Contrôle votre mirroir avec un StreamDeck par elgato©",
+          "EXT-TelegramBot": "Permet de contrôler à distance les plugins dans Telegram.",
+          "EXT-Touch": "Permet d'activer MMM-GoogleAssistant avec un écran tatile en appuyant uniquement sur l'icône Google.",
+          "EXT-Updates": "Ce plugin permet de mettre à jour automatiquement si une mise à jour est détectée.",
+          "EXT-VLCServer": "Permet de lire les contenus audio/video.",
+          "EXT-Volume": "Contrôle le niveau sonore de votre miroir.",
+          "EXT-Website": "Contrôler MMM-GoogleAssistant depuis une page web.",
+          "EXT-Welcome": "Permet d'envoyer un message de bienvenue au démarrage de MagicMirror².",
+          "EXT-YouTube": "Permet de lire des vidéos YouTube (réservées aux donateurs).",
+          "EXT-YouTubeCast": "Permet la diffusion d'une vidéo YouTube sur MagicMirror²."
+        }
       }
     }
   }

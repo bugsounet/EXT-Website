@@ -166,7 +166,7 @@ function loadDataInstalledEXT () {
 
 function loadDataDescriptionEXT () {
   return new Promise((resolve) => {
-    $.getJSON("/DescriptionEXT", (desEXT) => {
+    $.getJSON("/api/EXT/descriptions", (desEXT) => {
       //console.log("DescriptionEXT", desEXT)
       resolve(desEXT);
     })

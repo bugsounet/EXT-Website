@@ -378,11 +378,6 @@ class website {
           });
         })
 
-        .get("/DescriptionEXT", (req, res) => {
-          if (req.user) res.send(this.website.EXTDescription);
-          else res.status(403).sendFile(`${this.WebsitePath}/403.html`);
-        })
-
         .get("/Terminal", (req, res) => {
           if (req.user) {
             var ip = req.headers["x-forwarded-for"] || req.connection.remoteAddress;
@@ -1863,6 +1858,9 @@ class website {
         break;
       case "/api/EXT/configured":
         res.json(this.website.EXTConfigured);
+        break;
+      case "/api/EXT/descriptions":
+        res.json(this.website.EXTDescription);
         break;
       case "/api/MMConfig":
         res.json(this.website.MMConfig);
