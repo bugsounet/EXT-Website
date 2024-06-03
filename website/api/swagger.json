@@ -2005,6 +2005,518 @@
           "EXT-YouTube": "Permet de lire des vidéos YouTube (réservées aux donateurs).",
           "EXT-YouTubeCast": "Permet la diffusion d'une vidéo YouTube sur MagicMirror²."
         }
+      },
+      "EXTStatus" : {
+        "type": "object",
+        "properties": {
+          "EXT-Alert": {
+            "type": "object",
+            "properties" : {
+              "hello": {
+                "type": "boolean",
+                "description": "True when this plugin starts"
+              },
+              "connected": {
+                "type" : "boolean",
+                "description": "True when this plugin is running and need some rules"
+              }
+            }
+          },
+          "EXT-Background": {
+            "type": "object",
+            "properties" : {
+              "hello": {
+                "type": "boolean",
+                "description": "True when this plugin starts"
+              },
+              "connected": {
+                "type" : "boolean",
+                "description": "True when this plugin is running and need some rules"
+              }
+            }
+          },
+          "EXT-Brings": {
+            "type": "object",
+            "properties" : {
+              "hello": {
+                "type": "boolean",
+                "description": "True when this plugin starts"
+              },
+              "connected": {
+                "type" : "boolean",
+                "description": "True when this plugin is running and need some rules"
+              }
+            }
+          },
+          "EXT-Browser": {
+            "type": "object",
+            "properties" : {
+              "hello": {
+                "type": "boolean",
+                "description": "True when this plugin starts"
+              },
+              "connected": {
+                "type" : "boolean",
+                "description": "True when this plugin is running and need some rules"
+              }
+            }
+          },
+          "EXT-Detector": {
+            "type": "object",
+            "properties" : {
+              "hello": {
+                "type": "boolean",
+                "description": "True when this plugin starts"
+              },
+              "connected": {
+                "type" : "boolean",
+                "description": "True when this plugin is running and need some rules"
+              }
+            }
+          },
+          "EXT-FreeboxTV": {
+            "type": "object",
+            "properties" : {
+              "hello": {
+                "type": "boolean",
+                "description": "True when this plugin starts"
+              },
+              "connected": {
+                "type" : "boolean",
+                "description": "True when this plugin is running and need some rules"
+              }
+            }
+          },
+          "EXT-GooglePhotos": {
+            "type": "object",
+            "properties" : {
+              "hello": {
+                "type": "boolean",
+                "description": "True when this plugin starts"
+              },
+              "connected": {
+                "type" : "boolean",
+                "description": "True when this plugin is running and need some rules"
+              }
+            }
+          },
+          "EXT-Governor": {
+            "type": "object",
+            "properties" : {
+              "hello": {
+                "type": "boolean",
+                "description": "True when this plugin starts"
+              },
+              "connected": {
+                "type" : "boolean",
+                "description": "True when this plugin is running and need some rules"
+              }
+            }
+          },
+          "EXT-Internet": {
+            "type": "object",
+            "properties" : {
+              "hello": {
+                "type": "boolean",
+                "description": "True when this plugin starts"
+              },
+              "connected": {
+                "type" : "boolean",
+                "description": "True when this plugin is running and need some rules"
+              }
+            }
+          },
+          "EXT-Keybord": {
+            "type": "object",
+            "properties" : {
+              "hello": {
+                "type": "boolean",
+                "description": "True when this plugin starts"
+              },
+              "connected": {
+                "type" : "boolean",
+                "description": "True when this plugin is running and need some rules"
+              }
+            }
+          },
+          "EXT-Librespot": {
+            "type": "object",
+            "properties" : {
+              "hello": {
+                "type": "boolean",
+                "description": "True when this plugin starts"
+              },
+              "connected": {
+                "type" : "boolean",
+                "description": "True when this plugin is running and need some rules"
+              }
+            }
+          },
+          "EXT-MusicPlayer": {
+            "type": "object",
+            "properties" : {
+              "hello": {
+                "type": "boolean",
+                "description": "True when this plugin starts"
+              },
+              "connected": {
+                "type" : "boolean",
+                "description": "True when this plugin is running and need some rules"
+              }
+            }
+          },
+          "EXT-Motion": {
+            "type": "object",
+            "properties" : {
+              "hello": {
+                "type": "boolean",
+                "description": "True when this plugin starts"
+              },
+              "connected": {
+                "type" : "boolean",
+                "description": "True when this plugin is running and need some rules"
+              },
+              "started": {
+                "type": "boolean",
+                "description": "True when detection is started"
+              }
+            }
+          },
+          "EXT-Pages": {
+            "type": "object",
+            "properties" : {
+              "hello": {
+                "type": "boolean",
+                "description": "True when this plugin starts"
+              },
+              "connected": {
+                "type" : "boolean",
+                "description": "True when this plugin is running and need some rules"
+              },
+              "actual": {
+                "type": "number",
+                "description": "Actual page number"
+              },
+              "total": {
+                "type": "number",
+                "description": "Total number of pages"
+              }
+            }
+          },
+          "EXT-Photos": {
+            "type": "object",
+            "properties" : {
+              "hello": {
+                "type": "boolean",
+                "description": "True when this plugin starts"
+              },
+              "connected": {
+                "type" : "boolean",
+                "description": "True when this plugin is running and need some rules"
+              }
+            }
+          },
+          "EXT-Pir": {
+            "type": "object",
+            "properties" : {
+              "hello": {
+                "type": "boolean",
+                "description": "True when this plugin starts"
+              },
+              "connected": {
+                "type" : "boolean",
+                "description": "True when this plugin is running and need some rules"
+              },
+              "started": {
+                "type": "boolean",
+                "description": "True when detection is started"
+              }
+            }
+          },
+          "EXT-RadioPlayer": {
+            "type": "object",
+            "properties" : {
+              "hello": {
+                "type": "boolean",
+                "description": "True when this plugin starts"
+              },
+              "connected": {
+                "type" : "boolean",
+                "description": "True when this plugin is running and need some rules"
+              }
+            }
+          },
+          "EXT-RemoteControler": {
+            "type": "object",
+            "properties" : {
+              "hello": {
+                "type": "boolean",
+                "description": "True when this plugin starts"
+              },
+              "connected": {
+                "type" : "boolean",
+                "description": "True when this plugin is running and need some rules"
+              }
+            }
+          },
+          "EXT-Screen": {
+            "type": "object",
+            "properties" : {
+              "hello": {
+                "type": "boolean",
+                "description": "True when this plugin starts"
+              },
+              "connected": {
+                "type" : "boolean",
+                "description": "True when this plugin is running and need some rules"
+              },
+              "power": {
+                "type": "boolean",
+                "description": "True when screen power ON"
+              }
+            }
+          },
+          "EXT-Selfies": {
+            "type": "object",
+            "properties" : {
+              "hello": {
+                "type": "boolean",
+                "description": "True when this plugin starts"
+              },
+              "connected": {
+                "type" : "boolean",
+                "description": "True when this plugin is running and need some rules"
+              }
+            }
+          },
+          "EXT-SelfiesFlash": {
+            "type": "object",
+            "properties" : {
+              "hello": {
+                "type": "boolean",
+                "description": "True when this plugin starts"
+              },
+              "connected": {
+                "type" : "boolean",
+                "description": "True when this plugin is running and need some rules"
+              }
+            }
+          },
+          "EXT-SelfiesSender": {
+            "type": "object",
+            "properties" : {
+              "hello": {
+                "type": "boolean",
+                "description": "True when this plugin starts"
+              },
+              "connected": {
+                "type" : "boolean",
+                "description": "True when this plugin is running and need some rules"
+              }
+            }
+          },
+          "EXT-SelfiesViewer": {
+            "type": "object",
+            "properties" : {
+              "hello": {
+                "type": "boolean",
+                "description": "True when this plugin starts"
+              },
+              "connected": {
+                "type" : "boolean",
+                "description": "True when this plugin is running and need some rules"
+              }
+            }
+          },
+          "EXT-SmartHome": {
+            "type": "object",
+            "properties" : {
+              "hello": {
+                "type": "boolean",
+                "description": "True when this plugin starts"
+              },
+              "connected": {
+                "type" : "boolean",
+                "description": "True when this plugin is running and need some rules"
+              }
+            }
+          },
+          "EXT-Spotify": {
+            "type": "object",
+            "properties" : {
+              "hello": {
+                "type": "boolean",
+                "description": "True when this plugin starts"
+              },
+              "connected": {
+                "type" : "boolean",
+                "description": "True when this plugin is running and need some rules"
+              },
+              "remote": {
+                "type": "boolean",
+                "description": "Remote player is connected (not from MagicMirror²)"
+              },
+              "play": {
+                "type": "boolean",
+                "description": "Spotify play music from your account"
+              }
+            }
+          },
+          "EXT-SpotifyCanvasLyrics": {
+            "type": "object",
+            "properties" : {
+              "hello": {
+                "type": "boolean",
+                "description": "True when this plugin starts"
+              },
+              "connected": {
+                "type" : "boolean",
+                "description": "True when this plugin is running and need some rules"
+              },
+              "forced": {
+                "type" : "boolean",
+                "description": "Lyrics is forced to be displayed when Spotify play music"
+              }
+            }
+          },
+          "EXT-StreamDeck": {
+            "type": "object",
+            "properties" : {
+              "hello": {
+                "type": "boolean",
+                "description": "True when this plugin starts"
+              },
+              "connected": {
+                "type" : "boolean",
+                "description": "True when this plugin is running and need some rules"
+              }
+            }
+          },
+          "EXT-TelegramBot": {
+            "type": "object",
+            "properties" : {
+              "hello": {
+                "type": "boolean",
+                "description": "True when this plugin starts"
+              },
+              "connected": {
+                "type" : "boolean",
+                "description": "True when this plugin is running and need some rules"
+              }
+            }
+          },
+          "EXT-Updates": {
+            "type": "object",
+            "properties" : {
+              "hello": {
+                "type": "boolean",
+                "description": "True when this plugin starts"
+              },
+              "connected": {
+                "type" : "boolean",
+                "description": "True when this plugin is running and need some rules"
+              },
+              "update": {
+                "type": "object",
+                "description": "List of modules that can be updated"
+              }
+            }
+          },
+          "EXT-VLCServer": {
+            "type": "object",
+            "properties" : {
+              "hello": {
+                "type": "boolean",
+                "description": "True when this plugin starts"
+              },
+              "connected": {
+                "type" : "boolean",
+                "description": "True when this plugin is running and need some rules"
+              }
+            }
+          },
+          "EXT-Volume": {
+            "type": "object",
+            "properties" : {
+              "hello": {
+                "type": "boolean",
+                "description": "True when this plugin starts"
+              },
+              "connected": {
+                "type" : "boolean",
+                "description": "True when this plugin is running and need some rules"
+              },
+              "speaker": {
+                "type": "number",
+                "description": "Actual speaker volume in %"
+              },
+              "isMuted": {
+                "type": "boolean",
+                "description": "True when speaker is muted"
+              },
+              "recorder": {
+                "type": "number",
+                "description": "Actual microphone volume in %"
+              }
+            }
+          },
+          "EXT-Website": {
+            "type": "object",
+            "properties" : {
+              "hello": {
+                "type": "boolean",
+                "description": "True when this plugin starts"
+              },
+              "connected": {
+                "type" : "boolean",
+                "description": "True when this plugin is running and need some rules"
+              }
+            }
+          },
+          "EXT-Welcome": {
+            "type": "object",
+            "properties" : {
+              "hello": {
+                "type": "boolean",
+                "description": "True when this plugin starts"
+              },
+              "connected": {
+                "type" : "boolean",
+                "description": "True when this plugin is running and need some rules"
+              }
+            }
+          },
+          "EXT-YouTube": {
+            "type": "object",
+            "properties" : {
+              "hello": {
+                "type": "boolean",
+                "description": "True when this plugin starts"
+              },
+              "connected": {
+                "type" : "boolean",
+                "description": "True when this plugin is running and need some rules"
+              }
+            }
+          },
+          "EXT-YouTubeCast": {
+            "type": "object",
+            "properties" : {
+              "hello": {
+                "type": "boolean",
+                "description": "True when this plugin starts"
+              },
+              "connected": {
+                "type" : "boolean",
+                "description": "True when this plugin is running and need some rules"
+              }
+            }
+          },
+          "GA_Ready": {
+            "type": "boolean",
+            "description": "True when MMM-GoogleAssistant is iniatilized"
+          }
+        }
       }
     }
   }
