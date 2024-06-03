@@ -81,8 +81,8 @@ function checkGA () {
 function checkEXTStatus () {
   var ErrEXTStatus = 0;
   return new Promise((resolve) => {
-    $.getJSON("/getEXTStatus", (Status) => {
-      //console.log("EXTStatus", Status)
+    $.getJSON("/api/EXT/status", (Status) => {
+      console.log("EXTStatus", Status)
       resolve(Status);
     })
       .done(() => {

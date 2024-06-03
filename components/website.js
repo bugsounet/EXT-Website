@@ -789,11 +789,6 @@ class website {
           else res.status(403).sendFile(`${this.WebsitePath}/403.html`);
         })
 
-        .get("/getEXTStatus", (req, res) => {
-          if (req.user) res.send(this.website.EXTStatus);
-          else res.status(403).sendFile(`${this.WebsitePath}/403.html`);
-        })
-
         .post("/EXT-Screen", (req, res) => {
           if (req.user) {
             let data = req.body.data;
@@ -1861,6 +1856,9 @@ class website {
         break;
       case "/api/EXT/descriptions":
         res.json(this.website.EXTDescription);
+        break;
+      case "/api/EXT/status":
+        res.json(this.website.EXTStatus);
         break;
       case "/api/MMConfig":
         res.json(this.website.MMConfig);

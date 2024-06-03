@@ -433,6 +433,41 @@
         }
       }
     },
+    "/api/EXT/status": {
+      "get": {
+        "tags": [
+          "EXT"
+        ],
+        "summary": "Returns status of all EXTs",
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Sends status of all EXTs",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref" : "#/components/schemas/EXTStatus"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing valid authentication token",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "$ref": "#/components/schemas/401Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/MMConfig": {
       "get": {
         "tags": [
