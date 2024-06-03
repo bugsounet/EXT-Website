@@ -88,6 +88,7 @@ class website {
       app: null,
       server: null,
       translation: null,
+      loginTranslation: null,
       schemaTranslatation: null,
       language: null,
       webviewTag: false,
@@ -130,6 +131,13 @@ class website {
     this.website.EXT = data.EXT_DB.sort();
     this.website.EXTDescription = Translations.Description;
     this.website.translation = Translations.Translate;
+    this.website.loginTranslation = {
+      "welcome": this.website.translation["Login_Welcome"],
+      "username": this.website.translation["Login_Username"],
+      "password": this.website.translation["Login_Password"],
+      "error": this.website.translation["Login_Error"],
+      "login": this.website.translation["Login_Login"]
+    };
     this.website.schemaTranslatation = Translations.Schema;
     this.website.EXTStatus = Translations.EXTStatus;
     this.website.GAConfig = this.getGAConfig();
@@ -370,23 +378,8 @@ class website {
           });
         })
 
-        .get("/AllEXT", (req, res) => {
-          if (req.user) res.send(this.website.EXT);
-          else res.status(403).sendFile(`${this.WebsitePath}/403.html`);
-        })
-
         .get("/DescriptionEXT", (req, res) => {
           if (req.user) res.send(this.website.EXTDescription);
-          else res.status(403).sendFile(`${this.WebsitePath}/403.html`);
-        })
-
-        .get("/InstalledEXT", (req, res) => {
-          if (req.user) res.send(this.website.EXTInstalled);
-          else res.status(403).sendFile(`${this.WebsitePath}/403.html`);
-        })
-
-        .get("/ConfiguredEXT", (req, res) => {
-          if (req.user) res.send(this.website.EXTConfigured);
           else res.status(403).sendFile(`${this.WebsitePath}/403.html`);
         })
 
@@ -1056,7 +1049,6 @@ class website {
 
       /** API using **/
 
-
         .use("/api/docs", swaggerUi.serve, this.website.APIDocs
           ? swaggerUi.setup(APIDocs, {
             swaggerOptions: {
@@ -1070,8 +1062,8 @@ class website {
           res.json({ api: "OK" });
         })
 
-        .get("/api/translations", (req, res) => {
-          res.json(this.website.translation);
+        .get("/api/translations/login", (req, res) => {
+          res.json(this.website.loginTranslation);
         })
 
         .post("/api/login", (req, res) => {
@@ -1839,6 +1831,15 @@ class website {
     var APIResult = {};
 
     switch (req.url) {
+      case "/api/translations/common":
+        res.json(this.website.translation);
+        break;
+      case "/api/translations/homeText":
+        APIResult = {
+          homeText: this.website.homeText
+        };
+        res.json(APIResult);
+        break;
       case "/api/version":
         APIResult = await this.searchVersion();
         if (APIResult.error) {
@@ -1847,18 +1848,21 @@ class website {
           res.json(APIResult);
         }
         break;
-      case "/api/homeText":
-        APIResult = {
-          homeText: this.website.homeText
-        };
-        res.json(APIResult);
-        break;
       case "/api/sysInfo":
         this.website.systemInformation.result = await this.website.systemInformation.lib.Get();
         res.json(this.website.systemInformation.result);
         break;
-      case "/api/EXTVersions":
+      case "/api/EXT/versions":
         res.json(this.website.EXTVersions);
+        break;
+      case "/api/EXT/all":
+        res.json(this.website.EXT);
+        break;
+      case "/api/EXT/installed":
+        res.json(this.website.EXTInstalled);
+        break;
+       case "/api/EXT/configured":
+        res.json(this.website.EXTConfigured);
         break;
       case "/api/MMConfig":
         res.json(this.website.MMConfig);

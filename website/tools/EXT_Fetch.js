@@ -3,7 +3,7 @@
 /** fetch datas **/
 function getHomeText () {
   return new Promise((resolve) => {
-    $.getJSON("/api/homeText", (text) => {
+    $.getJSON("/api/translations/homeText", (text) => {
       //console.log("homeText", text)
       resolve(text.homeText);
     })
@@ -99,9 +99,22 @@ function checkEXTStatus () {
   });
 }
 
+function loadLoginTranslation () {
+  return new Promise((resolve) => {
+    $.getJSON("/api/translations/login", (tr) => {
+      //console.log("Translation", tr)
+      resolve(tr);
+    })
+      .fail(function (err) {
+        if (!err.status) alertify.error("Connexion Lost!");
+        else alertify.warning(`[loadTranslation] Server return Error ${err.status} (${err.statusText})`);
+      });
+  });
+}
+
 function loadTranslation () {
   return new Promise((resolve) => {
-    $.getJSON("/api/translations", (tr) => {
+    $.getJSON("/api/translations/common", (tr) => {
       //console.log("Translation", tr)
       resolve(tr);
     })
@@ -114,7 +127,7 @@ function loadTranslation () {
 
 function loadDataAllEXT () {
   return new Promise((resolve) => {
-    $.getJSON("/allEXT", (all) => {
+    $.getJSON("/api/EXT/all", (all) => {
       //console.log("allEXT", all)
       resolve(all);
     })
@@ -127,7 +140,7 @@ function loadDataAllEXT () {
 
 function loadDataConfiguredEXT () {
   return new Promise((resolve) => {
-    $.getJSON("/ConfiguredEXT", (confEXT) => {
+    $.getJSON("/api/EXT/configured", (confEXT) => {
       //console.log("ConfiguredEXT", confEXT)
       resolve(confEXT);
     })
@@ -140,7 +153,7 @@ function loadDataConfiguredEXT () {
 
 function loadDataInstalledEXT () {
   return new Promise((resolve) => {
-    $.getJSON("/InstalledEXT", (instEXT) => {
+    $.getJSON("/api/EXT/installed", (instEXT) => {
       //console.log("InstalledEXT", instEXT)
       resolve(instEXT);
     })
@@ -332,7 +345,7 @@ function doTranslateNavBar () {
 
 function getEXTVersions () {
   return new Promise((resolve) => {
-    $.getJSON("/api/EXTVersions", (EXTs) => {
+    $.getJSON("/api/EXT/versions", (EXTs) => {
       resolve(EXTs);
     })
       .fail(function (err) {

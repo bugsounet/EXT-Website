@@ -10,17 +10,17 @@ var versionGW = {};
 
 // Load rules
 window.addEventListener("load", async (event) => {
-  translation = await loadTranslation();
+  translation = await loadLoginTranslation();
   doLogin();
 });
 
 function doLogin () {
   $("#Login-submit").addClass("disabled");
-  $(document).prop("title", translation.Login_Welcome);
-  $("#Welcome").text(translation.Login_Welcome);
-  $("#username").attr("placeholder", translation.Login_Username);
-  $("#password").attr("placeholder", translation.Login_Password);
-  $("#Login-submit").text(translation.Login_Login);
+  $(document).prop("title", translation.welcome);
+  $("#Welcome").text(translation.welcome);
+  $("#username").attr("placeholder", translation.username);
+  $("#password").attr("placeholder", translation.password);
+  $("#Login-submit").text(translation.login);
 
   $("#login").on("input change", function () {
     if ($("#username").val() !== "" && $("#password").val() !== "") $("#Login-submit").removeClass("disabled");
