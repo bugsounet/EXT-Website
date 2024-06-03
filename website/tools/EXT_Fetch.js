@@ -14,7 +14,7 @@ function getHomeText () {
   });
 }
 
-function getGatewayVersion () {
+function getVersion () {
   return new Promise((resolve) => {
     $.getJSON("/api/version", (ver) => {
       //console.log("Version", ver)
@@ -82,7 +82,7 @@ function checkEXTStatus () {
   var ErrEXTStatus = 0;
   return new Promise((resolve) => {
     $.getJSON("/api/EXT/status", (Status) => {
-      console.log("EXTStatus", Status)
+      //console.log("EXTStatus", Status)
       resolve(Status);
     })
       .done(() => {

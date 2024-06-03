@@ -12,14 +12,14 @@ var PleaseRotateOptions = {
 // define all vars
 var translation = {};
 var InstEXT = [];
-var versionGW = {};
+var version = {};
 var webviewTag = false;
 var EXTStatus = {};
 var ErrEXTStatus = 0;
 
 // Load rules
 window.addEventListener("load", async (event) => {
-  versionGW = await getGatewayVersion();
+  version = await getVersion();
   translation = await loadTranslation();
 
   forceMobileRotate();
@@ -516,7 +516,7 @@ async function doTools () {
   }
 
   // FreeboxTV query
-  if (EXTStatus["EXT-FreeboxTV"].hello && versionGW.lang === "fr") {
+  if (EXTStatus["EXT-FreeboxTV"].hello && version.lang === "fr") {
     $("#FreeboxTV-Box").css("display", "block");
     document.getElementById("FreeboxTV-Send").onclick = function () {
       $.post("/EXT-FreeboxTVQuery", { data: $("#FreeboxTV-Query").val() })

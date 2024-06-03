@@ -1,7 +1,3 @@
-/* global window, getGatewayVersion, loadTranslation, $, forceMobileRotate, doTranslateNavBar, loadDataAllEXT, loadDataDescriptionEXT, loadDataInstalledEXT,
- * loadDataConfiguredEXT, alert, io, Terminal, FitAddon, alertify, jQuery, loadPluginConfig, loadPluginTemplate, JSONEditor, loadPluginCurrentConfig,
- * loadPluginTemplate, configMerge */
-
 /** EXT tools
 * @bugsounet
 **/
@@ -18,14 +14,13 @@ var AllEXT = [];
 var DescEXT = {};
 var InstEXT = [];
 var ConfigEXT = [];
-var versionGW = {};
+var version = {};
 
 // Load rules
 window.addEventListener("load", async (event) => {
-  versionGW = await getGatewayVersion();
+  version = await getVersion();
   translation = await loadTranslation();
 
-  $("html").prop("lang", versionGW.lang);
   forceMobileRotate();
   switch (window.location.pathname) {
     case "/EXT":
@@ -112,7 +107,7 @@ function doDelete () {
   fitAddonDelete.fit();
 
   socketDelete.on("connect", () => {
-    termDelete.write(`\x1B[1;3;31mMMM-GoogleAssistant v${versionGW.v} (${versionGW.rev}.${versionGW.lang})\x1B[0m \r\n\n`);
+    termDelete.write(`\x1B[1;3;31mEXT-Website v${version.version} (${version.rev}.${version.lang})\x1B[0m \r\n\n`);
   });
 
   socketDelete.on("disconnect", () => {
@@ -163,7 +158,7 @@ function doInstall () {
   fitAddonInstall.fit();
 
   socketInstall.on("connect", () => {
-    termInstall.write(`\x1B[1;3;31mMMM-GoogleAssistant v${versionGW.v} (${versionGW.rev}.${versionGW.lang})\x1B[0m \r\n\n`);
+    termInstall.write(`\x1B[1;3;31mMMM-GoogleAssistant v${version.verion} (${version.rev}.${version.lang})\x1B[0m \r\n\n`);
   });
 
   socketInstall.io.on("error", (data) => {

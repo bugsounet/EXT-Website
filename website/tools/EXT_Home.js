@@ -12,16 +12,15 @@ var PleaseRotateOptions = {
 
 // define all vars
 var translation = {};
-var versionGA = {};
+var version = {};
 var homeText = {};
 
 // Load rules
 window.addEventListener("load", async (event) => {
-  versionGA = await getGatewayVersion();
+  version = await getVersion();
   translation = await loadTranslation();
   homeText = await getHomeText();
 
-  $("html").prop("lang", versionGA.lang);
   forceMobileRotate();
   doIndex();
   doTranslateNavBar();
@@ -32,11 +31,11 @@ window.addEventListener("load", async (event) => {
 function doIndex () {
   $(document).prop("title", translation.Home);
   $("#welcome").text(translation.Home_Welcome);
-  if (versionGA.needUpdate) {
+  if (version.needUpdate) {
     $("#alert").removeClass("invisible");
     $("#alert").removeClass("alert-success");
     $("#alert").addClass("alert-warning");
-    $("#messageText").text(`${translation.Update} v${versionGA.last}`);
+    $("#messageText").text(`${translation.Update} v${version.last}`);
   }
 }
 

@@ -12,14 +12,13 @@ var PleaseRotateOptions = {
 
 // define all vars
 var translation = {};
-var versionGW = {};
+var version = {};
 
 // Load rules
 window.addEventListener("load", async (event) => {
-  versionGW = await getGatewayVersion();
+  version = await getVersion();
   translation = await loadTranslation();
 
-  $("html").prop("lang", versionGW.lang);
   forceMobileRotate();
   switch (window.location.pathname) {
     case "/Terminal":
@@ -45,7 +44,7 @@ async function doTerminalLogs () {
   fitAddonLogs.fit();
 
   socketLogs.on("connect", () => {
-    termLogs.write(`\x1B[1;3;31mMMM-GoogleAssistant v${versionGW.v} (${versionGW.rev}.${versionGW.lang})\x1B[0m \r\n\n`);
+    termLogs.write(`\x1B[1;3;31mMMM-GoogleAssistant v${version.v} (${version.rev}.${version.lang})\x1B[0m \r\n\n`);
   });
 
   socketLogs.on("disconnect", () => {
@@ -76,7 +75,7 @@ async function doTerminal () {
   }
 
   socketPTY.on("connect", () => {
-    termPTY.write(`\x1B[1;3;31mMMM-GoogleAssistant v${versionGW.v} (${versionGW.rev}.${versionGW.lang})\x1B[0m \r\n\n`);
+    termPTY.write(`\x1B[1;3;31mMMM-GoogleAssistant v${version.v} (${version.rev}.${version.lang})\x1B[0m \r\n\n`);
   });
 
   socketPTY.on("disconnect", () => {

@@ -12,14 +12,11 @@ var PleaseRotateOptions = {
 
 // define all vars
 var translation = {};
-var versionGW = {};
 
 // Load rules
 window.addEventListener("load", async (event) => {
-  versionGW = await getGatewayVersion();
   translation = await loadTranslation();
 
-  $("html").prop("lang", versionGW.lang);
   forceMobileRotate();
   switch (window.location.pathname) {
     case "/MMConfig":
