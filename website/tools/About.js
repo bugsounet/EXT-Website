@@ -28,6 +28,7 @@ function GatewaySetting () {
   $(document).prop("title", translation.About);
   $("#about_title").text(translation.About_Title);
   $("#version").text(version.version);
+  $("#api").text(version.api);
   $("#rev").text(version.rev);
   $("#language").text(version.lang);
 

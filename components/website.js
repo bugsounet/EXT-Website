@@ -1878,6 +1878,7 @@ class website {
     var APIResult = {
       version: require(`${this.WebsiteModulePath}/package.json`).version,
       rev: require(`${this.WebsiteModulePath}/package.json`).rev,
+      api: require(`${this.WebsiteModulePath}/package.json`).api,
       lang: this.website.language,
       last: "0.0.0",
       needUpdate: false
