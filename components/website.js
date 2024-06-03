@@ -132,11 +132,11 @@ class website {
     this.website.EXTDescription = Translations.Description;
     this.website.translation = Translations.Translate;
     this.website.loginTranslation = {
-      "welcome": this.website.translation["Login_Welcome"],
-      "username": this.website.translation["Login_Username"],
-      "password": this.website.translation["Login_Password"],
-      "error": this.website.translation["Login_Error"],
-      "login": this.website.translation["Login_Login"]
+      welcome: this.website.translation["Login_Welcome"],
+      username: this.website.translation["Login_Username"],
+      password: this.website.translation["Login_Password"],
+      error: this.website.translation["Login_Error"],
+      login: this.website.translation["Login_Login"]
     };
     this.website.schemaTranslatation = Translations.Schema;
     this.website.EXTStatus = Translations.EXTStatus;
@@ -1861,7 +1861,7 @@ class website {
       case "/api/EXT/installed":
         res.json(this.website.EXTInstalled);
         break;
-       case "/api/EXT/configured":
+      case "/api/EXT/configured":
         res.json(this.website.EXTConfigured);
         break;
       case "/api/MMConfig":
