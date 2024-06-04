@@ -177,7 +177,7 @@ function loadDataDescriptionEXT () {
 
 function loadMMConfig () {
   return new Promise((resolve) => {
-    $.getJSON("/api/MMConfig", (config) => {
+    $.getJSON("/api/config/MM", (config) => {
       //console.log("MMConfig", config)
       resolve(config);
     })

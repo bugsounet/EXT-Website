@@ -30,6 +30,10 @@
     {
       "name": "Tools",
       "description": "Helper Tools"
+    },
+    {
+      "name": "Configuration",
+      "description": "MagicMirror² and EXTs configuration Tools"
     }
   ],
   "paths": {
@@ -468,10 +472,10 @@
         }
       }
     },
-    "/api/MMConfig": {
+    "/api/config/MM": {
       "get": {
         "tags": [
-          "Tools"
+          "Configuration"
         ],
         "summary": "Returns current MagicMirror² configuration",
         "security": [
@@ -489,6 +493,183 @@
               "text/html": {
                 "schema": {
                   "$ref": "#/components/schemas/401Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/config/EXT": {
+      "get": {
+        "tags": [
+          "Configuration"
+        ],
+        "summary": "Returns current configuration of an EXT",
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "ext",
+            "in": "header",
+            "description": "EXT Name to get current configuration",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Sends EXT configuration"
+          },
+          "400": {
+            "description": "Missing EXT name in header",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "$ref": "#/components/schemas/Config400Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing valid authentication token",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "$ref": "#/components/schemas/401Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "EXT not found in configuration",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "$ref": "#/components/schemas/Config404Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/config/default": {
+      "get": {
+        "tags": [
+          "Configuration"
+        ],
+        "summary": "Returns default configuration of an EXT",
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "ext",
+            "in": "header",
+            "description": "EXT Name to get default configuration",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Sends EXT configuration"
+          },
+          "400": {
+            "description": "Missing EXT name in header",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "$ref": "#/components/schemas/Config400Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing valid authentication token",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "$ref": "#/components/schemas/401Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "EXT not found in configuration",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "$ref": "#/components/schemas/Config404Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/config/schema": {
+      "get": {
+        "tags": [
+          "Configuration"
+        ],
+        "summary": "Returns template configuration schema of an EXT",
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "ext",
+            "in": "header",
+            "description": "EXT Name to get template configuration schema",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Sends template configuration schema"
+          },
+          "400": {
+            "description": "Missing EXT name in header",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "$ref": "#/components/schemas/Config400Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing valid authentication token",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "$ref": "#/components/schemas/401Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "EXT not found in configuration",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "$ref": "#/components/schemas/Config404Error"
                 }
               }
             }
@@ -1415,6 +1596,16 @@
         "type": "string",
         "description": "No valid authentication",
         "example": "Unauthorized"
+      },
+      "Config400Error": {
+        "type": "string",
+        "description": "EXT not found in header",
+        "example": "Bad Request"
+      },
+      "Config404Error": {
+        "type": "string",
+        "description": "EXT not found in configuration",
+        "example": "Not Found"
       },
       "sysInfo": {
         "type": "object",

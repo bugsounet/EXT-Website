@@ -575,6 +575,8 @@ class website {
           else res.status(403).sendFile(`${this.WebsitePath}/403.html`);
         })
 
+        // To API
+        
         .get("/EXTGetCurrentConfig", (req, res) => {
           if (req.user) {
             if (!req.query.ext) return res.status(404).sendFile(`${this.WebsitePath}/404.html`);
@@ -588,6 +590,7 @@ class website {
           else res.status(403).sendFile(`${this.WebsitePath}/403.html`);
         })
 
+        // API
         .get("/EXTGetDefaultConfig", (req, res) => {
           if (req.user) {
             if (!req.query.ext) return res.status(404).sendFile(`${this.WebsitePath}/404.html`);
@@ -597,6 +600,7 @@ class website {
           else res.status(403).sendFile(`${this.WebsitePath}/403.html`);
         })
 
+        // API
         .get("/EXTGetDefaultTemplate", (req, res) => {
           if (req.user) {
             if (!req.query.ext) return res.status(404).sendFile(`${this.WebsitePath}/404.html`);
@@ -1861,8 +1865,39 @@ class website {
       case "/api/EXT/status":
         res.json(this.website.EXTStatus);
         break;
-      case "/api/MMConfig":
+      case "/api/config/MM":
         res.json(this.website.MMConfig);
+        break;
+      case "/api/config/EXT":
+        //console.log("--->", req.headers['ext'])
+        //console.log("--->", {headers:req.headers})
+        if (!req.headers['ext']) return res.status(400).send("Bad Request");
+        var index = this.website.MMConfig.modules.map((e) => { return e.module; }).indexOf(req.headers['ext']);
+        if (index > -1) {
+          log(`Request config of ${req.headers['ext']}`)
+          res.json(this.website.MMConfig.modules[index]);
+        } else {
+          res.status(404).send("Not Found");
+        }
+        break;
+      case "/api/config/default":
+        if (!req.headers['ext']) return res.status(400).send("Bad Request");
+        try {
+          let data = require(`../website/config/${req.headers['ext']}/config.js`);
+          res.json(data.default);
+        } catch (e) {
+          res.status(404).send("Not Found");
+        }
+        break;
+      case "/api/config/schema":
+        if (!req.headers['ext']) return res.status(400).send("Bad Request");
+        try {
+          let data = require(`../website/config/${req.headers['ext']}/config.js`);
+          data.schema = this.makeSchemaTranslate(data.schema, this.website.schemaTranslatation);
+          res.json(data.schema);
+        } catch (e) {
+          res.status(404).send("Not Found");
+        }
         break;
       default:
         console.warn("[WEBSITE] Don't find:", req.url);
