@@ -25,19 +25,6 @@ function getVersion () {
   });
 }
 
-function loadPluginCurrentConfig (plugin) {
-  return new Promise((resolve) => {
-    $.getJSON(`/EXTGetCurrentConfig?ext=${plugin}`, (currentConfig) => {
-      //console.log("CurrentConfig", currentConfig)
-      resolve(currentConfig);
-    })
-      .fail(function (err) {
-        if (!err.status) alertify.error("Connexion Lost!");
-        else alertify.warning(`[loadPluginCurrentConfig] Server return Error ${err.status} (${err.statusText})`);
-      });
-  });
-}
-
 function checkSystem () {
   return new Promise((resolve) => {
     $.getJSON("/api/sysInfo", (system) => {
@@ -190,28 +177,59 @@ function loadMMConfig () {
 
 function loadPluginConfig (plugin) {
   return new Promise((resolve) => {
-    $.getJSON(`/EXTGetDefaultConfig?ext=${plugin}`, (defaultConfig) => {
-      //console.log("defaultConfig", defaultConfig)
-      resolve(defaultConfig);
-    })
-      .fail(function (err) {
+    $.ajax(
+      {
+        url: "/api/config/default",
+        type: "GET",
+        headers: {"ext": plugin},
+        dataType: "json",
+        success: function(config){
+          resolve(config);
+      },
+      error: function(err) {
         if (!err.status) alertify.error("Connexion Lost!");
-        else alertify.warning(`[loadPluginConfig] Server return Error ${err.status} (${err.statusText})`);
-      });
-  });
+        else alertify.warning(`[loadPluginTemplate] Server return Error ${err.status} (${err.statusText})`);
+      }
+    })
+  })
 }
 
 function loadPluginTemplate (plugin) {
   return new Promise((resolve) => {
-    $.getJSON(`/EXTGetDefaultTemplate?ext=${plugin}`, (defaultTemplate) => {
-      //console.log("defaultTemplate", defaultTemplate)
-      resolve(defaultTemplate);
-    })
-      .fail(function (err) {
+    $.ajax(
+      {
+        url: "/api/config/schema",
+        type: "GET",
+        headers: {"ext": plugin},
+        dataType: "json",
+        success: function(schema){
+          resolve(schema);
+      },
+      error: function(err) {
         if (!err.status) alertify.error("Connexion Lost!");
         else alertify.warning(`[loadPluginTemplate] Server return Error ${err.status} (${err.statusText})`);
-      });
-  });
+      }
+    })
+  })
+}
+
+function loadPluginCurrentConfig (plugin) {
+  return new Promise((resolve) => {
+    $.ajax(
+      {
+        url: "/api/config/EXT",
+        type: "GET",
+        headers: {"ext": plugin},
+        dataType: "json",
+        success: function(config){
+          resolve(config);
+      },
+      error: function(err) {
+        if (!err.status) alertify.error("Connexion Lost!");
+        else alertify.warning(`[loadPluginTemplate] Server return Error ${err.status} (${err.statusText})`);
+      }
+    })
+  })
 }
 
 function loadBackupConfig (file) {

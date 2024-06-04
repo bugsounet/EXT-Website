@@ -575,42 +575,6 @@ class website {
           else res.status(403).sendFile(`${this.WebsitePath}/403.html`);
         })
 
-      // To API
-        
-        .get("/EXTGetCurrentConfig", (req, res) => {
-          if (req.user) {
-            if (!req.query.ext) return res.status(404).sendFile(`${this.WebsitePath}/404.html`);
-            var index = this.website.MMConfig.modules.map((e) => { return e.module; }).indexOf(req.query.ext);
-            if (index > -1) {
-              let data = this.website.MMConfig.modules[index];
-              return res.send(data);
-            }
-            res.status(404).sendFile(`${this.WebsitePath}/404.html`);
-          }
-          else res.status(403).sendFile(`${this.WebsitePath}/403.html`);
-        })
-
-        // API
-        .get("/EXTGetDefaultConfig", (req, res) => {
-          if (req.user) {
-            if (!req.query.ext) return res.status(404).sendFile(`${this.WebsitePath}/404.html`);
-            let data = require(`../website/config/${req.query.ext}/config.js`);
-            res.send(data.default);
-          }
-          else res.status(403).sendFile(`${this.WebsitePath}/403.html`);
-        })
-
-        // API
-        .get("/EXTGetDefaultTemplate", (req, res) => {
-          if (req.user) {
-            if (!req.query.ext) return res.status(404).sendFile(`${this.WebsitePath}/404.html`);
-            let data = require(`../website/config/${req.query.ext}/config.js`);
-            data.schema = this.makeSchemaTranslate(data.schema, this.website.schemaTranslatation);
-            res.send(data.schema);
-          }
-          else res.status(403).sendFile(`${this.WebsitePath}/403.html`);
-        })
-
         .get("/EXTSaveConfig", (req, res) => {
           if (req.user) {
             if (!req.query.config) return res.status(404).sendFile(`${this.WebsitePath}/404.html`);
