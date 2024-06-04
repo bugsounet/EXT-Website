@@ -1049,7 +1049,9 @@ class website {
             swaggerOptions: {
               defaultModelsExpandDepth: -1
             },
-            customCss: ".swagger-ui .topbar { display: none }"
+            customCss: ".swagger-ui .topbar { display: none }",
+            customSiteTitle: "EXT-Website API",
+            customfavIcon: "/assets/img/FavIcon.png"
           })
           : (req,res,next) => res.status(401).send("Unauthorized"))
 
