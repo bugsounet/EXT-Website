@@ -575,7 +575,7 @@ class website {
           else res.status(403).sendFile(`${this.WebsitePath}/403.html`);
         })
 
-        // To API
+      // To API
         
         .get("/EXTGetCurrentConfig", (req, res) => {
           if (req.user) {
@@ -1871,28 +1871,28 @@ class website {
       case "/api/config/EXT":
         //console.log("--->", req.headers['ext'])
         //console.log("--->", {headers:req.headers})
-        if (!req.headers['ext']) return res.status(400).send("Bad Request");
-        var index = this.website.MMConfig.modules.map((e) => { return e.module; }).indexOf(req.headers['ext']);
+        if (!req.headers["ext"]) return res.status(400).send("Bad Request");
+        var index = this.website.MMConfig.modules.map((e) => { return e.module; }).indexOf(req.headers["ext"]);
         if (index > -1) {
-          log(`Request config of ${req.headers['ext']}`)
+          log(`Request config of ${req.headers["ext"]}`);
           res.json(this.website.MMConfig.modules[index]);
         } else {
           res.status(404).send("Not Found");
         }
         break;
       case "/api/config/default":
-        if (!req.headers['ext']) return res.status(400).send("Bad Request");
+        if (!req.headers["ext"]) return res.status(400).send("Bad Request");
         try {
-          let data = require(`../website/config/${req.headers['ext']}/config.js`);
+          let data = require(`../website/config/${req.headers["ext"]}/config.js`);
           res.json(data.default);
         } catch (e) {
           res.status(404).send("Not Found");
         }
         break;
       case "/api/config/schema":
-        if (!req.headers['ext']) return res.status(400).send("Bad Request");
+        if (!req.headers["ext"]) return res.status(400).send("Bad Request");
         try {
-          let data = require(`../website/config/${req.headers['ext']}/config.js`);
+          let data = require(`../website/config/${req.headers["ext"]}/config.js`);
           data.schema = this.makeSchemaTranslate(data.schema, this.website.schemaTranslatation);
           res.json(data.schema);
         } catch (e) {
