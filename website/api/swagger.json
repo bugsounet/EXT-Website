@@ -1530,6 +1530,10 @@
             "type": "string",
             "description": "EXT-Website version"
           },
+          "api": {
+            "type": "string",
+            "description": "EXT-Website API version"
+          },
           "rev": {
             "type": "string",
             "description": "EXT-Website revision"
@@ -1549,7 +1553,8 @@
         },
         "example": {
           "version": "1.1.0",
-          "rev": "240106",
+          "api": "1.0.0",
+          "rev": "240603",
           "lang": "fr",
           "last": "1.0.0",
           "needUpdate": true
