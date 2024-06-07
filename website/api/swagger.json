@@ -262,6 +262,146 @@
         }
       }
     },
+    "/api/system/restart": {
+      "post": {
+        "tags": [
+          "System"
+        ],
+        "summary": "Restart MagicMirror²",
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Restart in progress",
+            "content": {
+              "application/json": {
+                "example": {
+                  "done" : "ok"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing valid authentication token",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "$ref": "#/components/schemas/401Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/system/die": {
+      "post": {
+        "tags": [
+          "System"
+        ],
+        "summary": "Close MagicMirror²",
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Close in progress",
+            "content": {
+              "application/json": {
+                "example": {
+                  "done" : "ok"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing valid authentication token",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "$ref": "#/components/schemas/401Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/system/reboot": {
+      "post": {
+        "tags": [
+          "System"
+        ],
+        "summary": "Reboot OS",
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Reboot in progress",
+            "content": {
+              "application/json": {
+                "example": {
+                  "done" : "ok"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing valid authentication token",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "$ref": "#/components/schemas/401Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/system/shutdown": {
+      "post": {
+        "tags": [
+          "System"
+        ],
+        "summary": "Shutdown OS",
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Shutdown in progress",
+            "content": {
+              "application/json": {
+                "example": {
+                  "done" : "ok"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing valid authentication token",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "$ref": "#/components/schemas/401Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/EXT/versions": {
       "get": {
         "tags": [

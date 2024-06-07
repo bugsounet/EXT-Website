@@ -1083,6 +1083,12 @@ class website {
         })
         .delete("/api/*", passport.authenticate("jwt", { session: false }), (req, res) => this.DeleteAPI(req,res))
 
+        .post("/api/*", (req,res,next) => {
+          if (req.user) this.PostAPI(req,res);
+          else next();
+        })
+        .post("/api/*", passport.authenticate("jwt", { session: false }), (req, res) => this.PostAPI(req,res))
+
         .get("/*", (req, res) => {
           console.warn("[WEBSITE] Don't find:", req.url);
           res.redirect("/404");
@@ -1950,11 +1956,47 @@ class website {
   }
 
   /** Website DELETE API **/
+  async PostAPI (req, res) {
+    var APIResult = {};
+
+    switch (req.url) {
+      case "/api/system/restart":
+        setTimeout(() => this.sendSocketNotification("SendNoti", "EXT_GATEWAY-Restart"), 1000);
+        res.json({ done: "ok" });
+        break;
+      case "/api/system/die":
+        setTimeout(() => this.sendSocketNotification("SendNoti", "EXT_GATEWAY-Close"), 3000);
+        res.json({ done: "ok" });
+        break;
+      case "/api/system/reboot":
+        setTimeout(() => this.sendSocketNotification("SendNoti", "EXT-GATEWAY-Reboot"), 1000);
+        res.json({ done: "ok" });
+        break;
+      case "/api/system/shutdown":
+        setTimeout(() => this.sendSocketNotification("SendNoti", "EXT-GATEWAY-Shutdown"), 3000);
+        res.json({ done: "ok" });
+        break;
+      default:
+        console.warn("[WEBSITE] Don't find:", req.url);
+        APIResult = {
+          error: "You Are Lost in Space"
+        };
+        res.status(404).json(APIResult);
+    }
+  }
+
+
+  /** Website DELETE API **/
   async DeleteAPI (req, res) {
     var APIResult = {};
 
     switch (req.url) {
-
+      default:
+        console.warn("[WEBSITE] Don't find:", req.url);
+        APIResult = {
+          error: "You Are Lost in Space"
+        };
+        res.status(404).json(APIResult);
     }
   }
 
