@@ -498,6 +498,63 @@
             }
           }
         }
+      },
+      "put": {
+        "tags": [
+          "Configuration"
+        ],
+        "summary": "Update new MagicMirror² configuration",
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "config",
+            "in": "header",
+            "description": "New config of MagicMirror² (JSON string format)",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Configuration Updated successfully"
+          },
+          "400": {
+            "description": "Missing config in header or config is not in JSON string format",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "$ref": "#/components/schemas/Config400Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing valid authentication token",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "$ref": "#/components/schemas/401Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error on writing new configuration file",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "$ref": "#/components/schemas/Config500Error"
+                }
+              }
+            }
+          }
+        }
       }
     },
     "/api/config/EXT": {
@@ -524,7 +581,14 @@
         ],
         "responses": {
           "200": {
-            "description": "Sends EXT configuration"
+            "description": "Sends EXT configuration",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConfigSample"
+                }
+              }
+            }
           },
           "400": {
             "description": "Missing EXT name in header",
@@ -583,7 +647,14 @@
         ],
         "responses": {
           "200": {
-            "description": "Sends EXT configuration"
+            "description": "Sends EXT configuration",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConfigSample"
+                }
+              }
+            }
           },
           "400": {
             "description": "Missing EXT name in header",
@@ -642,7 +713,14 @@
         ],
         "responses": {
           "200": {
-            "description": "Sends template configuration schema"
+            "description": "Sends template configuration schema",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConfigSchema"
+                }
+              }
+            }
           },
           "400": {
             "description": "Missing EXT name in header",
@@ -1604,13 +1682,85 @@
       },
       "Config400Error": {
         "type": "string",
-        "description": "EXT not found in header",
+        "description": "Missing params in Header",
         "example": "Bad Request"
       },
       "Config404Error": {
         "type": "string",
         "description": "EXT not found in configuration",
         "example": "Not Found"
+      },
+      "Config500Error": {
+        "type": "object",
+        "description": "Internal Error, Operation not completed",
+        "properties": {
+          "error": {
+            "type": "string",
+            "description": "Error description"
+          }
+        },
+        "example": {
+          "error": "Error when writing file"
+        }
+      },
+      "ConfigSample": {
+        "type": "object",
+        "description": "Sample configuration sended",
+        "example": {
+          "module": "EXT-Alert",
+          "disabled": false,
+          "config": {
+            "debug": false,
+            "style": 1,
+            "ignore": []
+          }
+        }
+      },
+      "ConfigSchema": {
+        "type": "object",
+        "description": "Sample schema sended",
+        "example": {
+          "title": "EXT-Alert",
+          "description": "Propriétés de ce plugin",
+          "type": "object",
+          "properties": {
+            "module": {
+              "type": "string",
+              "title": "Nom du plugin",
+              "default": "EXT-Alert"
+            },
+            "disabled": {
+              "type": "boolean",
+              "title": "Désactiver le plugin",
+              "default": false
+            },
+            "config": {
+              "type": "object",
+              "title": "Configuration",
+              "properties": {
+                "debug": {
+                  "type": "boolean",
+                  "title": "Activer le mode debug",
+                  "default": false
+                },
+                "style": {
+                  "type": "number",
+                  "title": "Style des notifications",
+                  "default": 1,
+                  "enum": [0, 1, 2],
+                  "minimum": 0,
+                  "maximum": 2
+                },
+                "ignore": {
+                  "type": "array",
+                  "title": "Liste les plugins/modules à ignorer pour ne pas afficher leurs notifications",
+                  "default": []
+                }
+              }
+            }
+          },
+          "required": ["module"]
+        }
       },
       "sysInfo": {
         "type": "object",

@@ -145,11 +145,15 @@ async function EditMMConfigJSEditor () {
       });
   };
   document.getElementById("save").onclick = function () {
-    let data = editor.getText();
+    let data = editor.get();
     $("#save").css("display", "none");
     $("#wait").css("display", "block");
-    $.post("/writeConfig", { data: data })
-      .done(function (back) {
+
+    $.ajax({
+      url: "/api/config/MM",
+      type: "PUT",
+      headers: { "config": JSON.stringify(data) },
+      success: function (back) {
         if (back.error) {
           $("#wait").css("display", "none");
           $("#error").css("display", "block");
@@ -163,10 +167,23 @@ async function EditMMConfigJSEditor () {
           $("#alert").removeClass("invisible");
           $("#messageText").text(translation.Restart);
         }
-      })
-      .fail(function (err) {
-        alertify.error(`[writeConfig] Server return Error ${err.status} (${err.statusText})`);
-      });
+      },
+      error: function (request,msg,err) {
+        $("#wait").css("display", "none");
+        $("#error").css("display", "block");
+        $("#alert").removeClass("invisible");
+        $("#alert").removeClass("alert-success");
+        $("#alert").addClass("alert-danger");
+        if (err.status) {
+          $("#messageText").text(err.statusText);
+          alertify.error(`[writeConfig] Server return Error ${err.status} (${err.statusText})`);
+        } else {
+          $("#messageText").text(err);
+          alertify.error(`[writeConfig] Server return Error: ${err}`);
+        }
+      }
+    });
+
   };
   FileReaderJS.setupInput(document.getElementById("fileToLoad"), {
     readAsDefault: "Text",

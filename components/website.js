@@ -1079,11 +1079,22 @@ class website {
         })
 
         .get("/api/*", (req,res,next) => {
-          if (req.user) this.websiteAPI(req,res);
+          if (req.user) this.GetAPI(req,res);
           else next();
         })
+        .get("/api/*", passport.authenticate("jwt", { session: false }), (req, res) => this.GetAPI(req,res))
 
-        .get("/api/*", passport.authenticate("jwt", { session: false }), (req, res) => this.websiteAPI(req,res))
+        .put("/api/*", (req,res,next) => {
+          if (req.user) this.PutAPI(req,res);
+          else next();
+        })
+        .put("/api/*", passport.authenticate("jwt", { session: false }), (req, res) => this.PutAPI(req,res))
+
+        .delete("/api/*", (req,res,next) => {
+          if (req.user) this.DeleteAPI(req,res);
+          else next();
+        })
+        .delete("/api/*", passport.authenticate("jwt", { session: false }), (req, res) => this.DeleteAPI(req,res))
 
         .get("/*", (req, res) => {
           console.warn("[WEBSITE] Don't find:", req.url);
@@ -1787,8 +1798,8 @@ class website {
     return this.website.EXTStatus;
   }
 
-  /** Website API **/
-  async websiteAPI (req, res) {
+  /** Website GET API **/
+  async GetAPI (req, res) {
     var APIResult = {};
 
     switch (req.url) {
@@ -1870,8 +1881,54 @@ class website {
         APIResult = {
           error: "You Are Lost in Space"
         };
-        res.json(APIResult);
+        res.status(404).json(APIResult);
         break;
+    }
+  }
+
+  /** Website PUT API **/
+  async PutAPI (req, res) {
+    var APIResult = {};
+
+    switch (req.url) {
+      case "/api/config/MM":
+        console.log("[WEBSITE] Receiving write MM config...");
+        if (!req.headers["config"]) return res.status(400).send("Bad Request");
+        var resultSaveConfig = {};
+        try  {
+          const dataConfig = JSON.parse(req.headers["config"]);
+          resultSaveConfig = await this.saveConfig(dataConfig);
+        } catch (e) {
+          console.log("[WEBSITE] Request error", e.message);
+          res.status(400).send("Bad Request");
+          return;
+        }
+
+        console.log("[WEBSITE] Write config result:", resultSaveConfig);
+
+        if (resultSaveConfig.done) {
+          res.json(resultSaveConfig);
+          this.website.MMConfig = await this.readConfig();
+          console.log("[WEBSITE] Reload config");
+        } else if (resultSaveConfig.error) {
+          res.status(500).json({ error: resultSaveConfig.error });
+        }
+        break;
+      default:
+        console.warn("[WEBSITE] Don't find:", req.url);
+        APIResult = {
+          error: "You Are Lost in Space"
+        };
+        res.status(404).json(APIResult);
+    }
+  }
+
+  /** Website DELETE API **/
+  async DeleteAPI (req, res) {
+    var APIResult = {};
+
+    switch (req.url) {
+
     }
   }
 
