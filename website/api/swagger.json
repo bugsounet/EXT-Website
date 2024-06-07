@@ -252,6 +252,51 @@
                 }
               }
             }
+          },
+          "401": {
+            "description": "Missing valid authentication token",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "$ref": "#/components/schemas/401Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/webview": {
+      "get": {
+        "tags": [
+          "Tools"
+        ],
+        "summary": "Inspect actual MagicMirror² webview electron configuration option",
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Send result if webview is activated in MagicMirror² configuration",
+            "content": {
+              "application/json": {
+                "example": {
+                  "webview" : false
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing valid authentication token",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "$ref": "#/components/schemas/401Error"
+                }
+              }
+            }
           }
         }
       }

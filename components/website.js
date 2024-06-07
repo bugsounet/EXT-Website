@@ -566,50 +566,6 @@ class website {
           else res.status(403).sendFile(`${this.WebsitePath}/403.html`);
         })
 
-        // to move to API
-        .get("/GetBackupName", async (req, res) => {
-          if (req.user) {
-            var names = await this.loadBackupNames();
-            res.send(names);
-          }
-          else res.status(403).sendFile(`${this.WebsitePath}/403.html`);
-        })
-
-        // to move to API
-        .get("/GetBackupFile", async (req, res) => {
-          if (req.user) {
-            let data = req.query.config;
-            var file = await this.loadBackupFile(data);
-            res.send(file);
-          }
-          else res.status(403).sendFile(`${this.WebsitePath}/403.html`);
-        })
-
-        // to move to API
-        .get("/GetRadioStations", (req, res) => {
-          if (req.user) {
-            if (!this.website.radio) return res.status(404).sendFile(`${this.WebsitePath}/404.html`);
-            var allRadio = Object.keys(this.website.radio);
-            res.send(allRadio);
-          }
-          else res.status(403).sendFile(`${this.WebsitePath}/403.html`);
-        })
-
-        // to move to API
-        .post("/loadBackup", async (req, res) => {
-          if (req.user) {
-            console.log("[WEBSITE] Receiving backup data ...");
-            let file = req.body.data;
-            var loadFile = await this.loadBackupFile(file);
-            var resultSaveConfig = await this.saveConfig(loadFile);
-            console.log("[WEBSITE] Write config result:", resultSaveConfig);
-            res.send(resultSaveConfig);
-            if (resultSaveConfig.done) {
-              this.website.MMConfig = await this.readConfig();
-              console.log("[WEBSITE] Reload config");
-            }
-          } else res.status(403).sendFile(`${this.WebsitePath}/403.html`);
-        })
 
         // to move to API
         .get("/getWebviewTag", (req, res) => {
@@ -630,6 +586,16 @@ class website {
               this.website.MMConfig = await this.readConfig();
               console.log("[WEBSITE] Reload config");
             }
+          }
+          else res.status(403).sendFile(`${this.WebsitePath}/403.html`);
+        })
+
+        // to move to API
+        .get("/GetRadioStations", (req, res) => {
+          if (req.user) {
+            if (!this.website.radio) return res.status(404).sendFile(`${this.WebsitePath}/404.html`);
+            var allRadio = Object.keys(this.website.radio);
+            res.send(allRadio);
           }
           else res.status(403).sendFile(`${this.WebsitePath}/403.html`);
         })
@@ -833,6 +799,40 @@ class website {
             res.send("ok");
           }
           else res.send("error");
+        })
+
+        // to move to API
+        .get("/GetBackupName", async (req, res) => {
+          if (req.user) {
+            var names = await this.loadBackupNames();
+            res.send(names);
+          }
+          else res.status(403).sendFile(`${this.WebsitePath}/403.html`);
+        })
+
+        // to move to API
+        .get("/GetBackupFile", async (req, res) => {
+          if (req.user) {
+            let data = req.query.config;
+            var file = await this.loadBackupFile(data);
+            res.send(file);
+          }
+          else res.status(403).sendFile(`${this.WebsitePath}/403.html`);
+        })
+        // to move to API
+        .post("/loadBackup", async (req, res) => {
+          if (req.user) {
+            console.log("[WEBSITE] Receiving backup data ...");
+            let file = req.body.data;
+            var loadFile = await this.loadBackupFile(file);
+            var resultSaveConfig = await this.saveConfig(loadFile);
+            console.log("[WEBSITE] Write config result:", resultSaveConfig);
+            res.send(resultSaveConfig);
+            if (resultSaveConfig.done) {
+              this.website.MMConfig = await this.readConfig();
+              console.log("[WEBSITE] Reload config");
+            }
+          } else res.status(403).sendFile(`${this.WebsitePath}/403.html`);
         })
 
         // to move to API
@@ -1780,6 +1780,9 @@ class website {
         } catch (e) {
           res.status(404).send("Not Found");
         }
+        break;
+      case "/api/webview":
+        res.json({ webview: this.website.webviewTag });
         break;
       default:
         console.warn("[WEBSITE] Don't find:", req.url);

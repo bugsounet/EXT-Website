@@ -39,9 +39,9 @@ function checkSystem () {
 
 function checkWebviewTag () {
   return new Promise((resolve) => {
-    $.getJSON("/getWebviewTag", (tag) => {
+    $.getJSON("/api/webview", (tag) => {
       //console.log("webviewTag", tag)
-      resolve(tag);
+      resolve(tag.webview);
     })
       .fail(function (err) {
         if (!err.status) alertify.error("Connexion Lost!");
