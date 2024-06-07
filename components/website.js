@@ -328,6 +328,8 @@ class website {
         .use("/About.js", express.static(`${this.WebsitePath}/tools/About.js`))
         .use("/Restart.js", express.static(`${this.WebsitePath}/tools/Restart.js`))
         .use("/Die.js", express.static(`${this.WebsitePath}/tools/Die.js`))
+        .use("/Shutdown.js", express.static(`${this.WebsitePath}/tools/Shutdown.js`))
+        .use("/Reboot.js", express.static(`${this.WebsitePath}/tools/Reboot.js`))
         .use("/Fetch.js", express.static(`${this.WebsitePath}/tools/Fetch.js`))
         .use("/3rdParty.js", express.static(`${this.WebsitePath}/tools/3rdParty.js`))
         .use("/assets", express.static(`${this.WebsitePath}/assets`, options))
@@ -639,34 +641,22 @@ class website {
         })
 
         .get("/Restart", (req, res) => {
-          if (req.user) {
-            res.sendFile(`${this.WebsitePath}/restarting.html`);
-            setTimeout(() => this.sendSocketNotification("SendNoti", "EXT_GATEWAY-Restart"), 1000);
-          }
+          if (req.user) res.sendFile(`${this.WebsitePath}/restarting.html`);
           else res.status(403).sendFile(`${this.WebsitePath}/403.html`);
         })
 
         .get("/Die", (req, res) => {
-          if (req.user) {
-            res.sendFile(`${this.WebsitePath}/die.html`);
-            setTimeout(() => this.sendSocketNotification("SendNoti", "EXT_GATEWAY-Close"), 3000);
-          }
+          if (req.user) res.sendFile(`${this.WebsitePath}/die.html`);
           else res.status(403).sendFile(`${this.WebsitePath}/403.html`);
         })
 
         .get("/SystemRestart", (req, res) => {
-          if (req.user) {
-            res.sendFile(`${this.WebsitePath}/restarting.html`);
-            setTimeout(() => this.sendSocketNotification("SendNoti", "EXT-GATEWAY-Reboot"), 1000);
-          }
+          if (req.user) res.sendFile(`${this.WebsitePath}/reboot.html`);
           else res.status(403).sendFile(`${this.WebsitePath}/403.html`);
         })
 
         .get("/SystemDie", (req, res) => {
-          if (req.user) {
-            res.sendFile(`${this.WebsitePath}/die.html`);
-            setTimeout(() => tthis.sendSocketNotification("SendNoti", "EXT-GATEWAY-Shutdown"), 3000);
-          }
+          if (req.user) res.sendFile(`${this.WebsitePath}/shutdown.html`);
           else res.status(403).sendFile(`${this.WebsitePath}/403.html`);
         })
 
