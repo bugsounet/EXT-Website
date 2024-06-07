@@ -453,36 +453,6 @@ class website {
           else res.status(403).sendFile(`${this.WebsitePath}/403.html`);
         })
 
-        // to move to API
-        .get("/EXTInstall", (req, res) => {
-          if (req.user) {
-            var ip = req.headers["x-forwarded-for"] || req.connection.remoteAddress;
-            if (req.query.EXT && this.website.EXTInstalled.indexOf(req.query.EXT) === -1 && this.website.EXT.indexOf(req.query.EXT) > -1) {
-              console.log(`[WEBSITE] [${ip}] Request installation:`, req.query.EXT);
-              var result = {
-                error: false
-              };
-              var modulePath = `${this.root_path}/modules/`;
-              var Command = `cd ${modulePath} && git clone https://github.com/bugsounet/${req.query.EXT} && cd ${req.query.EXT} && npm install`;
-
-              var child = exec(Command, { cwd: modulePath }, (error, stdout, stderr) => {
-                if (error) {
-                  result.error = true;
-                  console.error("[WEBSITE] [INSTALL] [FATAL] exec error:", error);
-                } else {
-                  this.website.EXTInstalled = this.searchInstalled();
-                  console.log("[WEBSITE] [INSTALL] [DONE]", req.query.EXT);
-                }
-                res.json(result);
-              });
-              child.stdout.pipe(process.stdout);
-              child.stderr.pipe(process.stdout);
-            }
-            else res.status(404).sendFile(`${this.WebsitePath}/404.html`);
-          }
-          else res.status(403).sendFile(`${this.WebsitePath}/403.html`);
-        })
-
         .get("/delete", (req, res) => {
           if (req.user) {
             var ip = req.headers["x-forwarded-for"] || req.connection.remoteAddress;
@@ -1899,6 +1869,36 @@ class website {
           console.log("[WEBSITE] Reload config");
         } else if (resultSaveConfig.error) {
           res.status(500).json({ error: resultSaveConfig.error });
+        }
+        break;
+      case "/api/EXT/install":
+        if (!req.headers["ext"]) return res.status(400).send("Bad Request");
+        const pluginName = req.headers["ext"];
+        if (this.website.EXTInstalled.indexOf(pluginName) === -1) {
+          if (this.website.EXT.indexOf(pluginName) > -1) {
+            console.log("[WEBSITE] Request installation:",pluginName);
+            var modulePath = `${this.root_path}/modules/`;
+            var Command = `cd ${modulePath} && git clone https://github.com/bugsounet/${pluginName} && cd ${pluginName} && npm install`;
+
+            var child = exec(Command, { cwd: modulePath }, (error, stdout, stderr) => {
+              if (error) {
+                console.error("[WEBSITE] [INSTALL] [FATAL] exec error:", error);
+                res.status(500).json({ error: `Error on install ${pluginName}` });
+              } else {
+                this.website.EXTInstalled = this.searchInstalled();
+                console.log("[WEBSITE] [INSTALL] [DONE]", pluginName);
+                res.json({ done: "ok" });
+              }
+            });
+            child.stdout.pipe(process.stdout);
+            child.stderr.pipe(process.stdout);
+          } else {
+            console.log(`[WEBSITE] [INSTALL] EXT Not Found: ${pluginName}`);
+            res.status(404).send("Not Found");
+          }
+        } else {
+          console.log(`[WEBSITE] [INSTALL] EXT Already Installed: ${pluginName}`);
+          res.status(400).send("Already installed");
         }
         break;
       default:

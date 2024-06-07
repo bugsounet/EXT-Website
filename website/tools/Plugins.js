@@ -192,16 +192,26 @@ function doInstall () {
   document.getElementById("install").onclick = function () {
     $("#messageText").text(translation.Plugins_Install_Progress);
     $("#install").addClass("disabled");
-    return new Promise((resolve) => {
-      $.getJSON(`/EXTInstall?EXT=${EXT}`, (res) => {
-        if (!res.error) $("#messageText").text(translation.Plugins_Install_Confirmed);
-        else $("#messageText").text(translation.Warn_Error);
-        resolve();
+    $.ajax({
+      url: "/api/EXT/install",
+      type: "PUT",
+      headers: { "ext": EXT },
+      success: function (back) {
+        if (back.done) {
+          $("#messageText").text(translation.Plugins_Install_Confirmed);
+        } else {
+          $("#messageText").text(translation.Warn_Error);
+        }
         setTimeout(() => socketInstall.close(), 500);
-      })
-        .fail(function (err) {
+      },
+      error: function (request,msg,err) {
+        $("#messageText").text(translation.Warn_Error);
+        if (err.status) {
           alertify.error(`[doInstall] Server return Error ${err.status} (${err.statusText})`);
-        });
+        } else {
+          alertify.error(`[doInstall] Server return Error: ${err}`);
+        }
+      }
     });
   };
 }

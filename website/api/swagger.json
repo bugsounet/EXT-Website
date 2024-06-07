@@ -688,6 +688,82 @@
         }
       }
     },
+    "/api/EXT/install": {
+      "put": {
+        "tags": [
+          "EXT"
+        ],
+        "summary": "Delete an EXT of the module folder",
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "ext",
+            "in": "header",
+            "description": "Name of the EXT",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "EXT deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Config200"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing ext in header or params is not in JSON string format",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "$ref": "#/components/schemas/Config400Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing valid authentication token",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "$ref": "#/components/schemas/401Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "EXT not found",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "$ref": "#/components/schemas/Config404Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error on writing new configuration file",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Config500Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/config/MM": {
       "get": {
         "tags": [
