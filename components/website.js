@@ -575,6 +575,7 @@ class website {
           else res.status(403).sendFile(`${this.WebsitePath}/403.html`);
         })
 
+        // ????
         .get("/EXTSaveConfig", (req, res) => {
           if (req.user) {
             if (!req.query.config) return res.status(404).sendFile(`${this.WebsitePath}/404.html`);
@@ -1813,7 +1814,7 @@ class website {
           res.json(APIResult);
         }
         break;
-      case "/api/sysInfo":
+      case "/api/system/sysInfo":
         this.website.systemInformation.result = await this.website.systemInformation.lib.Get();
         res.json(this.website.systemInformation.result);
         break;

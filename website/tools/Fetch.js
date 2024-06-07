@@ -27,7 +27,7 @@ function getVersion () {
 
 function checkSystem () {
   return new Promise((resolve) => {
-    $.getJSON("/api/sysInfo", (system) => {
+    $.getJSON("/api/system/sysInfo", (system) => {
       resolve(system);
     })
       .fail(function (err) {
