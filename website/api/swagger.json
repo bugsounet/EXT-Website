@@ -522,7 +522,14 @@
         ],
         "responses": {
           "200": {
-            "description": "Configuration Updated successfully"
+            "description": "Configuration Updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Config200"
+                }
+              }
+            }
           },
           "400": {
             "description": "Missing config in header or config is not in JSON string format",
@@ -547,7 +554,7 @@
           "500": {
             "description": "Error on writing new configuration file",
             "content": {
-              "text/html": {
+              "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Config500Error"
                 }
@@ -616,6 +623,79 @@
               "text/html": {
                 "schema": {
                   "$ref": "#/components/schemas/Config404Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Configuration"
+        ],
+        "summary": "Update an EXT configuration",
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "ext",
+            "in": "header",
+            "description": "Name of the EXT",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "config",
+            "in": "header",
+            "description": "New config of the EXT (JSON string format)",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Configuration of the EXT updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Config200"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing ext or config in header or params is not in JSON string format",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "$ref": "#/components/schemas/Config400Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing valid authentication token",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "$ref": "#/components/schemas/401Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error on writing new configuration file",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Config500Error"
                 }
               }
             }
@@ -1760,6 +1840,19 @@
             }
           },
           "required": ["module"]
+        }
+      },
+      "Config200": {
+        "type": "object",
+        "description": "Configuration updated",
+        "properties": {
+          "done": {
+            "type": "string",
+            "description": "send state"
+          }
+        },
+        "example": {
+          "done": "ek"
         }
       },
       "sysInfo": {

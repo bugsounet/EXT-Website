@@ -715,20 +715,6 @@ class website {
           } else res.status(403).sendFile(`${this.WebsitePath}/403.html`);
         })
 
-        .post("/writeConfig", async (req, res) => {
-          if (req.user) {
-            console.log("[WEBSITE] Receiving config data ...");
-            let data = JSON.parse(req.body.data);
-            var resultSaveConfig = await this.saveConfig(data);
-            console.log("[WEBSITE] Write config result:", resultSaveConfig);
-            res.send(resultSaveConfig);
-            if (resultSaveConfig.done) {
-              this.website.MMConfig = await this.readConfig();
-              console.log("[WEBSITE] Reload config");
-            }
-          } else res.status(403).sendFile(`${this.WebsitePath}/403.html`);
-        })
-
         .get("/getWebviewTag", (req, res) => {
           if (req.user) res.send(this.website.webviewTag);
           else res.status(403).sendFile(`${this.WebsitePath}/403.html`);
@@ -1405,6 +1391,13 @@ class website {
     });
   }
 
+  /** check plugin in config **/
+  checkPluginInConfig (plugin) {
+    let index = this.website.EXTConfigured.indexOf(plugin);
+    if (index > -1) return true
+    else return false
+  }
+
   /** delete plugins config **/
   configDelete (EXT) {
     return new Promise((resolve) => {
@@ -1909,6 +1902,38 @@ class website {
         if (resultSaveConfig.done) {
           res.json(resultSaveConfig);
           this.website.MMConfig = await this.readConfig();
+          console.log("[WEBSITE] Reload config");
+        } else if (resultSaveConfig.error) {
+          res.status(500).json({ error: resultSaveConfig.error });
+        }
+        break;
+      case "/api/config/EXT":
+        console.log("[WEBSITE] Receiving write EXT config...");
+        if (!req.headers["ext"] || !req.headers["config"]) return res.status(400).send("Bad Request");
+        const plugin = this.checkPluginInConfig(req.headers["ext"])
+        if (!plugin) {
+          return res.status(404).send("Not Found");
+        }
+        var resultSaveConfig = {};
+        try  {
+          const dataConfig = JSON.parse(req.headers["config"]);
+          if (dataConfig.module !== req.headers["ext"]) {
+            return res.status(400).send("Bad Request");
+          }
+          const NewConfig = await this.configAddOrModify(dataConfig);
+          resultSaveConfig = await this.saveConfig(NewConfig);
+        } catch (e) {
+          console.log("[WEBSITE] Request error", e.message);
+          res.status(400).send("Bad Request");
+          return;
+        }
+
+        console.log("[WEBSITE] Write config result:", resultSaveConfig);
+
+        if (resultSaveConfig.done) {
+          res.json(resultSaveConfig);
+          this.website.MMConfig = await this.readConfig();
+          this.website.EXTConfigured = this.searchConfigured();
           console.log("[WEBSITE] Reload config");
         } else if (resultSaveConfig.error) {
           res.status(500).json({ error: resultSaveConfig.error });
