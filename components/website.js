@@ -589,40 +589,6 @@ class website {
           else res.status(403).sendFile(`${this.WebsitePath}/403.html`);
         })
 
-        // to move to API
-        .post("/writeEXT", async (req, res) => {
-          if (req.user) {
-            console.log("[WEBSITE] Receiving EXT data ...");
-            let data = JSON.parse(req.body.data);
-            var NewConfig = await this.configAddOrModify(data);
-            var resultSaveConfig = await this.saveConfig(NewConfig);
-            console.log("[WEBSITE] Write config result:", resultSaveConfig);
-            res.send(resultSaveConfig);
-            if (resultSaveConfig.done) {
-              this.website.MMConfig = await this.readConfig();
-              this.website.EXTConfigured = this.searchConfigured();
-              console.log("[WEBSITE] Reload config");
-            }
-          } else res.status(403).sendFile(`${this.WebsitePath}/403.html`);
-        })
-
-        // to move to API
-        .post("/deleteEXT", async (req, res) => {
-          if (req.user) {
-            console.log("[WEBSITE] Receiving EXT data ...", req.body);
-            let EXTName = req.body.data;
-            var NewConfig = await this.configDelete(EXTName);
-            var resultSaveConfig = await this.saveConfig(NewConfig);
-            console.log("[WEBSITE] Write config result:", resultSaveConfig);
-            res.send(resultSaveConfig);
-            if (resultSaveConfig.done) {
-              this.website.MMConfig = await this.readConfig();
-              this.website.EXTConfigured = this.searchConfigured();
-              console.log("[WEBSITE] Reload config");
-            }
-          } else res.status(403).sendFile(`${this.WebsitePath}/403.html`);
-        })
-
         .get("/Tools", (req, res) => {
           if (req.user) res.sendFile(`${this.WebsitePath}/tools.html`);
           else res.status(403).sendFile(`${this.WebsitePath}/403.html`);
@@ -737,7 +703,7 @@ class website {
           else res.status(403).sendFile(`${this.WebsitePath}/403.html`);
         })
 
-        // to move to API
+        // ???
         .get("/getGAVersion", (req, res) => {
           if (req.user) {
             if (this.website.EXTStatus.GA_Ready) this.website.GACheck.ready = true;
@@ -975,7 +941,7 @@ class website {
         .post("/saveExternalBackup", async (req, res) => {
           if (req.user) {
             let data = req.body.data;
-            if (!data) return res.send({ error: "error" });
+            if (!data) return res.send({ error: "error no data" });
             console.log("[WEBSITE] Receiving External backup...");
             var linkExternalBackup = await this.saveExternalConfig(data);
             if (linkExternalBackup.data) {
@@ -2009,6 +1975,25 @@ class website {
     var APIResult = {};
 
     switch (req.url) {
+      case "/api/config/EXT":
+        console.log("[WEBSITE] Receiving delete EXT config...");
+        if (!req.headers["ext"]) return res.status(400).send("Bad Request");
+        const plugin = this.checkPluginInConfig(req.headers["ext"]);
+        if (!plugin) return res.status(404).send("Not Found");
+
+        const NewConfig = await this.configDelete(req.headers["ext"]);
+        const resultSaveConfig = await this.saveConfig(NewConfig);
+
+        console.log("[WEBSITE] Write config result:", resultSaveConfig);
+        if (resultSaveConfig.done) {
+          res.json(resultSaveConfig);
+          this.website.MMConfig = await this.readConfig();
+          this.website.EXTConfigured = this.searchConfigured();
+          console.log("[WEBSITE] Reload config");
+        } else if (resultSaveConfig.error) {
+          res.status(500).json({ error: resultSaveConfig.error });
+        }
+        break;
       default:
         console.warn("[WEBSITE] Don't find:", req.url);
         APIResult = {
