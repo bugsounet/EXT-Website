@@ -566,13 +566,6 @@ class website {
           else res.status(403).sendFile(`${this.WebsitePath}/403.html`);
         })
 
-
-        // to move to API
-        .get("/getWebviewTag", (req, res) => {
-          if (req.user) res.send(this.website.webviewTag);
-          else res.status(403).sendFile(`${this.WebsitePath}/403.html`);
-        })
-
         // to move to API
         .post("/setWebviewTag", async (req, res) => {
           if (!this.website.webviewTag && req.user) {
