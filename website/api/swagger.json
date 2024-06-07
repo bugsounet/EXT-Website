@@ -297,7 +297,7 @@
         }
       }
     },
-    "/api/EXT/all": {
+    "/api/EXT/list": {
       "get": {
         "tags": [
           "EXT"
@@ -314,7 +314,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref" : "#/components/schemas/EXTAll"
+                  "$ref" : "#/components/schemas/EXTList"
                 }
               }
             }
@@ -2210,7 +2210,7 @@
           }
         }
       },
-      "EXTAll" : {
+      "EXTList" : {
         "description": "Array of all available EXTs",
         "type": "array",
         "items": {

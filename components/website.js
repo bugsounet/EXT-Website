@@ -1827,7 +1827,7 @@ class website {
       case "/api/EXT/versions":
         res.json(this.website.EXTVersions);
         break;
-      case "/api/EXT/all":
+      case "/api/EXT/list":
         res.json(this.website.EXT);
         break;
       case "/api/EXT/installed":
