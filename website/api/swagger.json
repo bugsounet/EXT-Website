@@ -34,6 +34,10 @@
     {
       "name": "Configuration",
       "description": "MagicMirror² and EXTs configuration Tools"
+    },
+    {
+      "name": "Backup",
+      "description": "Manage backup"
     }
   ],
   "paths": {
@@ -220,6 +224,31 @@
               "text/html": {
                 "schema": {
                   "$ref": "#/components/schemas/401Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/stop": {
+      "post": {
+        "tags": [
+          "Tools"
+        ],
+        "summary": "Stop all EXTs running",
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "All EXTs are stopped",
+            "content": {
+              "application/json": {
+                "example": {
+                  "done" : "ok"
                 }
               }
             }

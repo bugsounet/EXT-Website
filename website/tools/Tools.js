@@ -535,12 +535,12 @@ async function doTools () {
   $("#Stop-Text").text(translation.Tools_Stop_Text);
   $("#Stop-Send").text(translation.Send);
   document.getElementById("Stop-Send").onclick = function () {
-    $.post("/EXT-StopQuery")
+    $.post("/api/stop")
       .done(function (back) {
-        if (back === "error") {
-          alertify.error(translation.Warn_Error);
-        } else {
+        if (back.done) {
           alertify.success(translation.RequestDone);
+        else {
+          alertify.error(translation.Warn_Error);
         }
       })
       .fail(function (err) {

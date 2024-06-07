@@ -520,16 +520,6 @@ class website {
           else res.status(403).sendFile(`${this.WebsitePath}/403.html`);
         })
 
-        // ????
-        .get("/EXTSaveConfig", (req, res) => {
-          if (req.user) {
-            if (!req.query.config) return res.status(404).sendFile(`${this.WebsitePath}/404.html`);
-            let data = req.query.config;
-            res.send(data);
-          }
-          else res.status(403).sendFile(`${this.WebsitePath}/403.html`);
-        })
-
         .get("/Tools", (req, res) => {
           if (req.user) res.sendFile(`${this.WebsitePath}/tools.html`);
           else res.status(403).sendFile(`${this.WebsitePath}/403.html`);
@@ -840,16 +830,6 @@ class website {
               noti: "EXT_RADIO-PLAY",
               payload: data
             });
-            res.send("ok");
-          }
-          else res.send("error");
-        })
-
-        // to move to API
-        .post("/EXT-StopQuery", (req, res) => {
-          if (req.user) {
-            this.sendSocketNotification("SendStop");
-            this.sendSocketNotification("SendNoti", "EXT_STOP");
             res.send("ok");
           }
           else res.send("error");
@@ -1915,6 +1895,11 @@ class website {
     var APIResult = {};
 
     switch (req.url) {
+      case "/api/stop":
+        this.sendSocketNotification("SendStop");
+        this.sendSocketNotification("SendNoti", "EXT_STOP");
+        res.json({ done: "ok" });
+        break;
       case "/api/system/restart":
         setTimeout(() => this.sendSocketNotification("SendNoti", "EXT_GATEWAY-Restart"), 1000);
         res.json({ done: "ok" });
