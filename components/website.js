@@ -1394,8 +1394,8 @@ class website {
   /** check plugin in config **/
   checkPluginInConfig (plugin) {
     let index = this.website.EXTConfigured.indexOf(plugin);
-    if (index > -1) return true
-    else return false
+    if (index > -1) return true;
+    else return false;
   }
 
   /** delete plugins config **/
@@ -1910,7 +1910,7 @@ class website {
       case "/api/config/EXT":
         console.log("[WEBSITE] Receiving write EXT config...");
         if (!req.headers["ext"] || !req.headers["config"]) return res.status(400).send("Bad Request");
-        const plugin = this.checkPluginInConfig(req.headers["ext"])
+        const plugin = this.checkPluginInConfig(req.headers["ext"]);
         if (!plugin) {
           return res.status(404).send("Not Found");
         }
