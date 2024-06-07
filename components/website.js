@@ -503,35 +503,6 @@ class website {
           else res.status(403).sendFile(`${this.WebsitePath}/403.html`);
         })
 
-        // to move to API
-        .get("/EXTDelete", (req, res) => {
-          if (req.user) {
-            var ip = req.headers["x-forwarded-for"] || req.connection.remoteAddress;
-            if (req.query.EXT && this.website.EXTInstalled.indexOf(req.query.EXT) > -1 && this.website.EXT.indexOf(req.query.EXT) > -1) {
-              console.log(`[WEBSITE] [${ip}] Request delete:`, req.query.EXT);
-              var result = {
-                error: false
-              };
-              var modulePath = `${this.root_path}/modules/`;
-              var Command = `cd ${modulePath} && rm -rfv ${req.query.EXT}`;
-              var child = exec(Command, { cwd: modulePath }, (error, stdout, stderr) => {
-                if (error) {
-                  result.error = true;
-                  console.error("[WEBSITE] [DELETE] [FATAL] exec error:", error);
-                } else {
-                  this.website.EXTInstalled = this.searchInstalled();
-                  console.log("[WEBSITE] [DELETE] [DONE]", req.query.EXT);
-                }
-                res.json(result);
-              });
-              child.stdout.pipe(process.stdout);
-              child.stderr.pipe(process.stdout);
-            }
-            else res.status(404).sendFile(`${this.WebsitePath}/404.html`);
-          }
-          else res.status(403).sendFile(`${this.WebsitePath}/403.html`);
-        })
-
         .get("/MMConfig", (req, res) => {
           if (req.user) res.sendFile(`${this.WebsitePath}/mmconfig.html`);
           else res.status(403).sendFile(`${this.WebsitePath}/403.html`);
@@ -1939,7 +1910,7 @@ class website {
     }
   }
 
-  /** Website DELETE API **/
+  /** Website POST API **/
   async PostAPI (req, res) {
     var APIResult = {};
 
@@ -1992,6 +1963,31 @@ class website {
           console.log("[WEBSITE] Reload config");
         } else if (resultSaveConfig.error) {
           res.status(500).json({ error: resultSaveConfig.error });
+        }
+        break;
+      case "/api/EXT/delete":
+        console.log("[WEBSITE] Receiving delete EXT...");
+        if (!req.headers["ext"]) return res.status(400).send("Bad Request");
+        const pluginName = req.headers["ext"]
+        if (this.website.EXTInstalled.indexOf(pluginName) > -1 && this.website.EXT.indexOf(pluginName) > -1) {
+          console.log(`[WEBSITE] Request delete:`, pluginName);
+          var modulePath = `${this.root_path}/modules/`;
+          var Command = `cd ${modulePath} && rm -rfv ${pluginName}`;
+          var child = exec(Command, { cwd: modulePath }, (error, stdout, stderr) => {
+            if (error) {
+              console.error("[WEBSITE] [DELETE] [FATAL] exec error:", error);
+              res.status(500).json({ error: `Error on delete ${pluginName}` });
+            } else {
+              this.website.EXTInstalled = this.searchInstalled();
+              console.log("[WEBSITE] [DELETE] [DONE]", pluginName);
+              res.json({ done: "ok" });
+            }
+          });
+          child.stdout.pipe(process.stdout);
+          child.stderr.pipe(process.stdout);
+        } else {
+          console.log(`[WEBSITE] [DELETE] EXT Not Found: ${pluginName}`)
+          res.status(404).send("Not Found");
         }
         break;
       default:

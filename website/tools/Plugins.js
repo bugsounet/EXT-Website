@@ -130,16 +130,27 @@ function doDelete () {
   document.getElementById("delete").onclick = function () {
     $("#messageText").text(translation.Plugins_Delete_Progress);
     $("#delete").addClass("disabled");
-    return new Promise((resolve) => {
-      $.getJSON(`/EXTDelete?EXT=${EXT}`, (res) => {
-        if (!res.error) $("#messageText").text(translation.Plugins_Delete_Confirmed);
-        else $("#messageText").text(translation.Warn_Error);
-        resolve();
+
+    $.ajax({
+      url: "/api/EXT/delete",
+      type: "DELETE",
+      headers: { "ext": EXT },
+      success: function (back) {
+        if (back.done) {
+          $("#messageText").text(translation.Plugins_Delete_Confirmed);
+        } else {
+          $("#messageText").text(translation.Warn_Error);
+        }
         setTimeout(() => socketDelete.close(), 500);
-      })
-        .fail(function (err) {
+      },
+      error: function (request,msg,err) {
+        $("#messageText").text(translation.Warn_Error);
+        if (err.status) {
           alertify.error(`[doDelete] Server return Error ${err.status} (${err.statusText})`);
-        });
+        } else {
+          alertify.error(`[doDelete] Server return Error: ${err}`);
+        }
+      }
     });
   };
 }
