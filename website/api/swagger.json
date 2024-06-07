@@ -12,8 +12,8 @@
   ],
   "tags": [
     {
-      "name": "Test",
-      "description": "Testing tool"
+      "name": "Tools",
+      "description": "Helper Tools"
     },
     {
       "name": "Authentification",
@@ -28,8 +28,8 @@
       "description": "EXTs Tools"
     },
     {
-      "name": "Tools",
-      "description": "Helper Tools"
+      "name": "System",
+      "description": "System Tools"
     },
     {
       "name": "Configuration",
@@ -40,7 +40,7 @@
     "/api": {
       "get": {
         "tags": [
-          "Test"
+          "Tools"
         ],
         "summary": "Test API path",
         "responses": {
@@ -227,12 +227,12 @@
         }
       }
     },
-    "/api/sysInfo": {
+    "/api/system/sysInfo": {
       "get": {
         "tags": [
-          "Tools"
+          "System"
         ],
-        "summary": "Returns system information of current device",
+        "summary": "Returns system informations of current device",
         "security": [
           {
             "Bearer": []
