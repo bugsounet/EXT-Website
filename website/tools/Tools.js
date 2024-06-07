@@ -539,7 +539,7 @@ async function doTools () {
       .done(function (back) {
         if (back.done) {
           alertify.success(translation.RequestDone);
-        else {
+        } else {
           alertify.error(translation.Warn_Error);
         }
       })
