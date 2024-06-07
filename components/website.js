@@ -1968,9 +1968,9 @@ class website {
       case "/api/EXT/delete":
         console.log("[WEBSITE] Receiving delete EXT...");
         if (!req.headers["ext"]) return res.status(400).send("Bad Request");
-        const pluginName = req.headers["ext"]
+        const pluginName = req.headers["ext"];
         if (this.website.EXTInstalled.indexOf(pluginName) > -1 && this.website.EXT.indexOf(pluginName) > -1) {
-          console.log(`[WEBSITE] Request delete:`, pluginName);
+          console.log("[WEBSITE] Request delete:", pluginName);
           var modulePath = `${this.root_path}/modules/`;
           var Command = `cd ${modulePath} && rm -rfv ${pluginName}`;
           var child = exec(Command, { cwd: modulePath }, (error, stdout, stderr) => {
@@ -1986,7 +1986,7 @@ class website {
           child.stdout.pipe(process.stdout);
           child.stderr.pipe(process.stdout);
         } else {
-          console.log(`[WEBSITE] [DELETE] EXT Not Found: ${pluginName}`)
+          console.log(`[WEBSITE] [DELETE] EXT Not Found: ${pluginName}`);
           res.status(404).send("Not Found");
         }
         break;
