@@ -453,6 +453,7 @@ class website {
           else res.status(403).sendFile(`${this.WebsitePath}/403.html`);
         })
 
+        // to move to API
         .get("/EXTInstall", (req, res) => {
           if (req.user) {
             var ip = req.headers["x-forwarded-for"] || req.connection.remoteAddress;
@@ -502,6 +503,7 @@ class website {
           else res.status(403).sendFile(`${this.WebsitePath}/403.html`);
         })
 
+        // to move to API
         .get("/EXTDelete", (req, res) => {
           if (req.user) {
             var ip = req.headers["x-forwarded-for"] || req.connection.remoteAddress;
@@ -587,6 +589,7 @@ class website {
           else res.status(403).sendFile(`${this.WebsitePath}/403.html`);
         })
 
+        // to move to API
         .post("/writeEXT", async (req, res) => {
           if (req.user) {
             console.log("[WEBSITE] Receiving EXT data ...");
@@ -603,6 +606,7 @@ class website {
           } else res.status(403).sendFile(`${this.WebsitePath}/403.html`);
         })
 
+        // to move to API
         .post("/deleteEXT", async (req, res) => {
           if (req.user) {
             console.log("[WEBSITE] Receiving EXT data ...", req.body);
@@ -665,6 +669,7 @@ class website {
           else res.status(403).sendFile(`${this.WebsitePath}/403.html`);
         })
 
+        // to move to API
         .get("/GetBackupName", async (req, res) => {
           if (req.user) {
             var names = await this.loadBackupNames();
@@ -673,6 +678,7 @@ class website {
           else res.status(403).sendFile(`${this.WebsitePath}/403.html`);
         })
 
+        // to move to API
         .get("/GetBackupFile", async (req, res) => {
           if (req.user) {
             let data = req.query.config;
@@ -682,6 +688,7 @@ class website {
           else res.status(403).sendFile(`${this.WebsitePath}/403.html`);
         })
 
+        // to move to API
         .get("/GetRadioStations", (req, res) => {
           if (req.user) {
             if (!this.website.radio) return res.status(404).sendFile(`${this.WebsitePath}/404.html`);
@@ -691,6 +698,7 @@ class website {
           else res.status(403).sendFile(`${this.WebsitePath}/403.html`);
         })
 
+        // to move to API
         .post("/loadBackup", async (req, res) => {
           if (req.user) {
             console.log("[WEBSITE] Receiving backup data ...");
@@ -706,11 +714,13 @@ class website {
           } else res.status(403).sendFile(`${this.WebsitePath}/403.html`);
         })
 
+        // to move to API
         .get("/getWebviewTag", (req, res) => {
           if (req.user) res.send(this.website.webviewTag);
           else res.status(403).sendFile(`${this.WebsitePath}/403.html`);
         })
 
+        // to move to API
         .post("/setWebviewTag", async (req, res) => {
           if (!this.website.webviewTag && req.user) {
             console.log("[WEBSITE] Receiving setWebviewTag demand...");
@@ -727,6 +737,7 @@ class website {
           else res.status(403).sendFile(`${this.WebsitePath}/403.html`);
         })
 
+        // to move to API
         .get("/getGAVersion", (req, res) => {
           if (req.user) {
             if (this.website.EXTStatus.GA_Ready) this.website.GACheck.ready = true;
@@ -735,6 +746,7 @@ class website {
           else res.status(403).sendFile(`${this.WebsitePath}/403.html`);
         })
 
+        // to move to API
         .post("/EXT-Screen", (req, res) => {
           if (req.user) {
             let data = req.body.data;
@@ -751,6 +763,7 @@ class website {
           else res.send("error");
         })
 
+        // to move to API
         .post("/EXT-GAQuery", (req, res) => {
           if (req.user) {
             let data = req.body.data;
@@ -764,6 +777,7 @@ class website {
           else res.send("error");
         })
 
+        // to move to API
         .post("/EXT-AlertQuery", (req, res) => {
           if (req.user) {
             let data = req.body.data;
@@ -784,6 +798,7 @@ class website {
           else res.send("error");
         })
 
+        // to move to API
         .post("/EXT-VolumeSendSpeaker", (req, res) => {
           if (req.user) {
             let data = req.body.data;
@@ -797,6 +812,7 @@ class website {
           else res.send("error");
         })
 
+        // to move to API
         .post("/EXT-VolumeSendRecorder", (req, res) => {
           if (req.user) {
             let data = req.body.data;
@@ -810,6 +826,7 @@ class website {
           else res.send("error");
         })
 
+        // to move to API
         .post("/EXT-SpotifyQuery", (req, res) => {
           if (req.user) {
             let result = req.body.data;
@@ -831,6 +848,7 @@ class website {
           else res.send("error");
         })
 
+        // to move to API
         .post("/EXT-SpotifyPlay", (req, res) => {
           if (req.user) {
             this.sendSocketNotification("SendNoti", "EXT_SPOTIFY-PLAY");
@@ -847,6 +865,7 @@ class website {
           else res.send("error");
         })
 
+        // to move to API
         .post("/EXT-SpotifyNext", (req, res) => {
           if (req.user) {
             this.sendSocketNotification("SendNoti", "EXT_SPOTIFY-NEXT");
@@ -855,6 +874,7 @@ class website {
           else res.send("error");
         })
 
+        // to move to API
         .post("/EXT-SpotifyPrevious", (req, res) => {
           if (req.user) {
             this.sendSocketNotification("SendNoti", "EXT_SPOTIFY-PREVIOUS");
@@ -863,6 +883,7 @@ class website {
           else res.send("error");
         })
 
+        // to move to API
         .post("/EXT-Updates", (req, res) => {
           if (req.user) {
             this.sendSocketNotification("SendNoti", "EXT_UPDATES-UPDATE");
@@ -871,6 +892,7 @@ class website {
           else res.send("error");
         })
 
+        // to move to API
         .post("/EXT-YouTubeQuery", (req, res) => {
           if (req.user) {
             let data = req.body.data;
@@ -888,6 +910,7 @@ class website {
           else res.send("error");
         })
 
+        // to move to API
         .post("/EXT-FreeboxTVQuery", (req, res) => {
           if (this.website.freeTV && req.user) {
             let data = req.body.data;
@@ -901,6 +924,7 @@ class website {
           else res.send("error");
         })
 
+        // to move to API
         .post("/EXT-RadioQuery", (req, res) => {
           if (req.user) {
             let data = req.body.data;
@@ -914,6 +938,7 @@ class website {
           else res.send("error");
         })
 
+        // to move to API
         .post("/EXT-StopQuery", (req, res) => {
           if (req.user) {
             this.sendSocketNotification("SendStop");
@@ -923,6 +948,7 @@ class website {
           else res.send("error");
         })
 
+        // to move to API
         .post("/deleteBackup", async (req, res) => {
           if (req.user) {
             console.log("[WEBSITE] Receiving delete backup demand...");
@@ -933,6 +959,7 @@ class website {
           else res.status(403).sendFile(`${this.WebsitePath}/403.html`);
         })
 
+        // to move to API
         .post("/readExternalBackup", async (req, res) => {
           if (req.user) {
             let data = req.body.data;
@@ -944,6 +971,7 @@ class website {
           else res.status(403).sendFile(`${this.WebsitePath}/403.html`);
         })
 
+        // to move to API
         .post("/saveExternalBackup", async (req, res) => {
           if (req.user) {
             let data = req.body.data;
