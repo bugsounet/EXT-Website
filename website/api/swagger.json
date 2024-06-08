@@ -247,8 +247,8 @@
             "description": "All EXTs are stopped",
             "content": {
               "application/json": {
-                "example": {
-                  "done" : "ok"
+                "schema": {
+                  "$ref": "#/components/schemas/Result200"
                 }
               }
             }
@@ -317,8 +317,8 @@
             "description": "Restart in progress",
             "content": {
               "application/json": {
-                "example": {
-                  "done" : "ok"
+                "schema": {
+                  "$ref": "#/components/schemas/Result200"
                 }
               }
             }
@@ -352,8 +352,8 @@
             "description": "Close in progress",
             "content": {
               "application/json": {
-                "example": {
-                  "done" : "ok"
+                "schema": {
+                  "$ref": "#/components/schemas/Result200"
                 }
               }
             }
@@ -387,8 +387,8 @@
             "description": "Reboot in progress",
             "content": {
               "application/json": {
-                "example": {
-                  "done" : "ok"
+                "schema": {
+                  "$ref": "#/components/schemas/Result200"
                 }
               }
             }
@@ -422,8 +422,8 @@
             "description": "Shutdown in progress",
             "content": {
               "application/json": {
-                "example": {
-                  "done" : "ok"
+                "schema": {
+                  "$ref": "#/components/schemas/Result200"
                 }
               }
             }
@@ -679,7 +679,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Config200"
+                  "$ref": "#/components/schemas/EXT200"
                 }
               }
             }
@@ -755,7 +755,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Config200"
+                  "$ref": "#/components/schemas/EXT200"
                 }
               }
             }
@@ -2341,6 +2341,32 @@
         "example": {
           "done": "ok",
           "backup": "config.js.GA.20240608-09:58:25"
+        }
+      },
+      "EXT200": {
+        "type": "object",
+        "description": "Configuration updated sucessfully",
+        "properties": {
+          "done": {
+            "type": "string",
+            "description": "send state"
+          }
+        },
+        "example": {
+          "done": "ok"
+        }
+      },
+      "Result200": {
+        "type": "object",
+        "description": "Command executed sucessfully",
+        "properties": {
+          "done": {
+            "type": "string",
+            "description": "send state"
+          }
+        },
+        "example": {
+          "done": "ok"
         }
       },
       "sysInfo": {
