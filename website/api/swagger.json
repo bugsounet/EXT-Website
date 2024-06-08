@@ -231,10 +231,10 @@
         }
       }
     },
-    "/api/stop": {
+    "/api/EXT/stop": {
       "post": {
         "tags": [
-          "Tools"
+          "EXT"
         ],
         "summary": "Stop all EXTs running",
         "security": [

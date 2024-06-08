@@ -544,7 +544,7 @@ async function doTools () {
   $("#Stop-Text").text(translation.Tools_Stop_Text);
   $("#Stop-Send").text(translation.Send);
   document.getElementById("Stop-Send").onclick = function () {
-    $.post("/api/stop")
+    $.post("/api/EXT/stop")
       .done(function (back) {
         if (back.done) {
           alertify.success(translation.RequestDone);

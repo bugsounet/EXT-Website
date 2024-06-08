@@ -1915,7 +1915,7 @@ class website {
     var APIResult = {};
 
     switch (req.url) {
-      case "/api/stop":
+      case "/api/EXT/stop":
         this.sendSocketNotification("SendStop");
         this.sendSocketNotification("SendNoti", "EXT_STOP");
         res.json({ done: "ok" });
