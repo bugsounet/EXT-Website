@@ -1133,9 +1133,10 @@ class website {
   /** Save MagicMirror config with backup **/
   saveConfig (MMConfig) {
     return new Promise((resolve) => {
-      var configPath = `${this.root_path}/config/config.js`;
-      var configPathTMP = `${this.root_path}/config/configTMP.js`;
-      let backupPath = `${this.WebsiteModulePath}/backup/config.js.GA.${this.timeStamp()}`;
+      const configPath = `${this.root_path}/config/config.js`;
+      const configPathTMP = `${this.root_path}/config/configTMP.js`;
+      const backupFile = `config.js.GA.${this.timeStamp()}`
+      const backupPath = `${this.WebsiteModulePath}/backup/${backupFile}`;
       var source = fs.createReadStream(configPath);
       var destination = fs.createWriteStream(backupPath);
 
@@ -1190,7 +1191,11 @@ class website {
                   resolve({ error: "Error when deleting file" });
                   return console.error("[WEBSITE] [DELETE] error", err);
                 }
-                resolve({ done: "ok" }); // !! ALL is ok !!
+                // !! ALL is ok !!
+                resolve({
+                  done: "ok",
+                  backup: backupFile
+                });
               });
             });
           }
@@ -1701,6 +1706,14 @@ class website {
     var APIResult = {};
 
     switch (req.url) {
+      case "/api/version":
+        APIResult = await this.searchVersion();
+        if (APIResult.error) {
+          res.status(206).json(APIResult);
+        } else {
+          res.json(APIResult);
+        }
+        break;
       case "/api/translations/common":
         res.json(this.website.translation);
         break;
@@ -1709,14 +1722,6 @@ class website {
           homeText: this.website.homeText
         };
         res.json(APIResult);
-        break;
-      case "/api/version":
-        APIResult = await this.searchVersion();
-        if (APIResult.error) {
-          res.status(206).json(APIResult);
-        } else {
-          res.json(APIResult);
-        }
         break;
       case "/api/system/sysInfo":
         this.website.systemInformation.result = await this.website.systemInformation.lib.Get();
@@ -1774,7 +1779,7 @@ class website {
           res.status(404).send("Not Found");
         }
         break;
-      case "/api/webview":
+      case "/api/config/webview":
         res.json({ webview: this.website.webviewTag });
         break;
       default:
@@ -1845,6 +1850,25 @@ class website {
           console.log("[WEBSITE] Reload config");
         } else if (resultSaveConfig.error) {
           res.status(500).json({ error: resultSaveConfig.error });
+        }
+        break;
+      case "/api/config/webview":
+        if (!this.website.webviewTag) {
+          console.log("[WEBSITE] Receiving set webview...");
+          let NewConfig = await this.setWebviewTag();
+          var resultSaveConfig = await this.saveConfig(NewConfig);
+          console.log("[WEBSITE] Write webview config result:", resultSaveConfig);
+          if (resultSaveConfig.done) {
+            res.json(resultSaveConfig);
+            this.website.webviewTag = true;
+            this.website.MMConfig = await this.readConfig();
+            console.log("[WEBSITE] Reload config");
+          } else if (resultSaveConfig.error) {
+            res.status(500).json({ error: resultSaveConfig.error });
+          }
+        } else {
+          console.log(`[WEBSITE] Already activated`);
+          res.status(400).send("Already activated");
         }
         break;
       case "/api/EXT/install":

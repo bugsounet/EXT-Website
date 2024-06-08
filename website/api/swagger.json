@@ -1,5 +1,5 @@
 {
-  "openapi": "3.0.3",
+  "openapi": "3.0.0",
   "info": {
     "description": "Control MMM-GoogleAssistant from API",
     "version": "1.0.0",
@@ -249,41 +249,6 @@
               "application/json": {
                 "example": {
                   "done" : "ok"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Missing valid authentication token",
-            "content": {
-              "text/html": {
-                "schema": {
-                  "$ref": "#/components/schemas/401Error"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/webview": {
-      "get": {
-        "tags": [
-          "Tools"
-        ],
-        "summary": "Inspect actual MagicMirror² webview electron configuration option",
-        "security": [
-          {
-            "Bearer": []
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Send result if webview is activated in MagicMirror² configuration",
-            "content": {
-              "application/json": {
-                "example": {
-                  "webview" : false
                 }
               }
             }
@@ -1268,6 +1233,84 @@
               "text/html": {
                 "schema": {
                   "$ref": "#/components/schemas/Config404Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/config/webview": {
+      "get": {
+        "tags": [
+          "Configuration"
+        ],
+        "summary": "Inspect actual MagicMirror² webview electron configuration option",
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Send result if webview is activated in MagicMirror² configuration",
+            "content": {
+              "application/json": {
+                "example": {
+                  "webview" : false
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing valid authentication token",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "$ref": "#/components/schemas/401Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Configuration"
+        ],
+        "summary": "Set webview electron configuration option",
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Send result if webview is activated in MagicMirror² configuration",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Config200"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Webview option already set",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "$ref": "#/components/schemas/Config400Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing valid authentication token",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "$ref": "#/components/schemas/401Error"
                 }
               }
             }
@@ -2289,10 +2332,15 @@
           "done": {
             "type": "string",
             "description": "send state"
+          },
+          "backup": {
+            "type": "string",
+            "description": "backup file name"
           }
         },
         "example": {
-          "done": "ek"
+          "done": "ok",
+          "backup": "config.js.GA.20240608-09:58:25"
         }
       },
       "sysInfo": {

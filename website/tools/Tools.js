@@ -97,21 +97,30 @@ async function doTools () {
     if (displayNeeded) $("#webview-Box").css("display", "block");
 
     document.getElementById("webviewbtn-Apply").onclick = function () {
-      $.post("/setWebviewTag")
-        .done(function (back) {
-          if (back.error) {
-            $("#webviewbtn-Apply").css("display", "none");
-            $("#webviewbtn-Error").css("display", "inline-block");
-            alertify.success(back.error);
-          } else {
+      $.ajax({
+        url: "/api/config/webview",
+        type: "PUT",
+        success: function (back) {
+          if (back.done) {
             $("#webviewbtn-Apply").css("display", "none");
             $("#webviewbtn-Done").css("display", "inline-block");
             alertify.success(translation.Restart);
+          } else {
+            $("#webviewbtn-Apply").css("display", "none");
+            $("#webviewbtn-Error").css("display", "inline-block");
+            alertify.success(back.error);
           }
-        })
-        .fail(function (err) {
-          alertify.error(`[WebviewTag] Server return Error ${err.status} (${err.statusText})`);
-        });
+        },
+        error: function (request,msg,err) {
+          $("#webviewbtn-Apply").css("display", "none");
+          $("#webviewbtn-Error").css("display", "inline-block");
+          if (err.status) {
+            alertify.error(`[WebviewTag] Server return Error ${err.status} (${err.statusText})`);
+          } else {
+            alertify.error(`[WebviewTag] Server return Error: ${err}`);
+          }
+        }
+      });
     };
 
     document.getElementById("webviewbtn-Done").onclick = function () {

@@ -39,7 +39,7 @@ function checkSystem () {
 
 function checkWebviewTag () {
   return new Promise((resolve) => {
-    $.getJSON("/api/webview", (tag) => {
+    $.getJSON("/api/config/webview", (tag) => {
       //console.log("webviewTag", tag)
       resolve(tag.webview);
     })
