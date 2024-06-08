@@ -1135,7 +1135,7 @@ class website {
     return new Promise((resolve) => {
       const configPath = `${this.root_path}/config/config.js`;
       const configPathTMP = `${this.root_path}/config/configTMP.js`;
-      const backupFile = `config.js.GA.${this.timeStamp()}`
+      const backupFile = `config.js.GA.${this.timeStamp()}`;
       const backupPath = `${this.WebsiteModulePath}/backup/${backupFile}`;
       var source = fs.createReadStream(configPath);
       var destination = fs.createWriteStream(backupPath);
@@ -1867,7 +1867,7 @@ class website {
             res.status(500).json({ error: resultSaveConfig.error });
           }
         } else {
-          console.log(`[WEBSITE] Already activated`);
+          console.log("[WEBSITE] Already activated");
           res.status(400).send("Already activated");
         }
         break;
