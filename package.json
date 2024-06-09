@@ -35,6 +35,7 @@
     "express-session": "^1.18.0",
     "glob": "^10.4.1",
     "http-proxy-middleware": "^3.0.0",
+    "jquery": "^3.7.1",
     "jsoneditor": "^10.0.3",
     "node-pty": "^1.0.0",
     "passport": "^0.7.0",

@@ -336,6 +336,7 @@ class website {
         .use("/jsoneditor", express.static(`${this.WebsiteModulePath}/node_modules/jsoneditor`))
         .use("/xterm", express.static(`${this.WebsiteModulePath}/node_modules/xterm`))
         .use("/xterm-addon-fit", express.static(`${this.WebsiteModulePath}/node_modules/xterm-addon-fit`))
+        .use("/jquery.min.js", express.static(`${this.WebsiteModulePath}/node_modules/jquery/dist/jquery.min.js`))
 
         .get("/", (req, res) => {
           if (req.user) res.sendFile(`${this.WebsitePath}/index.html`);
