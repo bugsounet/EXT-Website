@@ -794,15 +794,6 @@ class website {
         })
 
         // to move to API
-        .get("/GetBackupName", async (req, res) => {
-          if (req.user) {
-            var names = await this.loadBackupNames();
-            res.send(names);
-          }
-          else res.status(403).sendFile(`${this.WebsitePath}/403.html`);
-        })
-
-        // to move to API
         .get("/GetBackupFile", async (req, res) => {
           if (req.user) {
             let data = req.query.config;
@@ -825,17 +816,6 @@ class website {
               console.log("[WEBSITE] Reload config");
             }
           } else res.status(403).sendFile(`${this.WebsitePath}/403.html`);
-        })
-
-        // to move to API
-        .post("/deleteBackup", async (req, res) => {
-          if (req.user) {
-            console.log("[WEBSITE] Receiving delete backup demand...");
-            var deleteBackup = await this.deleteBackup();
-            console.log("[WEBSITE] Delete backup result:", deleteBackup);
-            res.send(deleteBackup);
-          }
-          else res.status(403).sendFile(`${this.WebsitePath}/403.html`);
         })
 
         // to move to API
@@ -2007,6 +1987,12 @@ class website {
           console.log(`[WEBSITE] [DELETE] EXT Not Found: ${pluginName}`);
           res.status(404).send("Not Found");
         }
+        break;
+      case "/api/backup/delete":
+        console.log("[WEBSITE] Receiving delete backup demand...");
+        let deleteBackup = await this.deleteBackup();
+        console.log("[WEBSITE] Delete backup result:", deleteBackup);
+        res.json(deleteBackup);
         break;
       default:
         console.warn("[WEBSITE] Don't find:", req.url);

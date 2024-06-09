@@ -56,8 +56,10 @@ async function doTools () {
     $("#backup-Box").css("display", "block");
 
     document.getElementById("backup-Delete").onclick = function () {
-      $.post("/deleteBackup")
-        .done(function (back) {
+      $.ajax({
+        url: "/api/backup/delete",
+        type: "DELETE",
+        success: function (back) {
           if (back.error) {
             $("#backup-Delete").css("display", "none");
             $("#backup-Error").css("display", "inline-block");
@@ -66,12 +68,18 @@ async function doTools () {
             $("#backup-Delete").css("display", "none");
             $("#backup-Done").css("display", "inline-block");
             alertify.success(translation.Tools_Backup_Deleted);
-            back.error;
           }
-        })
-        .fail(function (err) {
-          alertify.error(`[Delete] Server return Error ${err.status} (${err.statusText})`);
-        });
+        },
+        error: function (request,msg,err) {
+          $("#backup-Delete").css("display", "none");
+          $("#backup-Error").css("display", "inline-block");
+          if (err.status) {
+            alertify.error(`[backup-Delete] Server return Error ${err.status} (${err.statusText})`);
+          } else {
+            alertify.error(`[backup-Delete] Server return Error: ${err}`);
+          }
+        }
+      });
     };
 
     document.getElementById("backup-Done").onclick = function () {

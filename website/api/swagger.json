@@ -1361,6 +1361,41 @@
           }
         }
       }
+    },
+    "/api/backup/delete": {
+      "delete": {
+        "tags": [
+          "Backup"
+        ],
+        "summary": "Delete all available backup collection",
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Backup Delete confirmation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref" : "#/components/schemas/Result200"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing valid authentication token",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "$ref": "#/components/schemas/401Error"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
