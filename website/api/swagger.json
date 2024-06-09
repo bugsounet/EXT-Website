@@ -1326,6 +1326,41 @@
           }
         }
       }
+    },
+    "/api/backup/list": {
+      "get": {
+        "tags": [
+          "Backup"
+        ],
+        "summary": "Returns available backup collection",
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Sends all available backup",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref" : "#/components/schemas/BackupList"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing valid authentication token",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "$ref": "#/components/schemas/401Error"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -3461,6 +3496,56 @@
             "description": "True when MMM-GoogleAssistant is iniatilized"
           }
         }
+      },
+      "BackupList" : {
+        "description": "Array of all available backups",
+        "type": "array",
+        "items": {
+          "type" : "string"
+        },
+        "example": [
+          "config.js.GA.20240610-00:15:37",
+          "config.js.GA.20240610-00:13:35",
+          "config.js.GA.20240610-00:13:06",
+          "config.js.GA.20240610-00:01:55",
+          "config.js.GA.20240609-15:50:15",
+          "config.js.GA.20240609-14:45:16",
+          "config.js.GA.20240609-14:22:22",
+          "config.js.GA.20240609-14:21:50",
+          "config.js.GA.20240609-14:14:42",
+          "config.js.GA.20240609-14:13:35",
+          "config.js.GA.20240609-14:11:01",
+          "config.js.GA.20240609-14:07:50",
+          "config.js.GA.20240609-13:39:19",
+          "config.js.GA.20240608-15:22:10",
+          "config.js.GA.20240608-15:03:54",
+          "config.js.GA.20240608-15:02:25",
+          "config.js.GA.20240608-14:43:54",
+          "config.js.GA.20240608-14:30:41",
+          "config.js.GA.20240608-14:30:17",
+          "config.js.GA.20240608-10:14:32",
+          "config.js.GA.20240608-10:13:38",
+          "config.js.GA.20240608-09:58:25",
+          "config.js.GA.20240608-09:51:43",
+          "config.js.GA.20240608-09:30:52",
+          "config.js.GA.20240607-13:41:49",
+          "config.js.GA.20240607-13:29:38",
+          "config.js.GA.20240607-04:39:42",
+          "config.js.GA.20240607-04:11:13",
+          "config.js.GA.20240607-04:09:42",
+          "config.js.GA.20240607-03:22:50",
+          "config.js.GA.20240607-03:17:10",
+          "config.js.GA.20240607-03:16:53",
+          "config.js.GA.20240607-03:14:44",
+          "config.js.GA.20240607-03:12:29",
+          "config.js.GA.20240607-03:09:23",
+          "config.js.GA.20240606-18:34:05",
+          "config.js.GA.20240606-18:32:18",
+          "config.js.GA.20240606-18:23:46",
+          "config.js.GA.20240606-18:19:02",
+          "config.js.GA.20240606-18:17:42",
+          "config.js.GA.20240605-18:05:14"
+        ]
       }
     }
   }
