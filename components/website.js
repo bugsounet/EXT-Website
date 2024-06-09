@@ -1769,7 +1769,7 @@ class website {
         if (!req.headers["ext"]) return res.status(400).send("Bad Request");
         try {
           let data = require(`../website/config/${req.headers["ext"]}/config.js`);
-          let stringify = JSON.stringify(data);
+          let stringify = JSON.stringify(data.default);
           let encoded = btoa(stringify);
           res.json({ config: encoded });
         } catch (e) {
