@@ -148,11 +148,12 @@ async function EditMMConfigJSEditor () {
     let data = editor.get();
     $("#save").css("display", "none");
     $("#wait").css("display", "block");
+    let encode = btoa(JSON.stringify(data));
 
     $.ajax({
       url: "/api/config/MM",
       type: "PUT",
-      headers: { "config": JSON.stringify(data) },
+      headers: { "config": encode },
       success: function (back) {
         if (back.error) {
           $("#wait").css("display", "none");

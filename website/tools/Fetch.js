@@ -164,9 +164,14 @@ function loadDataDescriptionEXT () {
 
 function loadMMConfig () {
   return new Promise((resolve) => {
-    $.getJSON("/api/config/MM", (config) => {
-      //console.log("MMConfig", config)
-      resolve(config);
+    $.getJSON("/api/config/MM", (response) => {
+      try {
+        let parse = atob(response.config);
+        let config = JSON.parse(parse);
+        resolve(config);
+      } catch (e) {
+        alertify.error("[loadMMConfig] Error on decode server response");
+      }
     })
       .fail(function (err) {
         if (!err.status) alertify.error("Connexion Lost!");
@@ -208,7 +213,7 @@ function loadPluginTemplate (plugin) {
             let schema = JSON.parse(parse);
             resolve(schema);
           } catch (e) {
-            alertify.warning("[loadPluginTemplate] Error on decode server response");
+            alertify.error("[loadPluginTemplate] Error on decode server response");
           }
         },
         error: function(err) {

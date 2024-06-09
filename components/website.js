@@ -1729,7 +1729,9 @@ class website {
         res.json(this.website.EXTStatus);
         break;
       case "/api/config/MM":
-        res.json(this.website.MMConfig);
+        let stringify = JSON.stringify(this.website.MMConfig);
+        let encoded = btoa(stringify);
+        res.json({ config: encoded });
         break;
       case "/api/config/EXT":
         //console.log("--->", req.headers['ext'])
@@ -1788,8 +1790,8 @@ class website {
         if (!req.headers["config"]) return res.status(400).send("Bad Request");
         var resultSaveConfig = {};
         try  {
-          const dataConfig = JSON.parse(req.headers["config"]);
-          resultSaveConfig = await this.saveConfig(dataConfig);
+          let decoded = JSON.parse(atob(req.headers["config"]));
+          resultSaveConfig = await this.saveConfig(decoded);
         } catch (e) {
           console.log("[WEBSITE] Request error", e.message);
           res.status(400).send("Bad Request");
