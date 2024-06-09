@@ -986,17 +986,19 @@
             "schema": {
               "type": "string"
             }
-          },
-          {
-            "name": "config",
-            "in": "header",
-            "description": "New config of the EXT (JSON string format)",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
           }
         ],
+        "requestBody": {
+          "description" : "Send new base64 encoded config in config key",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SendConfig"
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "Configuration of the EXT updated successfully",
@@ -2325,7 +2327,7 @@
         "properties": {
           "config": {
             "type": "string",
-            "description": "Encoded configuration in base64",
+            "description": "Encoded configuration in base64"
           }
         },
         "example": {

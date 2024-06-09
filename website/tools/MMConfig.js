@@ -150,45 +150,6 @@ async function EditMMConfigJSEditor () {
     $("#wait").css("display", "block");
     let encode = btoa(JSON.stringify(data));
 
-/*
-    fetch("/api/config/MM", {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json"
-        //"config": encode
-      }
-    })
-      .then(data => data.json())
-      .then(response => {
-        if (response.error) {
-          $("#wait").css("display", "none");
-          $("#error").css("display", "block");
-          $("#alert").removeClass("invisible");
-          $("#alert").removeClass("alert-success");
-          $("#alert").addClass("alert-danger");
-          $("#messageText").text(back.error);
-        } else {
-          $("#wait").css("display", "none");
-          $("#done").css("display", "block");
-          $("#alert").removeClass("invisible");
-          $("#messageText").text(translation.Restart);
-        }
-      })
-      .catch (err => {
-        $("#wait").css("display", "none");
-        $("#error").css("display", "block");
-        $("#alert").removeClass("invisible");
-        $("#alert").removeClass("alert-success");
-        $("#alert").addClass("alert-danger");
-        if (err.status) {
-          $("#messageText").text(err.statusText);
-          alertify.error(`[writeConfig] Server return Error ${err.status} (${err.statusText})`);
-        } else {
-          $("#messageText").text(err);
-          alertify.error(`[writeConfig] Server return Error: ${err}`);
-        }
-      })
-*/
     $.ajax({
       url: "/api/config/MM",
       type: "PUT",

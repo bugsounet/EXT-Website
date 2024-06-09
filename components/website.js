@@ -1831,14 +1831,14 @@ class website {
         break;
       case "/api/config/EXT":
         console.log("[WEBSITE] Receiving write EXT config...");
-        if (!req.headers["ext"] || !req.headers["config"]) return res.status(400).send("Bad Request");
+        if (!req.headers["ext"] || !req.body["config"]) return res.status(400).send("Bad Request");
         const plugin = this.checkPluginInConfig(req.headers["ext"]);
         if (!plugin) {
           return res.status(404).send("Not Found");
         }
         var resultSaveConfig = {};
         try  {
-          const dataConfig = JSON.parse(req.headers["config"]);
+          const dataConfig = JSON.parse(atob(req.body["config"]));
           if (dataConfig.module !== req.headers["ext"]) {
             return res.status(400).send("Bad Request");
           }

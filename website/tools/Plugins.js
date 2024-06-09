@@ -360,11 +360,16 @@ async function EXTConfigJSEditor () {
     let data = editor.get();
     $("#save").css("display", "none");
     $("#wait").css("display", "block");
+    let encode = btoa(JSON.stringify(data));
 
     $.ajax({
       url: "/api/config/EXT",
       type: "PUT",
-      headers: { "ext": EXT, "config": JSON.stringify(data) },
+      headers: {
+        "Content-Type": "application/json",
+        "ext": EXT
+      },
+      data: JSON.stringify({ config: encode }),
       success: function (back) {
         if (back.error) {
           $("#wait").css("display", "none");
@@ -483,11 +488,16 @@ async function EXTModifyConfigJSEditor () {
     let data = editor.get();
     $("#save").css("display", "none");
     $("#wait").css("display", "block");
+    let encode = btoa(JSON.stringify(data));
 
     $.ajax({
       url: "/api/config/EXT",
       type: "PUT",
-      headers: { "ext": EXT, "config": JSON.stringify(data) },
+      headers: {
+        "Content-Type": "application/json",
+        "ext": EXT
+      },
+      data: JSON.stringify({ config: encode }),
       success: function (back) {
         if (back.error) {
           $("#wait").css("display", "none");
