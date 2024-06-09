@@ -840,17 +840,17 @@
             "Bearer": []
           }
         ],
-        "parameters": [
-          {
-            "name": "config",
-            "in": "header",
-            "description": "New config of MagicMirror² (JSON string format)",
-            "required": true,
-            "schema": {
-              "type": "string"
+        "requestBody": {
+          "description" : "Send new base64 encoded config in config key",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SendConfig"
+              }
             }
           }
-        ],
+        },
         "responses": {
           "200": {
             "description": "Configuration Updated successfully",
@@ -2308,6 +2308,18 @@
         "example": {
           "done": "ok",
           "backup": "config.js.GA.20240608-09:58:25"
+        }
+      },
+      "SendConfig": {
+        "type": "object",
+        "properties": {
+          "config": {
+            "type": "string",
+            "description": "Encoded configuration in base64"
+          }
+        },
+        "example": {
+          "config": "ezTrGTH....base64encoded...."
         }
       },
       "EXT200": {
