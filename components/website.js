@@ -567,23 +567,6 @@ class website {
         })
 
         // to move to API
-        .post("/setWebviewTag", async (req, res) => {
-          if (!this.website.webviewTag && req.user) {
-            console.log("[WEBSITE] Receiving setWebviewTag demand...");
-            let NewConfig = await this.setWebviewTag();
-            var resultSaveConfig = await this.saveConfig(NewConfig);
-            console.log("[WEBSITE] Write GA webview config result:", resultSaveConfig);
-            res.send(resultSaveConfig);
-            if (resultSaveConfig.done) {
-              this.website.webviewTag = true;
-              this.website.MMConfig = await this.readConfig();
-              console.log("[WEBSITE] Reload config");
-            }
-          }
-          else res.status(403).sendFile(`${this.WebsitePath}/403.html`);
-        })
-
-        // to move to API
         .get("/GetRadioStations", (req, res) => {
           if (req.user) {
             if (!this.website.radio) return res.status(404).sendFile(`${this.WebsitePath}/404.html`);
@@ -1774,8 +1757,11 @@ class website {
         try {
           let data = require(`../website/config/${req.headers["ext"]}/config.js`);
           data.schema = this.makeSchemaTranslate(data.schema, this.website.schemaTranslatation);
-          res.json(data.schema);
+          data.stringify = JSON.stringify(data.schema);
+          data.encoded = btoa(data.stringify);
+          res.json({ schema: data.encoded });
         } catch (e) {
+          console.error("[WEBSITE] Schema:", e.message);
           res.status(404).send("Not Found");
         }
         break;

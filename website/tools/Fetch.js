@@ -202,14 +202,21 @@ function loadPluginTemplate (plugin) {
         type: "GET",
         headers: {"ext": plugin},
         dataType: "json",
-        success: function(schema){
-          resolve(schema);
-      },
-      error: function(err) {
-        if (!err.status) alertify.error("Connexion Lost!");
-        else alertify.warning(`[loadPluginTemplate] Server return Error ${err.status} (${err.statusText})`);
+        success: function(response) {
+          try {
+            let parse = atob(response.schema);
+            let schema = JSON.parse(parse);
+            resolve(schema);
+          } catch (e) {
+            alertify.warning("[loadPluginTemplate] Error on decode server response");
+          }
+        },
+        error: function(err) {
+          if (!err.status) alertify.error("Connexion Lost!");
+          else alertify.warning(`[loadPluginTemplate] Server return Error ${err.status} (${err.statusText})`);
+        }
       }
-    })
+    )
   })
 }
 

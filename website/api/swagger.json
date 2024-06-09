@@ -2281,48 +2281,15 @@
       },
       "ConfigSchema": {
         "type": "object",
-        "description": "Sample schema sended",
+        "description": "Stringified sample schema and encoded in base64",
+        "properties": {
+          "schema": {
+            "type": "string",
+            "description": "Encoded (base64) result"
+          }
+        },
         "example": {
-          "title": "EXT-Alert",
-          "description": "Propriétés de ce plugin",
-          "type": "object",
-          "properties": {
-            "module": {
-              "type": "string",
-              "title": "Nom du plugin",
-              "default": "EXT-Alert"
-            },
-            "disabled": {
-              "type": "boolean",
-              "title": "Désactiver le plugin",
-              "default": false
-            },
-            "config": {
-              "type": "object",
-              "title": "Configuration",
-              "properties": {
-                "debug": {
-                  "type": "boolean",
-                  "title": "Activer le mode debug",
-                  "default": false
-                },
-                "style": {
-                  "type": "number",
-                  "title": "Style des notifications",
-                  "default": 1,
-                  "enum": [0, 1, 2],
-                  "minimum": 0,
-                  "maximum": 2
-                },
-                "ignore": {
-                  "type": "array",
-                  "title": "Liste les plugins/modules à ignorer pour ne pas afficher leurs notifications",
-                  "default": []
-                }
-              }
-            }
-          },
-          "required": ["module"]
+          "schema": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiYnVnc291bmV0IiwiaWF0IjoxNzE3OTI4ODI3LCJleHAiOjE3MTc5MzI0Mjd9.FfHJb8iXiez_9MZN23PT19F3tbwQNRQnbgZs99AZU0U"
         }
       },
       "Config200": {
