@@ -1787,11 +1787,10 @@ class website {
 
     switch (req.url) {
       case "/api/config/MM":
-        console.log("[WEBSITE] Receiving write MM config...");
-        if (!req.headers["config"]) return res.status(400).send("Bad Request");
+        if (!req.body["config"]) return res.status(400).send("Bad Request");
         var resultSaveConfig = {};
         try  {
-          let decoded = JSON.parse(atob(req.headers["config"]));
+          let decoded = JSON.parse(atob(req.body["config"]));
           resultSaveConfig = await this.saveConfig(decoded);
         } catch (e) {
           console.log("[WEBSITE] Request error", e.message);

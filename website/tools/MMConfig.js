@@ -150,10 +150,12 @@ async function EditMMConfigJSEditor () {
     $("#wait").css("display", "block");
     let encode = btoa(JSON.stringify(data));
 
+/*
     fetch("/api/config/MM", {
       method: "PUT",
       headers: {
-        "config": encode
+        "Content-Type": "application/json"
+        //"config": encode
       }
     })
       .then(data => data.json())
@@ -186,12 +188,14 @@ async function EditMMConfigJSEditor () {
           alertify.error(`[writeConfig] Server return Error: ${err}`);
         }
       })
-
-/*
+*/
     $.ajax({
       url: "/api/config/MM",
       type: "PUT",
-      headers: { "config": encode },
+      headers: {
+        "Content-Type": "application/json"
+      },
+      data: JSON.stringify({ config: encode }),
       success: function (back) {
         if (back.error) {
           $("#wait").css("display", "none");
@@ -222,7 +226,7 @@ async function EditMMConfigJSEditor () {
         }
       }
     });
-*/
+
   };
   FileReaderJS.setupInput(document.getElementById("fileToLoad"), {
     readAsDefault: "Text",
