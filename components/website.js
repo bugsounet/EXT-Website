@@ -14,7 +14,7 @@ const passport = require("passport");
 const LocalStrategy = require("passport-local");
 const express = require("express");
 const session = require("express-session");
-const bodyParserErrorHandler = require('express-body-parser-error-handler');
+const bodyParserErrorHandler = require("express-body-parser-error-handler");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const Socket = require("socket.io");
@@ -303,7 +303,7 @@ class website {
             console.error("[WEBSITE] detail:", err.message);
           },
           errorMessage: (err, req,res) => {
-            return `Body Parser failed to parse request (${err.type}) --> ${err.message}`
+            return `Body Parser failed to parse request (${err.type}) --> ${err.message}`;
           }
         }
       ));
