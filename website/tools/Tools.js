@@ -57,7 +57,7 @@ async function doTools () {
 
     document.getElementById("backup-Delete").onclick = function () {
       $.ajax({
-        url: "/api/backup/delete",
+        url: "/api/backups",
         type: "DELETE",
         success: function (back) {
           if (back.error) {

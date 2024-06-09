@@ -36,8 +36,8 @@
       "description": "MagicMirror² and EXTs configuration Tools"
     },
     {
-      "name": "Backup",
-      "description": "Manage backup"
+      "name": "Backups",
+      "description": "Manage backups"
     }
   ],
   "paths": {
@@ -1327,10 +1327,10 @@
         }
       }
     },
-    "/api/backup/list": {
+    "/api/backups": {
       "get": {
         "tags": [
-          "Backup"
+          "Backups"
         ],
         "summary": "Returns available backup collection",
         "security": [
@@ -1360,12 +1360,10 @@
             }
           }
         }
-      }
-    },
-    "/api/backup/delete": {
+      },
       "delete": {
         "tags": [
-          "Backup"
+          "Backups"
         ],
         "summary": "Delete all available backup collection",
         "security": [

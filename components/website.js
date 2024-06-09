@@ -1772,7 +1772,7 @@ class website {
       case "/api/config/webview":
         res.json({ webview: this.website.webviewTag });
         break;
-      case "/api/backup/list":
+      case "/api/backups":
         let names = await this.loadBackupNames();
         res.json(names);
         break;
@@ -1988,7 +1988,7 @@ class website {
           res.status(404).send("Not Found");
         }
         break;
-      case "/api/backup/delete":
+      case "/api/backups":
         console.log("[WEBSITE] Receiving delete backup demand...");
         let deleteBackup = await this.deleteBackup();
         console.log("[WEBSITE] Delete backup result:", deleteBackup);
