@@ -816,7 +816,14 @@
         ],
         "responses": {
           "200": {
-            "description": "Sends MagicMirror² configuration"
+            "description": "Return current MagicMirror² configuration",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SendConfig"
+                }
+              }
+            }
           },
           "401": {
             "description": "Missing valid authentication token",
@@ -923,7 +930,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ConfigSample"
+                  "$ref": "#/components/schemas/SendConfig"
                 }
               }
             }
@@ -1136,7 +1143,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ConfigSample"
+                  "$ref": "#/components/schemas/SendConfig"
                 }
               }
             }
@@ -2312,10 +2319,13 @@
       },
       "SendConfig": {
         "type": "object",
+        "required": [
+          "config"
+        ],
         "properties": {
           "config": {
             "type": "string",
-            "description": "Encoded configuration in base64"
+            "description": "Encoded configuration in base64",
           }
         },
         "example": {

@@ -14,6 +14,7 @@ const passport = require("passport");
 const LocalStrategy = require("passport-local");
 const express = require("express");
 const session = require("express-session");
+const bodyParserErrorHandler = require('express-body-parser-error-handler');
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const Socket = require("socket.io");
@@ -269,7 +270,6 @@ class website {
       this.passportConfig();
       this.website.app = express();
       this.website.server = http.createServer(this.website.app);
-
       log("Create website needed routes...");
 
       // add current server IP to APIDocs
@@ -292,6 +292,21 @@ class website {
       // For parsing post request's data/body
       this.website.app.use(bodyParser.json());
       this.website.app.use(bodyParser.urlencoded({ extended: true }));
+
+      this.website.app.use(bodyParserErrorHandler(
+        {
+          onError: (err, req, res) => {
+            let ip = req.headers["x-forwarded-for"] || req.connection.remoteAddress;
+            console.error(`[WEBSITE] [${ip}] [${req.method}] ${req.url}`);
+            console.error("[WEBSITE] bodyparser error:", err.type);
+            log("body:", err.body);
+            console.error("[WEBSITE] detail:", err.message);
+          },
+          errorMessage: (err, req,res) => {
+            return `Body Parser failed to parse request (${err.type}) --> ${err.message}`
+          }
+        }
+      ));
 
       // Tells app to use password session
       this.website.app.use(passport.initialize());
@@ -1730,18 +1745,22 @@ class website {
         res.json(this.website.EXTStatus);
         break;
       case "/api/config/MM":
-        let stringify = JSON.stringify(this.website.MMConfig);
-        let encoded = btoa(stringify);
-        res.json({ config: encoded });
+        try {
+          let stringify = JSON.stringify(this.website.MMConfig);
+          let encoded = btoa(stringify);
+          res.json({ config: encoded });
+        } catch (e) {
+          res.status(500).json({ error: e.message });
+        }
         break;
       case "/api/config/EXT":
-        //console.log("--->", req.headers['ext'])
-        //console.log("--->", {headers:req.headers})
         if (!req.headers["ext"]) return res.status(400).send("Bad Request");
         var index = this.website.MMConfig.modules.map((e) => { return e.module; }).indexOf(req.headers["ext"]);
         if (index > -1) {
           log(`Request config of ${req.headers["ext"]}`);
-          res.json(this.website.MMConfig.modules[index]);
+          let stringify = JSON.stringify(this.website.MMConfig.modules[index]);
+          let encoded = btoa(stringify);
+          res.json({ config: encoded });
         } else {
           res.status(404).send("Not Found");
         }
@@ -1750,7 +1769,9 @@ class website {
         if (!req.headers["ext"]) return res.status(400).send("Bad Request");
         try {
           let data = require(`../website/config/${req.headers["ext"]}/config.js`);
-          res.json(data.default);
+          let stringify = JSON.stringify(data);
+          let encoded = btoa(stringify);
+          res.json({ config: encoded });
         } catch (e) {
           res.status(404).send("Not Found");
         }

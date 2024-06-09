@@ -188,14 +188,21 @@ function loadPluginConfig (plugin) {
         type: "GET",
         headers: {"ext": plugin},
         dataType: "json",
-        success: function(config){
-          resolve(config);
-      },
-      error: function(err) {
-        if (!err.status) alertify.error("Connexion Lost!");
-        else alertify.warning(`[loadPluginTemplate] Server return Error ${err.status} (${err.statusText})`);
+        success: function(response) {
+          try {
+            let parse = atob(response.config);
+            let config = JSON.parse(parse);
+            resolve(config);
+          } catch (e) {
+            alertify.error("[loadPluginConfig] Error on decode server response");
+          }
+        },
+        error: function(err) {
+          if (!err.status) alertify.error("Connexion Lost!");
+          else alertify.warning(`[loadPluginTemplate] Server return Error ${err.status} (${err.statusText})`);
+        }
       }
-    })
+    )
   })
 }
 
@@ -233,14 +240,21 @@ function loadPluginCurrentConfig (plugin) {
         type: "GET",
         headers: {"ext": plugin},
         dataType: "json",
-        success: function(config){
-          resolve(config);
-      },
-      error: function(err) {
-        if (!err.status) alertify.error("Connexion Lost!");
-        else alertify.warning(`[loadPluginTemplate] Server return Error ${err.status} (${err.statusText})`);
+        success: function(response){
+          try {
+            let parse = atob(response.config);
+            let config = JSON.parse(parse);
+            resolve(config);
+          } catch (e) {
+            alertify.error("[loadPluginConfig] Error on decode server response");
+          }
+        },
+        error: function(err) {
+          if (!err.status) alertify.error("Connexion Lost!");
+          else alertify.warning(`[loadPluginTemplate] Server return Error ${err.status} (${err.statusText})`);
+        }
       }
-    })
+    )
   })
 }
 
