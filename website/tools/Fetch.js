@@ -273,7 +273,7 @@ function loadBackupConfig (file) {
 
 function loadBackupNames () {
   return new Promise((resolve) => {
-    $.getJSON("/GetBackupName", (backups) => {
+    $.getJSON("/api/backup/list", (backups) => {
       //console.log("backups", backups)
       resolve(backups);
     })

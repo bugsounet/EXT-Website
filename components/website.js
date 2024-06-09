@@ -1792,6 +1792,10 @@ class website {
       case "/api/config/webview":
         res.json({ webview: this.website.webviewTag });
         break;
+      case "/api/backup/list":
+        let names = await this.loadBackupNames();
+        res.json(names);
+        break;
       default:
         console.warn("[WEBSITE] Don't find:", req.url);
         APIResult = {
