@@ -799,6 +799,138 @@
         }
       }
     },
+    "/api/EXT/Volume/speaker": {
+      "put": {
+        "tags": [
+          "EXT"
+        ],
+        "summary": "Send new speaker volume",
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "requestBody": {
+          "description" : "Send new percent speaker volume in volume key",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SendVolume"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Command sended successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EXT200"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing volume param or volume out of range (0-100)",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "$ref": "#/components/schemas/Config400Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing valid authentication token",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "$ref": "#/components/schemas/401Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "EXT-Volume not installed",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "$ref": "#/components/schemas/Config404Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/EXT/Volume/recorder": {
+      "put": {
+        "tags": [
+          "EXT"
+        ],
+        "summary": "Send new recorder volume",
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "requestBody": {
+          "description" : "Send new percent recorder volume in volume key",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SendVolume"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Command sended successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EXT200"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing volume param or volume out of range (0-100)",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "$ref": "#/components/schemas/Config400Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing valid authentication token",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "$ref": "#/components/schemas/401Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "EXT-Volume not installed",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "$ref": "#/components/schemas/Config404Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/config/MM": {
       "get": {
         "tags": [
@@ -3575,6 +3707,21 @@
           "config.js.GA.20240606-18:17:42",
           "config.js.GA.20240605-18:05:14"
         ]
+      },
+      "SendVolume": {
+        "type": "object",
+        "required": [
+          "config"
+        ],
+        "properties": {
+          "volume": {
+            "type": "number",
+            "description": "Volume in %"
+          }
+        },
+        "example": {
+          "volume": 50
+        }
       }
     }
   }

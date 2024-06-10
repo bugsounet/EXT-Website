@@ -592,15 +592,6 @@ class website {
           else res.status(403).sendFile(`${this.WebsitePath}/403.html`);
         })
 
-        // ???
-        .get("/getGAVersion", (req, res) => {
-          if (req.user) {
-            if (this.website.EXTStatus.GA_Ready) this.website.GACheck.ready = true;
-            res.send(this.website.GACheck);
-          }
-          else res.status(403).sendFile(`${this.WebsitePath}/403.html`);
-        })
-
         // to move to API
         .post("/EXT-Screen", (req, res) => {
           if (req.user) {
@@ -647,34 +638,6 @@ class website {
                 sound: "modules/EXT-Website/website/tools/message.mp3",
                 icon: "modules/EXT-Website/website/assets/img/GA_Small.png"
               }
-            });
-            res.send("ok");
-          }
-          else res.send("error");
-        })
-
-        // to move to API
-        .post("/EXT-VolumeSendSpeaker", (req, res) => {
-          if (req.user) {
-            let data = req.body.data;
-            if (!data) return res.send("error");
-            this.sendSocketNotification("SendNoti", {
-              noti: "EXT_VOLUME-SPEAKER_SET",
-              payload: data
-            });
-            res.send("ok");
-          }
-          else res.send("error");
-        })
-
-        // to move to API
-        .post("/EXT-VolumeSendRecorder", (req, res) => {
-          if (req.user) {
-            let data = req.body.data;
-            if (!data) return res.send("error");
-            this.sendSocketNotification("SendNoti", {
-              noti: "EXT_VOLUME-RECORDER_SET",
-              payload: data
             });
             res.send("ok");
           }
@@ -1682,25 +1645,20 @@ class website {
 
   /** Website GET API **/
   async GetAPI (req, res) {
-    var APIResult = {};
-
     switch (req.url) {
       case "/api/version":
-        APIResult = await this.searchVersion();
-        if (APIResult.error) {
-          res.status(206).json(APIResult);
+        let version = await this.searchVersion();
+        if (version.error) {
+          res.status(206).json(version);
         } else {
-          res.json(APIResult);
+          res.json(version);
         }
         break;
       case "/api/translations/common":
         res.json(this.website.translation);
         break;
       case "/api/translations/homeText":
-        APIResult = {
-          homeText: this.website.homeText
-        };
-        res.json(APIResult);
+        res.json({ homeText: this.website.homeText });
         break;
       case "/api/system/sysInfo":
         this.website.systemInformation.result = await this.website.systemInformation.lib.Get();
@@ -1778,18 +1736,13 @@ class website {
         break;
       default:
         console.warn("[WEBSITE] Don't find:", req.url);
-        APIResult = {
-          error: "You Are Lost in Space"
-        };
-        res.status(404).json(APIResult);
+        res.status(404).json({ error: "You Are Lost in Space" });
         break;
     }
   }
 
   /** Website PUT API **/
   async PutAPI (req, res) {
-    var APIResult = {};
-
     switch (req.url) {
       case "/api/config/MM":
         if (!req.body["config"]) return res.status(400).send("Bad Request");
@@ -1894,19 +1847,28 @@ class website {
           res.status(400).send("Already installed");
         }
         break;
+      case "/api/EXT/Volume/speaker":
+        if (!this.website.EXTStatus["EXT-Volume"].hello) return res.status(404).send("Not Found");
+        let speaker = req.body["volume"];
+        if (typeof(speaker) !== "number" || speaker < 0 || speaker > 100 || isNaN(speaker)) return res.status(400).send("Bad Request");
+        this.sendSocketNotification("SendNoti", { noti: "EXT_VOLUME-SPEAKER_SET", payload: speaker|| "0" });
+        res.json({ done: "ok" });
+        break;
+      case "/api/EXT/Volume/recorder":
+        if (!this.website.EXTStatus["EXT-Volume"].hello) return res.status(404).send("Not Found");
+        let recorder = req.body["volume"];
+        if (typeof(recorder) !== "number" || recorder < 0 || recorder > 100) return res.status(400).send("Bad Request");
+        this.sendSocketNotification("SendNoti", { noti: "EXT_VOLUME-RECORDER_SET", payload: recorder|| "0" });
+        res.json({ done: "ok" });
+        break;
       default:
         console.warn("[WEBSITE] Don't find:", req.url);
-        APIResult = {
-          error: "You Are Lost in Space"
-        };
-        res.status(404).json(APIResult);
+        res.status(404).json({ error: "You Are Lost in Space" });
     }
   }
 
   /** Website POST API **/
   async PostAPI (req, res) {
-    var APIResult = {};
-
     switch (req.url) {
       case "/api/EXT/stop":
         this.sendSocketNotification("SendStop");
@@ -1931,18 +1893,13 @@ class website {
         break;
       default:
         console.warn("[WEBSITE] Don't find:", req.url);
-        APIResult = {
-          error: "You Are Lost in Space"
-        };
-        res.status(404).json(APIResult);
+        res.status(404).json({ error: "You Are Lost in Space" });
     }
   }
 
 
   /** Website DELETE API **/
   async DeleteAPI (req, res) {
-    var APIResult = {};
-
     switch (req.url) {
       case "/api/config/EXT":
         console.log("[WEBSITE] Receiving delete EXT config...");
@@ -1996,10 +1953,7 @@ class website {
         break;
       default:
         console.warn("[WEBSITE] Don't find:", req.url);
-        APIResult = {
-          error: "You Are Lost in Space"
-        };
-        res.status(404).json(APIResult);
+        res.status(404).json({ error: "You Are Lost in Space" });
     }
   }
 

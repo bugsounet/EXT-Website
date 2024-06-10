@@ -220,17 +220,28 @@ async function doTools () {
     }, 1000);
 
     document.getElementById("Volume-Send").onclick = function () {
-      $.post("/EXT-VolumeSendSpeaker", { data: $("#Volume-Query").val() })
-        .done(function (back) {
-          if (back === "error") {
-            alertify.error(translation.Warn_Error);
-          } else {
+      $.ajax({
+        url: "/api/EXT/Volume/speaker",
+        type: "PUT",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        data: JSON.stringify({ volume: Number($("#Volume-Query").val()) }),
+        success: function (back) {
+          if (back.done) {
             alertify.success(translation.RequestDone);
+          } else {
+            alertify.error(translation.Warn_Error);
           }
-        })
-        .fail(function (err) {
-          alertify.error(`[Volume] Server return Error ${err.status} (${err.statusText})`);
-        });
+        },
+        error: function (request,msg,err) {
+          if (err.status) {
+            alertify.error(`[Volume] Server return Error ${err.status} (${err.statusText})`);
+          } else {
+            alertify.error(`[Volume] Server return Error: ${err}`);
+          }
+        }
+      });
     };
   }
 
@@ -246,17 +257,28 @@ async function doTools () {
     }, 1000);
 
     document.getElementById("Volume-Send-Record").onclick = function () {
-      $.post("/EXT-VolumeSendRecorder", { data: $("#Volume-Query-Record").val() })
-        .done(function (back) {
-          if (back === "error") {
-            alertify.error(translation.Warn_Error);
-          } else {
+      $.ajax({
+        url: "/api/EXT/Volume/recorder",
+        type: "PUT",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        data: JSON.stringify({ volume: Number($("#Volume-Query-Record").val()) }),
+        success: function (back) {
+          if (back.done) {
             alertify.success(translation.RequestDone);
+          } else {
+            alertify.error(translation.Warn_Error);
           }
-        })
-        .fail(function (err) {
-          alertify.error(`[Volume] Server return Error ${err.status} (${err.statusText})`);
-        });
+        },
+        error: function (request,msg,err) {
+          if (err.status) {
+            alertify.error(`[Volume] Server return Error ${err.status} (${err.statusText})`);
+          } else {
+            alertify.error(`[Volume] Server return Error: ${err}`);
+          }
+        }
+      });
     };
   }
 
