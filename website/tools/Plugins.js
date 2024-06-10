@@ -169,7 +169,7 @@ function doInstall () {
   fitAddonInstall.fit();
 
   socketInstall.on("connect", () => {
-    termInstall.write(`\x1B[1;3;31mMMM-GoogleAssistant v${version.verion} (${version.rev}.${version.lang})\x1B[0m \r\n\n`);
+    termInstall.write(`\x1B[1;3;31mEXT-Website v${version.version} (${version.rev}.${version.lang})\x1B[0m \r\n\n`);
   });
 
   socketInstall.io.on("error", (data) => {
