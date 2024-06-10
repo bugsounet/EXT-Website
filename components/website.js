@@ -1709,7 +1709,7 @@ class website {
       case "/api/EXT/versions":
         res.json(this.website.EXTVersions);
         break;
-      case "/api/EXT/list":
+      case "/api/EXT":
         res.json(this.website.EXT);
         break;
       case "/api/EXT/installed":
@@ -1864,7 +1864,7 @@ class website {
           res.status(400).send("Already activated");
         }
         break;
-      case "/api/EXT/install":
+      case "/api/EXT":
         if (!req.headers["ext"]) return res.status(400).send("Bad Request");
         const pluginName = req.headers["ext"];
         if (this.website.EXTInstalled.indexOf(pluginName) === -1) {
@@ -1963,7 +1963,7 @@ class website {
           res.status(500).json({ error: resultSaveConfig.error });
         }
         break;
-      case "/api/EXT/delete":
+      case "/api/EXT":
         console.log("[WEBSITE] Receiving delete EXT...");
         if (!req.headers["ext"]) return res.status(400).send("Bad Request");
         const pluginName = req.headers["ext"];

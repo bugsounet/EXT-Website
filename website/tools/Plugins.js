@@ -132,7 +132,7 @@ function doDelete () {
     $("#delete").addClass("disabled");
 
     $.ajax({
-      url: "/api/EXT/delete",
+      url: "/api/EXT",
       type: "DELETE",
       headers: { "ext": EXT },
       success: function (back) {
@@ -193,7 +193,7 @@ function doInstall () {
     $("#messageText").text(translation.Plugins_Install_Progress);
     $("#install").addClass("disabled");
     $.ajax({
-      url: "/api/EXT/install",
+      url: "/api/EXT",
       type: "PUT",
       headers: { "ext": EXT },
       success: function (back) {

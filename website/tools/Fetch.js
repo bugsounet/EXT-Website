@@ -112,7 +112,7 @@ function loadTranslation () {
 
 function loadDataAllEXT () {
   return new Promise((resolve) => {
-    $.getJSON("/api/EXT/list", (all) => {
+    $.getJSON("/api/EXT", (all) => {
       //console.log("allEXT", all)
       resolve(all);
     })
