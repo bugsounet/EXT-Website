@@ -610,20 +610,6 @@ class website {
         })
 
         // to move to API
-        .post("/EXT-GAQuery", (req, res) => {
-          if (req.user) {
-            let data = req.body.data;
-            if (!data) return res.send("error");
-            this.sendSocketNotification("SendNoti", {
-              noti: "GA_ACTIVATE",
-              payload: { type: "TEXT", key: data }
-            });
-            res.send("ok");
-          }
-          else res.send("error");
-        })
-
-        // to move to API
         .post("/EXT-AlertQuery", (req, res) => {
           if (req.user) {
             let data = req.body.data;
@@ -1889,6 +1875,14 @@ class website {
         break;
       case "/api/system/shutdown":
         setTimeout(() => this.sendSocketNotification("SendNoti", "EXT-GATEWAY-Shutdown"), 3000);
+        res.json({ done: "ok" });
+        break;
+      case "/api/Assistant/query":
+        if (!this.website.EXTStatus["GA_Ready"]) return res.status(404).send("Not Found");
+        let query = req.body["query"];
+        console.log("--->", query);
+        if (typeof(query) !== "string" || query.length < 5 ) return res.status(400).send("Bad Request");
+        this.sendSocketNotification("SendNoti", { noti: "GA_ACTIVATE", payload: { type: "TEXT", key: query } });
         res.json({ done: "ok" });
         break;
       default:

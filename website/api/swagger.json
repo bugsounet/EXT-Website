@@ -28,6 +28,10 @@
       "description": "EXTs Tools"
     },
     {
+      "name": "Assistant",
+      "description": "MMM-GoogleAssistant Tools"
+    },
+    {
       "name": "System",
       "description": "System Tools"
     },
@@ -1522,6 +1526,72 @@
           }
         }
       }
+    },
+    "/api/Assistant/query": {
+      "post": {
+        "tags": [
+          "Assistant"
+        ],
+        "summary": "Send query to MMM-GoogleAssistant",
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "requestBody": {
+          "description" : "Send new percent speaker volume in volume key",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SendQuery"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Command sended successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EXT200"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing query param",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "$ref": "#/components/schemas/Config400Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing valid authentication token",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "$ref": "#/components/schemas/401Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": " MMM-GoogleAssistant is not Ready",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "$ref": "#/components/schemas/Config404Error"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -2528,6 +2598,21 @@
         },
         "example": {
           "config": "ezTrGTH....base64encoded...."
+        }
+      },
+      "SendQuery": {
+        "type": "object",
+        "required": [
+          "query"
+        ],
+        "properties": {
+          "query": {
+            "type": "string",
+            "description": "MMM-GoogleAssistant text query"
+          }
+        },
+        "example": {
+          "query": "What time is it ?"
         }
       },
       "EXT200": {

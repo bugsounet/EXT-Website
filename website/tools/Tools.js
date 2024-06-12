@@ -472,18 +472,22 @@ async function doTools () {
 
   document.getElementById("GoogleAssistant-Send").onclick = function () {
     $("#GoogleAssistant-Send").addClass("disabled");
-    $.post("/EXT-GAQuery", { data: $("#GoogleAssistant-Query").val() })
-      .done(function (back) {
+    $.ajax({
+      url: "/api/Assistant/query",
+      type: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      data: JSON.stringify({ query: $("#GoogleAssistant-Query").val() }),
+      success: function(response) {
         $("#GoogleAssistant-Query").val("");
-        if (back === "error") {
-          alertify.error(translation.Warn_Error);
-        } else {
-          alertify.success(translation.RequestDone);
-        }
-      })
-      .fail(function (err) {
+        alertify.success(translation.RequestDone);
+      },
+      error: function(err) {
+        $("#GoogleAssistant-Query").val("");
         alertify.error(`[GoogleAssistant] Server return Error ${err.status} (${err.statusText})`);
-      });
+      }
+    });
   };
 
   // YouTube Query
