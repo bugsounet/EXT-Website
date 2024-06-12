@@ -583,16 +583,6 @@ class website {
         })
 
         // to move to API
-        .get("/GetRadioStations", (req, res) => {
-          if (req.user) {
-            if (!this.website.radio) return res.status(404).sendFile(`${this.WebsitePath}/404.html`);
-            var allRadio = Object.keys(this.website.radio);
-            res.send(allRadio);
-          }
-          else res.status(403).sendFile(`${this.WebsitePath}/403.html`);
-        })
-
-        // to move to API
         .post("/EXT-Screen", (req, res) => {
           if (req.user) {
             let data = req.body.data;
@@ -1720,6 +1710,11 @@ class website {
         let names = await this.loadBackupNames();
         res.json(names);
         break;
+      case "/api/EXT/RadioPlayer":
+        if (!this.website.EXTStatus["EXT-RadioPlayer"].hello || !this.website.radio) return res.status(404).send("Not Found");
+        var allRadio = Object.keys(this.website.radio);
+        res.send(allRadio);
+        break;
       default:
         console.warn("[WEBSITE] Don't find:", req.url);
         res.status(404).json({ error: "You Are Lost in Space" });
@@ -1880,7 +1875,6 @@ class website {
       case "/api/Assistant/query":
         if (!this.website.EXTStatus["GA_Ready"]) return res.status(404).send("Not Found");
         let query = req.body["query"];
-        console.log("--->", query);
         if (typeof(query) !== "string" || query.length < 5 ) return res.status(400).send("Bad Request");
         this.sendSocketNotification("SendNoti", { noti: "GA_ACTIVATE", payload: { type: "TEXT", key: query } });
         res.json({ done: "ok" });

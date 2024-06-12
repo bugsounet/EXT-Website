@@ -286,7 +286,7 @@ function loadBackupNames () {
 
 function loadRadio () {
   return new Promise((resolve) => {
-    $.getJSON("/GetRadioStations", (radio) => {
+    $.getJSON("/api/EXT/RadioPlayer", (radio) => {
       //console.log("radio", radio)
       resolve(radio);
     })
