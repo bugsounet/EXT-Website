@@ -978,6 +978,70 @@
             }
           }
         }
+      },
+      "put": {
+        "tags": [
+          "EXT"
+        ],
+        "summary": "Send request radio to play",
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "requestBody": {
+          "description" : "Send request radio in radio key",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SendRadio"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Command sended successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EXT200"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing radio param",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "$ref": "#/components/schemas/Config400Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing valid authentication token",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "$ref": "#/components/schemas/401Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "EXT-Radio not installed or radio not found",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "$ref": "#/components/schemas/Config404Error"
+                }
+              }
+            }
+          }
+        }
       }
     },
     "/api/config/MM": {
@@ -3809,7 +3873,7 @@
       "SendVolume": {
         "type": "object",
         "required": [
-          "config"
+          "volume"
         ],
         "properties": {
           "volume": {
@@ -3850,6 +3914,21 @@
           "Hit West",
           "Fugi FM"
         ]
+      },
+      "SendRadio": {
+        "type": "object",
+        "required": [
+          "radio"
+        ],
+        "properties": {
+          "radio": {
+            "type": "string",
+            "description": "Name of the Radio"
+          }
+        },
+        "example": {
+          "radio": "NRJ"
+        }
       }
     }
   }

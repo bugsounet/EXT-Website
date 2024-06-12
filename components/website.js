@@ -719,20 +719,6 @@ class website {
         })
 
         // to move to API
-        .post("/EXT-RadioQuery", (req, res) => {
-          if (req.user) {
-            let data = req.body.data;
-            if (!data) return res.send("error");
-            this.sendSocketNotification("SendNoti", {
-              noti: "EXT_RADIO-PLAY",
-              payload: data
-            });
-            res.send("ok");
-          }
-          else res.send("error");
-        })
-
-        // to move to API
         .get("/GetBackupFile", async (req, res) => {
           if (req.user) {
             let data = req.query.config;
@@ -1840,6 +1826,14 @@ class website {
         let recorder = req.body["volume"];
         if (typeof(recorder) !== "number" || recorder < 0 || recorder > 100) return res.status(400).send("Bad Request");
         this.sendSocketNotification("SendNoti", { noti: "EXT_VOLUME-RECORDER_SET", payload: recorder|| "0" });
+        res.json({ done: "ok" });
+        break;
+      case "/api/EXT/RadioPlayer":
+        if (!this.website.EXTStatus["EXT-RadioPlayer"].hello || !this.website.radio) return res.status(404).send("Not Found");
+        if (!req.body["radio"]) return res.status(400).send("Bad Request");
+        var allRadio = Object.keys(this.website.radio);
+        if (allRadio.indexOf(req.body["radio"]) === -1) return res.status(404).send("Not Found");
+        this.sendSocketNotification("SendNoti", { noti: "EXT_RADIO-PLAY", payload: req.body["radio"] });
         res.json({ done: "ok" });
         break;
       default:

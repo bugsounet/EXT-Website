@@ -542,17 +542,20 @@ async function doTools () {
     }
     $("#Radio-Box").css("display", "block");
     document.getElementById("Radio-Send").onclick = function () {
-      $.post("/EXT-RadioQuery", { data: $("#Radio-Query").val() })
-        .done(function (back) {
-          if (back === "error") {
-            alertify.error(translation.Warn_Error);
-          } else {
-            alertify.success(translation.RequestDone);
-          }
-        })
-        .fail(function (err) {
+      $.ajax({
+        url: "/api/EXT/RadioPlayer",
+        type: "PUT",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        data: JSON.stringify({ radio: $("#Radio-Query").val() }),
+        success: function(response) {
+          alertify.success(translation.RequestDone);
+        },
+        error: function(err) {
           alertify.error(`[RadioPlayer] Server return Error ${err.status} (${err.statusText})`);
-        });
+        }
+      });
     };
   }
 
