@@ -193,18 +193,28 @@ async function doTools () {
 
     document.getElementById("Alert-Send").onclick = function () {
       $("#Alert-Send").addClass("disabled");
-      $.post("/EXT-AlertQuery", { data: $("#Alert-Query").val() })
-        .done(function (back) {
-          $("#Alert-Query").val("");
-          if (back === "error") {
-            alertify.error(translation.Warn_Error);
-          } else {
+      $.ajax({
+        url: "/api/EXT/Alert",
+        type: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        data: JSON.stringify( { alert: $("#Alert-Query").val() } ),
+        success: function (back) {
+          if (back.done) {
             alertify.success(translation.RequestDone);
+          } else {
+            alertify.error(translation.Warn_Error);
           }
-        })
-        .fail(function (err) {
-          alertify.error(`[Alert] Server return Error ${err.status} (${err.statusText})`);
-        });
+        },
+        error: function (request,msg,err) {
+          if (err.status) {
+            alertify.error(`[Alert] Server return Error ${err.status} (${err.statusText})`);
+          } else {
+            alertify.error(`[Alert] Server return Error: ${err}`);
+          }
+        }
+      });
     };
   }
 

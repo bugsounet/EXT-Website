@@ -1132,6 +1132,72 @@
         }
       }
     },
+    "/api/EXT/Alert": {
+      "post": {
+        "tags": [
+          "EXT"
+        ],
+        "summary": "Send Alert on the screen",
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "requestBody": {
+          "description" : "Send Alert on MagicMirror²",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SendAlert"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Command sended successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EXT200"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing query param",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "$ref": "#/components/schemas/Config400Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing valid authentication token",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "$ref": "#/components/schemas/401Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "EXT-Alert not found",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "$ref": "#/components/schemas/Config404Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/config/MM": {
       "get": {
         "tags": [
@@ -1736,7 +1802,7 @@
           }
         ],
         "requestBody": {
-          "description" : "Send new percent speaker volume in volume key",
+          "description" : "Query to send in MMM-GoogleAssistant",
           "required": true,
           "content": {
             "application/json": {
@@ -2797,6 +2863,21 @@
         },
         "example": {
           "query": "What time is it ?"
+        }
+      },
+      "SendAlert": {
+        "type": "object",
+        "required": [
+          "alert"
+        ],
+        "properties": {
+          "alert": {
+            "type": "string",
+            "description": "Alert to send"
+          }
+        },
+        "example": {
+          "alert": "Hello world!"
         }
       },
       "EXT200": {

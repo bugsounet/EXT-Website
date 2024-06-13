@@ -1907,6 +1907,23 @@ class website {
         this.sendSocketNotification("SendNoti", { noti: "GA_ACTIVATE", payload: { type: "TEXT", key: query } });
         res.json({ done: "ok" });
         break;
+      case "/api/EXT/Alert":
+        if (!this.website.EXTStatus["EXT-Alert"].hello) return res.status(404).send("Not Found");
+        let alert = req.body["alert"];
+        if (typeof(alert) !== "string" || alert.length < 5 ) return res.status(400).send("Bad Request");
+        this.sendSocketNotification("SendNoti", {
+          noti: "EXT_ALERT",
+          payload: {
+            type: "information",
+            message: alert,
+            sender: req.user ? req.user.username : "EXT-Website",
+            timer: 30 * 1000,
+            sound: "modules/EXT-Website/website/tools/message.mp3",
+            icon: "modules/EXT-Website/website/assets/img/GA_Small.png"
+          }
+        });
+        res.json({ done: "ok" });
+        break;
       default:
         console.warn("[WEBSITE] Don't find:", req.url);
         res.status(404).json({ error: "You Are Lost in Space" });
