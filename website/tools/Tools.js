@@ -315,8 +315,8 @@ async function doTools () {
         },
         error: function(err) {
           alertify.error(`[Updates] Server return Error ${err.status} (${err.statusText})`);
-        });
-      };
+        };
+      });
     };
   }
 
