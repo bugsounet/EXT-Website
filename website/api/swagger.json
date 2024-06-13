@@ -497,7 +497,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref" : "#/components/schemas/EXTList"
+                  "$ref" : "#/components/schemas/ArrayPlugins"
                 }
               }
             }
@@ -680,7 +680,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref" : "#/components/schemas/EXTInstalled"
+                  "$ref" : "#/components/schemas/ArrayPlugins"
                 }
               }
             }
@@ -715,7 +715,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref" : "#/components/schemas/EXTConfigured"
+                  "$ref" : "#/components/schemas/ArrayPlugins"
                 }
               }
             }
@@ -1033,6 +1033,94 @@
           },
           "404": {
             "description": "EXT-Radio not installed or radio not found",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "$ref": "#/components/schemas/Config404Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/EXT/Updates": {
+      "get": {
+        "tags": [
+          "EXT"
+        ],
+        "summary": "Sends needed available Update to the first EXT",
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Sends available updates",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArrayPlugins"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing valid authentication token",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "$ref": "#/components/schemas/401Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "EXT-Updates not installed or no plugins need any updates",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "$ref": "#/components/schemas/Config404Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "EXT"
+        ],
+        "summary": "Sends needed available Update to the first EXT",
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Update command started",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Result200"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing valid authentication token",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "$ref": "#/components/schemas/401Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "EXT-Updates not installed or no plugins need any updates",
             "content": {
               "text/html": {
                 "schema": {
@@ -2650,19 +2738,6 @@
           "error": "Error when writing file"
         }
       },
-      "ConfigSample": {
-        "type": "object",
-        "description": "Sample configuration sended",
-        "example": {
-          "module": "EXT-Alert",
-          "disabled": false,
-          "config": {
-            "debug": false,
-            "style": 1,
-            "ignore": []
-          }
-        }
-      },
       "ConfigSchema": {
         "type": "object",
         "description": "Stringified sample schema and encoded in base64",
@@ -3198,53 +3273,8 @@
           }
         }
       },
-      "EXTList" : {
-        "description": "Array of all available EXTs",
-        "type": "array",
-        "items": {
-          "type" : "string"
-        },
-        "example": [
-          "EXT-Alert",
-          "EXT-Background",
-          "EXT-Bring",
-          "EXT-Browser",
-          "EXT-Detector",
-          "EXT-FreeboxTV",
-          "EXT-GooglePhotos",
-          "EXT-Governor",
-          "EXT-Internet",
-          "EXT-Keyboard",
-          "EXT-Librespot",
-          "EXT-Motion",
-          "EXT-MusicPlayer",
-          "EXT-Pages",
-          "EXT-Photos",
-          "EXT-Pir",
-          "EXT-RadioPlayer",
-          "EXT-RemoteControler",
-          "EXT-Screen",
-          "EXT-Selfies",
-          "EXT-SelfiesFlash",
-          "EXT-SelfiesSender",
-          "EXT-SelfiesViewer",
-          "EXT-SmartHome",
-          "EXT-Spotify",
-          "EXT-SpotifyCanvasLyrics",
-          "EXT-StreamDeck",
-          "EXT-TelegramBot",
-          "EXT-Touch",
-          "EXT-Updates",
-          "EXT-VLCServer",
-          "EXT-Volume",
-          "EXT-Website",
-          "EXT-Welcome",
-          "EXT-YouTube",
-          "EXT-YouTubeCast"
-        ]
-      },
-      "EXTInstalled" : {
-        "description": "Array of Installed EXTs in MagicMirror² configuration file",
+      "ArrayPlugins" : {
+        "description": "Array of plugins",
         "type": "array",
         "items": {
           "type" : "string"
@@ -3256,40 +3286,6 @@
           "EXT-Screen",
           "EXT-Website",
           "EXT-YouTube"
-        ]
-      },
-      "EXTConfigured" : {
-        "description": "Array of Installed EXTs in MagicMirror² modules folder",
-        "type": "array",
-        "items": {
-          "type" : "string"
-        },
-        "example": [
-          "EXT-Alert",
-          "EXT-Background",
-          "EXT-Bring",
-          "EXT-Browser",
-          "EXT-Detector",
-          "EXT-FreeboxTV",
-          "EXT-GooglePhotos",
-          "EXT-Governor",
-          "EXT-Librespot",
-          "EXT-MusicPlayer",
-          "EXT-Pages",
-          "EXT-Photos",
-          "EXT-Pir",
-          "EXT-RadioPlayer",
-          "EXT-Screen",
-          "EXT-SmartHome",
-          "EXT-Spotify",
-          "EXT-SpotifyCanvasLyrics",
-          "EXT-TelegramBot",
-          "EXT-Updates",
-          "EXT-VLCServer",
-          "EXT-Volume",
-          "EXT-Website",
-          "EXT-YouTube",
-          "EXT-YouTubeCast"
         ]
       },
       "EXTDescriptions" : {

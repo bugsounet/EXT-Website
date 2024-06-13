@@ -678,15 +678,6 @@ class website {
         })
 
         // to move to API
-        .post("/EXT-Updates", (req, res) => {
-          if (req.user) {
-            this.sendSocketNotification("SendNoti", "EXT_UPDATES-UPDATE");
-            res.send("ok");
-          }
-          else res.send("error");
-        })
-
-        // to move to API
         .post("/EXT-YouTubeQuery", (req, res) => {
           if (req.user) {
             let data = req.body.data;
@@ -1605,6 +1596,36 @@ class website {
     return this.website.EXTStatus;
   }
 
+  /** search a in object a filtred value
+   * sample object -->
+    {
+     ...
+      'EXT-Updates': {
+        module: 'EXT-Updates',
+        behind: 6,
+        current: 'dev',
+        hash: '',
+        tracking: 'origin/dev',
+        isBehindInStatus: false,
+        canBeUpdated: true,
+        notify: false
+      },
+      ...
+    }
+    --> filterObject(object, "canBeUpdated", true)
+    ----> will return Array of key with object found contain `canBeUpdated: true`
+    ----> [ "EXT-Updates" ]
+  */
+
+  filterObject (obj, filter, filterValue) {
+    var result = [];
+    const FiltredObject = Object.keys(obj).reduce((acc, val) => (obj[val][filter] === filterValue ? { ...acc, [val]: obj[val] } : acc ), {} );
+    if (Object.keys(FiltredObject).length) {
+      result = Object.keys(FiltredObject);
+    }
+    return result;
+  }
+
   /** Website GET API **/
   async GetAPI (req, res) {
     switch (req.url) {
@@ -1700,6 +1721,12 @@ class website {
         if (!this.website.EXTStatus["EXT-RadioPlayer"].hello || !this.website.radio) return res.status(404).send("Not Found");
         var allRadio = Object.keys(this.website.radio);
         res.send(allRadio);
+        break;
+      case "/api/EXT/Updates":
+        if (!this.website.EXTStatus["EXT-Updates"].hello) return res.status(404).send("Not Found");
+        let updates = this.filterObject(this.website.EXTStatus["EXT-Updates"].module, "canBeUpdated", true);
+        if (!updates.length) return res.status(404).send("Not Found");
+        res.json(updates);
         break;
       default:
         console.warn("[WEBSITE] Don't find:", req.url);
@@ -1834,6 +1861,13 @@ class website {
         var allRadio = Object.keys(this.website.radio);
         if (allRadio.indexOf(req.body["radio"]) === -1) return res.status(404).send("Not Found");
         this.sendSocketNotification("SendNoti", { noti: "EXT_RADIO-PLAY", payload: req.body["radio"] });
+        res.json({ done: "ok" });
+        break;
+      case "/api/EXT/Updates":
+        if (!this.website.EXTStatus["EXT-Updates"].hello) return res.status(404).send("Not Found");
+        let updates = this.filterObject(this.website.EXTStatus["EXT-Updates"].module, "canBeUpdated", true);
+        if (!updates.length) return res.status(404).send("Not Found");
+        this.sendSocketNotification("SendNoti", "EXT_UPDATES-UPDATE");
         res.json({ done: "ok" });
         break;
       default:

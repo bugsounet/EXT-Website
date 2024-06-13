@@ -307,17 +307,16 @@ async function doTools () {
     }, 1000);
     document.getElementById("Update-Confirm").onclick = function () {
       $("#Update-Confirm").addClass("disabled");
-      $.post("/EXT-Updates")
-        .done(function (back) {
-          if (back === "error") {
-            alertify.error(translation.Warn_Error);
-          } else {
-            alertify.success(translation.RequestDone);
-          }
-        })
-        .fail(function (err) {
+      $.ajax({
+        url: "/api/EXT/Updates",
+        type: "PUT",
+        success: function(response) {
+          alertify.success(translation.RequestDone);
+        },
+        error: function(err) {
           alertify.error(`[Updates] Server return Error ${err.status} (${err.statusText})`);
         });
+      };
     };
   }
 
