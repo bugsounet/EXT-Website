@@ -151,31 +151,25 @@ async function doTools () {
     $("#Screen-Box").css("display", "block");
 
     document.getElementById("Screen-Control").onclick = function () {
-      if (EXTStatus["EXT-Screen"].power) {
-        $.post("/EXT-Screen", { data: "OFF" })
-          .done(function (back) {
-            if (back.error) {
-              alertify.error(translation.Warn_Error);
-            } else {
-              alertify.success(translation.RequestDone);
-            }
-          })
-          .fail(function (err) {
+      $.ajax({
+        url: "/api/EXT/Screen",
+        type: "PUT",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        data: JSON.stringify( { power: EXTStatus["EXT-Screen"].power ? "OFF" : "ON" } ),
+        success: function (back) {
+          alertify.success(translation.RequestDone);
+        },
+        error: function (request,msg,err) {
+          if (err.status) {
             alertify.error(`[Screen] Server return Error ${err.status} (${err.statusText})`);
-          });
-      } else {
-        $.post("/EXT-Screen", { data: "ON" })
-          .done(function (back) {
-            if (back === "error") {
-              alertify.error(translation.Warn_Error);
-            } else {
-              alertify.success(translation.RequestDone);
-            }
-          })
-          .fail(function (err) {
-            alertify.error(`[Screen] Server return Error ${err.status} (${err.statusText})`);
-          });
-      }
+          } else {
+            alertify.error(`[Screen] Server return Error: ${err}`);
+          }
+          if (err.responseText) alertify.error(`[Screen] State return: ${err.responseText}`);
+        }
+      });
     };
   }
 

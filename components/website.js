@@ -583,23 +583,6 @@ class website {
         })
 
         // to move to API
-        .post("/EXT-Screen", (req, res) => {
-          if (req.user) {
-            let data = req.body.data;
-            if (data === "OFF") {
-              this.sendSocketNotification("SendNoti", "EXT_SCREEN-FORCE_END");
-              return res.send("ok");
-            }
-            if (data === "ON") {
-              this.sendSocketNotification("SendNoti", "EXT_SCREEN-FORCE_WAKEUP");
-              return res.send("ok");
-            }
-            res.send("error");
-          }
-          else res.send("error");
-        })
-
-        // to move to API
         .post("/EXT-FreeboxTVQuery", (req, res) => {
           if (this.website.freeTV && req.user) {
             let data = req.body.data;
@@ -1101,6 +1084,23 @@ class website {
         if (!YTquery || typeof(YTquery) !== "string") return res.status(400).send("Bad Request");
         this.sendSocketNotification("SendNoti", { noti: "EXT_YOUTUBE-SEARCH", payload: YTquery });
         res.json({ done: "ok" });
+        break;
+      case "/api/EXT/Screen":
+        //EXT-Screen
+        if (!this.website.EXTStatus["EXT-Screen"].hello) return res.status(404).send("Not Found");
+        let power = req.body["power"];
+        if (!power || typeof(power) !== "string") return res.status(400).send("Bad Request");
+        if (power === "OFF") {
+          if (!this.website.EXTStatus["EXT-Screen"].power) return res.status(409).send("Already OFF");
+          this.sendSocketNotification("SendNoti", "EXT_SCREEN-FORCE_END");
+          return res.json({ done: "ok" });
+        }
+        if (power === "ON") {
+          if (this.website.EXTStatus["EXT-Screen"].power) return res.status(409).send("Already ON");
+          this.sendSocketNotification("SendNoti", "EXT_SCREEN-FORCE_WAKEUP");
+          return res.json({ done: "ok" });
+        }
+        res.status(400).send("Bad Request");
         break;
       default:
         console.warn("[WEBSITE] Don't find:", req.url);
