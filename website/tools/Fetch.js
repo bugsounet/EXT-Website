@@ -8,6 +8,7 @@ function getHomeText () {
       .fail(function (err) {
         if (!err.status) alertify.error("Connexion Lost!");
         else alertify.warning(`[homeText] Server return Error ${err.status} (${err.statusText})`);
+        if (err.responseText) alertify.error(`[homeText] State return: ${err.responseText}`);
       });
   });
 }
@@ -20,7 +21,8 @@ function getVersion () {
     })
       .fail(function (err) {
         if (!err.status) alertify.error("Connexion Lost!");
-        else alertify.warning(`[getGatewayVersion] Server return Error ${err.status} (${err.statusText})`);
+        else alertify.warning(`[getVersion] Server return Error ${err.status} (${err.statusText})`);
+        if (err.responseText) alertify.error(`[getVersion] State return: ${err.responseText}`);
       });
   });
 }
@@ -33,6 +35,7 @@ function checkSystem () {
       .fail(function (err) {
         if (!err.status) alertify.error("Connexion Lost!");
         else alertify.warning(`[sysInfo] Server return Error ${err.status} (${err.statusText})`);
+        if (err.responseText) alertify.error(`[sysInfo] State return: ${err.responseText}`);
       });
   });
 }
@@ -46,6 +49,7 @@ function checkWebviewTag () {
       .fail(function (err) {
         if (!err.status) alertify.error("Connexion Lost!");
         else alertify.warning(`[checkWebviewTag] Server return Error ${err.status} (${err.statusText})`);
+        if (err.responseText) alertify.error(`[checkWebviewTag] State return: ${err.responseText}`);
       });
   });
 }
@@ -59,6 +63,7 @@ function checkGA () {
       .fail(function (err) {
         if (!err.status) alertify.error("Connexion Lost!");
         else alertify.warning(`[checkGA] Server return Error ${err.status} (${err.statusText})`);
+        if (err.responseText) alertify.error(`[checkGA] State return: ${err.responseText}`);
       });
   });
 }
@@ -92,7 +97,8 @@ function loadLoginTranslation () {
     })
       .fail(function (err) {
         if (!err.status) alertify.error("Connexion Lost!");
-        else alertify.warning(`[loadTranslation] Server return Error ${err.status} (${err.statusText})`);
+        else alertify.warning(`[loginTranslation] Server return Error ${err.status} (${err.statusText})`);
+        if (err.responseText) alertify.error(`[loginTranslation] State return: ${err.responseText}`);
       });
   });
 }
@@ -106,6 +112,7 @@ function loadTranslation () {
       .fail(function (err) {
         if (!err.status) alertify.error("Connexion Lost!");
         else alertify.warning(`[loadTranslation] Server return Error ${err.status} (${err.statusText})`);
+        if (err.responseText) alertify.error(`[loadTranslation] State return: ${err.responseText}`);
       });
   });
 }
@@ -119,6 +126,7 @@ function loadDataAllEXT () {
       .fail(function (err) {
         if (!err.status) alertify.error("Connexion Lost!");
         else alertify.warning(`[loadDataAllEXT] Server return Error ${err.status} (${err.statusText})`);
+        if (err.responseText) alertify.error(`[loadDataAllEXT] State return: ${err.responseText}`);
       });
   });
 }
@@ -132,6 +140,7 @@ function loadDataConfiguredEXT () {
       .fail(function (err) {
         if (!err.status) alertify.error("Connexion Lost!");
         else alertify.warning(`[loadDataConfiguredEXT] Server return Error ${err.status} (${err.statusText})`);
+        if (err.responseText) alertify.error(`[loadDataConfiguredEXT] State return: ${err.responseText}`);
       });
   });
 }
@@ -145,6 +154,7 @@ function loadDataInstalledEXT () {
       .fail(function (err) {
         if (!err.status) alertify.error("Connexion Lost!");
         else alertify.warning(`[loadDataInstalledEXT] Server return Error ${err.status} (${err.statusText})`);
+        if (err.responseText) alertify.error(`[loadDataInstalledEXT] State return: ${err.responseText}`);
       });
   });
 }
@@ -158,6 +168,7 @@ function loadDataDescriptionEXT () {
       .fail(function (err) {
         if (!err.status) alertify.error("Connexion Lost!");
         else alertify.warning(`[loadDataDescriptionEXT] Server return Error ${err.status} (${err.statusText})`);
+        if (err.responseText) alertify.error(`[loadDataDescriptionEXT] State return: ${err.responseText}`);
       });
   });
 }
@@ -176,6 +187,7 @@ function loadMMConfig () {
       .fail(function (err) {
         if (!err.status) alertify.error("Connexion Lost!");
         else alertify.warning(`[loadMMConfig] Server return Error ${err.status} (${err.statusText})`);
+        if (err.responseText) alertify.error(`[loadMMConfig] State return: ${err.responseText}`);
       });
   });
 }
@@ -199,7 +211,8 @@ function loadPluginConfig (plugin) {
         },
         error: function(err) {
           if (!err.status) alertify.error("Connexion Lost!");
-          else alertify.warning(`[loadPluginTemplate] Server return Error ${err.status} (${err.statusText})`);
+          else alertify.warning(`[loadPluginConfig] Server return Error ${err.status} (${err.statusText})`);
+          if (err.responseText) alertify.error(`[loadPluginConfig] State return: ${err.responseText}`);
         }
       }
     )
@@ -226,6 +239,7 @@ function loadPluginTemplate (plugin) {
         error: function(err) {
           if (!err.status) alertify.error("Connexion Lost!");
           else alertify.warning(`[loadPluginTemplate] Server return Error ${err.status} (${err.statusText})`);
+          if (err.responseText) alertify.error(`[loadPluginTemplate] State return: ${err.responseText}`);
         }
       }
     )
@@ -251,7 +265,8 @@ function loadPluginCurrentConfig (plugin) {
         },
         error: function(err) {
           if (!err.status) alertify.error("Connexion Lost!");
-          else alertify.warning(`[loadPluginTemplate] Server return Error ${err.status} (${err.statusText})`);
+          else alertify.warning(`[loadPluginConfig] Server return Error ${err.status} (${err.statusText})`);
+          if (err.responseText) alertify.error(`[loadPluginConfig] State return: ${err.responseText}`);
         }
       }
     )
@@ -294,6 +309,7 @@ function loadBackupNames () {
       .fail(function (err) {
         if (!err.status) alertify.error("Connexion Lost!");
         else alertify.warning(`[loadBackupNames] Server return Error ${err.status} (${err.statusText})`);
+        if (err.responseText) alertify.error(`[loadBackupNames] State return: ${err.responseText}`);
       });
   });
 }
@@ -308,6 +324,7 @@ function loadRadio () {
         if (!err.status) alertify.error("Connexion Lost!");
         if (err.status === 404) resolve([]);
         else alertify.warning(`[loadRadio] Server return Error ${err.status} (${err.statusText})`);
+        if (err.responseText) alertify.error(`[loadRadio] State return: ${err.responseText}`);
       });
   });
 }
@@ -408,6 +425,7 @@ function getEXTVersions () {
       .fail(function (err) {
         if (!err.status) alertify.error("Connexion Lost!");
         else alertify.warning(`[getEXTVersions] Server return Error ${err.status} (${err.statusText})`);
+        if (err.responseText) alertify.error(`[getEXTVersions] State return: ${err.responseText}`);
       });
   });
 }
