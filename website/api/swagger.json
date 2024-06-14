@@ -2280,6 +2280,63 @@
         }
       }
     },
+    "/api/backups/file": {
+      "get": {
+        "tags": [
+          "Backups"
+        ],
+        "summary": "Returns backup configuration from file content",
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "description" : "For securtity, response will be encoded in base64",
+        "parameters": [
+          {
+            "name": "backup",
+            "in": "header",
+            "description": "Backup Name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns backup config",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref" : "#/components/schemas/SendConfig"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing valid authentication token",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "$ref": "#/components/schemas/401Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Backup not found",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "$ref": "#/components/schemas/Config404Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/Assistant/query": {
       "post": {
         "tags": [

@@ -597,15 +597,6 @@ class website {
         })
 
         // to move to API
-        .get("/GetBackupFile", async (req, res) => {
-          if (req.user) {
-            let data = req.query.config;
-            var file = await this.loadBackupFile(data);
-            res.send(file);
-          }
-          else res.status(403).sendFile(`${this.WebsitePath}/403.html`);
-        })
-        // to move to API
         .post("/loadBackup", async (req, res) => {
           if (req.user) {
             console.log("[WEBSITE] Receiving backup data ...");
@@ -875,6 +866,15 @@ class website {
       case "/api/backups":
         let names = await this.loadBackupNames();
         res.json(names);
+        break;
+      case "/api/backups/file":
+        if (!req.headers["backup"]) return res.status(400).send("Bad Request");
+        let availableBackups = await this.loadBackupNames();
+        if (availableBackups.indexOf(req.headers["backup"]) === -1) return res.status(404).send("Not Found");
+        let file = await this.loadBackupFile(req.headers["backup"]);
+        let stringify = JSON.stringify(file);
+        let encoded = btoa(stringify);
+        res.json({ config: encoded });
         break;
       case "/api/EXT/RadioPlayer":
         if (!this.website.EXTStatus["EXT-RadioPlayer"].hello || !this.website.radio) return res.status(404).send("Not Found");

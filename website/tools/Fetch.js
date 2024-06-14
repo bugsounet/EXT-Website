@@ -260,14 +260,28 @@ function loadPluginCurrentConfig (plugin) {
 
 function loadBackupConfig (file) {
   return new Promise((resolve) => {
-    $.getJSON(`/GetBackupFile?config=${file}`, (backupFile) => {
-      //console.log("backupFile", backupFile)
-      resolve(backupFile);
-    })
-      .fail(function (err) {
-        if (!err.status) alertify.error("Connexion Lost!");
-        else alertify.warning(`[loadBackupConfig] Server return Error ${err.status} (${err.statusText})`);
-      });
+    $.ajax(
+      {
+        url: "/api/backups/file",
+        type: "GET",
+        headers: {"backup": file},
+        dataType: "json",
+        success: function(response){
+          try {
+            let parse = atob(response.config);
+            let backup = JSON.parse(parse);
+            resolve(backup);
+          } catch (e) {
+            alertify.error("[loadBackupConfig] Error on decode server response");
+          }
+        },
+        error: function(err) {
+          if (!err.status) alertify.error("Connexion Lost!");
+          else alertify.warning(`[loadBackupConfig] Server return Error ${err.status} (${err.statusText})`);
+          if (err.responseText) alertify.error(`[Screen] State return: ${err.responseText}`);
+        }
+      }
+    )
   });
 }
 
