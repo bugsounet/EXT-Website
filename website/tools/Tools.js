@@ -362,24 +362,21 @@ async function doTools () {
 
     document.getElementById("Spotify-Send").onclick = function () {
       $("#Spotify-Send").addClass("disabled");
-      $.post("/EXT-SpotifyQuery", {
-        data: {
-          query: $("#Spotify-Query").val(),
-          type: type
-        }
-      })
-        .done(function (back) {
-          $("#Spotify-Query").val("");
-          if (back === "error") {
-            alertify.error(translation.Warn_Error);
-          } else {
-            alertify.success(translation.RequestDone);
-          }
-        })
-        .fail(function (err) {
+      $.ajax({
+        url: "/api/EXT/Spotify",
+        type: "PUT",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        data: JSON.stringify({ query: $("#Spotify-Query").val(), type: type}),
+        success: function(response) {
+          alertify.success(translation.RequestDone);
+        },
+        error: function(err) {
           alertify.error(`[Spotify] Server return Error ${err.status} (${err.statusText})`);
           if (err.responseText) alertify.error(`[Spotify] Spotify state return: ${err.responseText}`);
-        });
+        }
+      });
     };
 
     document.getElementById("Spotify-Play").onclick = function () {

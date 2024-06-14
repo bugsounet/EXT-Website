@@ -1198,6 +1198,72 @@
         }
       }
     },
+    "/api/EXT/Spotify": {
+      "put": {
+        "tags": [
+          "EXT"
+        ],
+        "summary": "Send music that you want to listen",
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "requestBody": {
+          "description" : "Send query and type for search and listening",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SendSpotify"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Command sended successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EXT200"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing volume param",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "$ref": "#/components/schemas/Config400Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing valid authentication token",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "$ref": "#/components/schemas/401Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "EXT-Spotify not installed",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "$ref": "#/components/schemas/Config404Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/EXT/Spotify/play": {
       "put": {
         "tags": [
@@ -1249,7 +1315,7 @@
                 }
               }
             }
-          },
+          }
         }
       }
     },
@@ -1304,7 +1370,7 @@
                 }
               }
             }
-          },
+          }
         }
       }
     },
@@ -1359,7 +1425,7 @@
                 }
               }
             }
-          },
+          }
         }
       }
     },
@@ -1414,7 +1480,7 @@
                 }
               }
             }
-          },
+          }
         }
       }
     },
@@ -1469,7 +1535,7 @@
                 }
               }
             }
-          },
+          }
         }
       }
     },
@@ -4292,6 +4358,27 @@
         },
         "example": {
           "radio": "NRJ"
+        }
+      },
+      "SendSpotify": {
+        "type": "object",
+        "required": [
+          "query",
+          "type"
+        ],
+        "properties": {
+          "query": {
+            "type": "string",
+            "description": "Query to send"
+          },
+          "type": {
+            "type": "string",
+            "description": "Query type (artist, album, playlist or track)"
+          }
+        },
+        "example": {
+          "query": "Michael jackson",
+          "type" : "artist"
         }
       }
     }

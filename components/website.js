@@ -1065,7 +1065,6 @@ class website {
         res.json({ done: "ok" });
         break;
       case "/api/EXT/Spotify/play":
-        //EXT-SpotifyPlay
         if (!this.website.EXTStatus["EXT-Spotify"].hello) return res.status(404).send("Not Found");
         if (this.website.EXTStatus["EXT-Spotify"].play) return res.status(409).send("Already playing");
         this.sendSocketNotification("SendNoti", "EXT_SPOTIFY-PLAY");
@@ -1083,49 +1082,38 @@ class website {
         res.json({ done: "ok" });
         break;
       case "/api/EXT/Spotify/stop":
-        //EXT-SpotifyStop
         if (!this.website.EXTStatus["EXT-Spotify"].hello) return res.status(404).send("Not Found");
         if (!this.website.EXTStatus["EXT-Spotify"].play) return res.status(409).send("Not playing");
         this.sendSocketNotification("SendNoti", "EXT_SPOTIFY-STOP");
         res.json({ done: "ok" });
         break;
       case "/api/EXT/Spotify/next":
-        //EXT-SpotifyNext
         if (!this.website.EXTStatus["EXT-Spotify"].hello) return res.status(404).send("Not Found");
         if (!this.website.EXTStatus["EXT-Spotify"].play) return res.status(409).send("Not playing");
         this.sendSocketNotification("SendNoti", "EXT_SPOTIFY-NEXT");
         res.json({ done: "ok" });
         break;
       case "/api/EXT/Spotify/previous":
-        //EXT-SpotifyPrevious
         if (!this.website.EXTStatus["EXT-Spotify"].hello) return res.status(404).send("Not Found");
         if (!this.website.EXTStatus["EXT-Spotify"].play) return res.status(409).send("Not playing");
         this.sendSocketNotification("SendNoti", "EXT_SPOTIFY-PREVIOUS");
         res.json({ done: "ok" });
         break;
-        /*
-        // to move to API
-        .post("/EXT-SpotifyQuery", (req, res) => {
-          if (req.user) {
-            let result = req.body.data;
-            if (!result) return res.send("error");
-            let query = req.body.data.query;
-            let type = req.body.data.type;
-            if (!query || !type) return res.send("error");
-            var pl = {
-              type: type,
-              query: query,
-              random: false
-            };
-            this.sendSocketNotification("SendNoti", {
-              noti: "EXT_SPOTIFY-SEARCH",
-              payload: pl
-            });
-            res.send("ok");
-          }
-          else res.send("error");
-        })
-*/
+      case "/api/EXT/Spotify":
+        //EXT-SpotifyQuery"
+        if (!this.website.EXTStatus["EXT-Spotify"].hello) return res.status(404).send("Not Found");
+        let query = req.body["query"];
+        let type = req.body["type"];
+        let ArrayType = [ "artist", "album", "playlist", "track" ];
+        if (!query || typeof(query) !== "string" || !type || ArrayType.indexOf(type) === -1) return res.status(400).send("Bad Request");
+        var pl = {
+          type: type,
+          query: query,
+          random: false
+        };
+        this.sendSocketNotification("SendNoti", { noti: "EXT_SPOTIFY-SEARCH", payload: pl });
+        res.json({ done: "ok" });
+        break;
       default:
         console.warn("[WEBSITE] Don't find:", req.url);
         res.status(404).json({ error: "You Are Lost in Space" });
