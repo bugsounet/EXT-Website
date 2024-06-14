@@ -378,23 +378,65 @@ async function doTools () {
         })
         .fail(function (err) {
           alertify.error(`[Spotify] Server return Error ${err.status} (${err.statusText})`);
+          if (err.responseText) alertify.error(`[Spotify] Spotify state return: ${err.responseText}`);
         });
     };
 
     document.getElementById("Spotify-Play").onclick = function () {
-      $.post("/EXT-SpotifyPlay");
+      $.ajax({
+        url: "/api/EXT/Spotify/play",
+        type: "PUT",
+        success: function(response) {
+          alertify.success(translation.RequestDone);
+        },
+        error: function(err) {
+          alertify.error(`[Spotify] Server return Error ${err.status} (${err.statusText})`);
+          if (err.responseText) alertify.error(`[Spotify] Spotify state return: ${err.responseText}`);
+        }
+      });
     };
 
     document.getElementById("Spotify-Stop").onclick = function () {
-      $.post("/EXT-SpotifyStop");
+      $.ajax({
+        url: "/api/EXT/Spotify/stop",
+        type: "PUT",
+        success: function(response) {
+          alertify.success(translation.RequestDone);
+        },
+        error: function(err) {
+          alertify.error(`[Spotify] Server return Error ${err.status} (${err.statusText})`);
+          if (err.responseText) alertify.error(`[Spotify] Spotify state return: ${err.responseText}`);
+        }
+      });
     };
 
     document.getElementById("Spotify-Next").onclick = function () {
-      $.post("/EXT-SpotifyNext");
+      $.ajax({
+        url: "/api/EXT/Spotify/next",
+        type: "PUT",
+        success: function(response) {
+          alertify.success(translation.RequestDone);
+        },
+        error: function(err) {
+          console.log(err)
+          alertify.error(`[Spotify] Server return Error ${err.status} (${err.statusText})`);
+          if (err.responseText) alertify.error(`[Spotify] Spotify state return: ${err.responseText}`);
+        }
+      });
     };
 
     document.getElementById("Spotify-Previous").onclick = function () {
-      $.post("/EXT-SpotifyPrevious");
+      $.ajax({
+        url: "/api/EXT/Spotify/previous",
+        type: "PUT",
+        success: function(response) {
+          alertify.success(translation.RequestDone);
+        },
+        error: function(err) {
+          alertify.error(`[Spotify] Server return Error ${err.status} (${err.statusText})`);
+          if (err.responseText) alertify.error(`[Spotify] Spotify state return: ${err.responseText}`);
+        }
+      });
     };
 
     document.getElementById("Spotify-Artist").onclick = function () {

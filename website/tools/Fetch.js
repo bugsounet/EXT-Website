@@ -79,7 +79,7 @@ function checkEXTStatus () {
       .fail((err) => {
         ErrEXTStatus++;
         if (ErrEXTStatus === 1) alertify.error("EXTStatus: Connexion Lost!");
-        if (err.status === 403) $(location).attr("href", "/");
+        if (err.status === 403 || err.status === 401) $(location).attr("href", "/");
       });
   });
 }
