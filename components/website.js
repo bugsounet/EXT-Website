@@ -1070,40 +1070,40 @@ class website {
         if (this.website.EXTStatus["EXT-Spotify"].play) return res.status(409).send("Already playing");
         this.sendSocketNotification("SendNoti", "EXT_SPOTIFY-PLAY");
         res.json({ done: "ok" });
-        break
+        break;
       case "/api/EXT/Spotify/pause":
         if (!this.website.EXTStatus["EXT-Spotify"].hello) return res.status(404).send("Not Found");
         if (this.website.EXTStatus["EXT-Spotify"].play) return res.status(409).send("Already pausing");
         this.sendSocketNotification("SendNoti", "EXT_SPOTIFY-PAUSE");
         res.json({ done: "ok" });
-        break
+        break;
       case "/api/EXT/Spotify/toggle":
         if (!this.website.EXTStatus["EXT-Spotify"].hello) return res.status(404).send("Not Found");
         this.sendSocketNotification("SendNoti", "EXT_SPOTIFY-PLAY-TOGGLE");
         res.json({ done: "ok" });
-        break
+        break;
       case "/api/EXT/Spotify/stop":
         //EXT-SpotifyStop
         if (!this.website.EXTStatus["EXT-Spotify"].hello) return res.status(404).send("Not Found");
         if (!this.website.EXTStatus["EXT-Spotify"].play) return res.status(409).send("Not playing");
         this.sendSocketNotification("SendNoti", "EXT_SPOTIFY-STOP");
         res.json({ done: "ok" });
-        break
+        break;
       case "/api/EXT/Spotify/next":
         //EXT-SpotifyNext
         if (!this.website.EXTStatus["EXT-Spotify"].hello) return res.status(404).send("Not Found");
         if (!this.website.EXTStatus["EXT-Spotify"].play) return res.status(409).send("Not playing");
         this.sendSocketNotification("SendNoti", "EXT_SPOTIFY-NEXT");
         res.json({ done: "ok" });
-        break
+        break;
       case "/api/EXT/Spotify/previous":
         //EXT-SpotifyPrevious
         if (!this.website.EXTStatus["EXT-Spotify"].hello) return res.status(404).send("Not Found");
         if (!this.website.EXTStatus["EXT-Spotify"].play) return res.status(409).send("Not playing");
         this.sendSocketNotification("SendNoti", "EXT_SPOTIFY-PREVIOUS");
         res.json({ done: "ok" });
-        break
-/*
+        break;
+        /*
         // to move to API
         .post("/EXT-SpotifyQuery", (req, res) => {
           if (req.user) {
