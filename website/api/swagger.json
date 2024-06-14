@@ -283,7 +283,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Send EXT-Website version tools",
+            "description": "Send System informations result",
             "content": {
               "application/json": {
                 "schema": {
@@ -1200,6 +1200,7 @@
     },
     "/api/config/MM": {
       "get": {
+        "description" : "For securtity, response will be encoded in base64",
         "tags": [
           "Configuration"
         ],
@@ -1242,6 +1243,7 @@
             "Bearer": []
           }
         ],
+        "description" : "For securtity:<br><li>`config` must be encoded in base64<li>Last configuration will be saved into a file",
         "requestBody": {
           "description" : "Send new base64 encoded config in config key",
           "required": true,
@@ -1308,6 +1310,7 @@
             "Bearer": []
           }
         ],
+        "description" : "For securtity, response will be encoded in base64",
         "parameters": [
           {
             "name": "ext",
@@ -1372,6 +1375,7 @@
             "Bearer": []
           }
         ],
+        "description" : "For securtity:<br><li>`config` must be encoded in base64<li>Last configuration will be saved into a file",
         "parameters": [
           {
             "name": "ext",
@@ -1447,6 +1451,7 @@
             "Bearer": []
           }
         ],
+        "description" : "For securtity, last configuration will be saved into a file",
         "parameters": [
           {
             "name": "ext",
@@ -1523,6 +1528,7 @@
             "Bearer": []
           }
         ],
+        "description" : "For securtity, response will be encoded in base64",
         "parameters": [
           {
             "name": "ext",
@@ -1589,6 +1595,7 @@
             "Bearer": []
           }
         ],
+        "description" : "For securtity, response will be encoded in base64",
         "parameters": [
           {
             "name": "ext",

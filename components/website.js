@@ -600,27 +600,6 @@ class website {
         })
 
         // to move to API
-        .post("/EXT-AlertQuery", (req, res) => {
-          if (req.user) {
-            let data = req.body.data;
-            if (!data) return res.send("error");
-            this.sendSocketNotification("SendNoti", {
-              noti: "EXT_ALERT",
-              payload: {
-                type: "information",
-                message: data,
-                sender: req.user ? req.user.username : "EXT-Website",
-                timer: 30 * 1000,
-                sound: "modules/EXT-Website/website/tools/message.mp3",
-                icon: "modules/EXT-Website/website/assets/img/GA_Small.png"
-              }
-            });
-            res.send("ok");
-          }
-          else res.send("error");
-        })
-
-        // to move to API
         .post("/EXT-SpotifyQuery", (req, res) => {
           if (req.user) {
             let result = req.body.data;
