@@ -383,6 +383,7 @@ function doTranslateNavBar () {
   if (path === "/SystemDie" || path === "/SystemRestart") path = "/System";
   if (path === "/ptyProcess") path = "/Terminal";
   $(`a[href="${path}"]`).closest("a").addClass("active");
+  $(`a[href="${path}"]`).removeAttr("href");
 }
 
 function getEXTVersions () {
