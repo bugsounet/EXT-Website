@@ -340,7 +340,7 @@ async function doTools () {
   if (EXTStatus["EXT-Spotify"].hello) {
     var type = null;
     setInterval(() => {
-      if (EXTStatus["EXT-Spotify"].connected || (EXTStatus["EXT-Spotify"].remote && EXTStatus["EXT-Spotify"].play)) {
+      if (EXTStatus["EXT-Spotify"].connected || EXTStatus["EXT-Spotify"].play) {
         $("#Spotify-Play").css("display", "none");
         $("#Spotify-Stop").css("display", "block");
       } else {
