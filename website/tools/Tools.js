@@ -78,6 +78,7 @@ async function doTools () {
           } else {
             alertify.error(`[backup-Delete] Server return Error: ${err}`);
           }
+          if (err.responseText) alertify.error(`[backup-Delete] State return: ${err.responseText}`);
         }
       });
     };
@@ -127,6 +128,7 @@ async function doTools () {
           } else {
             alertify.error(`[WebviewTag] Server return Error: ${err}`);
           }
+          if (err.responseText) alertify.error(`[WebviewTag] State return: ${err.responseText}`);
         }
       });
     };
@@ -213,6 +215,7 @@ async function doTools () {
           } else {
             alertify.error(`[Alert] Server return Error: ${err}`);
           }
+          if (err.responseText) alertify.error(`[Alert] State return: ${err.responseText}`);
         }
       });
     };
@@ -250,6 +253,7 @@ async function doTools () {
           } else {
             alertify.error(`[Volume] Server return Error: ${err}`);
           }
+          if (err.responseText) alertify.error(`[Volume] State return: ${err.responseText}`);
         }
       });
     };
@@ -287,6 +291,7 @@ async function doTools () {
           } else {
             alertify.error(`[Volume] Server return Error: ${err}`);
           }
+          if (err.responseText) alertify.error(`[Volume] State return: ${err.responseText}`);
         }
       });
     };
@@ -325,6 +330,7 @@ async function doTools () {
         },
         error: function(err) {
           alertify.error(`[Updates] Server return Error ${err.status} (${err.statusText})`);
+          if (err.responseText) alertify.error(`[Updates] State return: ${err.responseText}`);
         }
       });
     };
@@ -534,6 +540,7 @@ async function doTools () {
       error: function(err) {
         $("#GoogleAssistant-Query").val("");
         alertify.error(`[GoogleAssistant] Server return Error ${err.status} (${err.statusText})`);
+        if (err.responseText) alertify.error(`[GoogleAssistant] State return: ${err.responseText}`);
       }
     });
   };
@@ -553,18 +560,21 @@ async function doTools () {
     });
 
     document.getElementById("YouTube-Send").onclick = function () {
-      $.post("/EXT-YouTubeQuery", { data: $("#YouTube-Query").val() })
-        .done(function (back) {
-          $("#YouTube-Query").val("");
-          if (back === "error") {
-            alertify.error(translation.Warn_Error);
-          } else {
-            alertify.success(translation.RequestDone);
-          }
-        })
-        .fail(function (err) {
+      $.ajax({
+        url: "/api/EXT/YouTube",
+        type: "PUT",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        data: JSON.stringify({ query: $("#YouTube-Query").val() }),
+        success: function(response) {
+          alertify.success(translation.RequestDone);
+        },
+        error: function(err) {
           alertify.error(`[YouTube] Server return Error ${err.status} (${err.statusText})`);
-        });
+          if (err.responseText) alertify.error(`[YouTube] State return: ${err.responseText}`);
+        }
+      });
     };
   }
 
@@ -602,6 +612,7 @@ async function doTools () {
         },
         error: function(err) {
           alertify.error(`[RadioPlayer] Server return Error ${err.status} (${err.statusText})`);
+          if (err.responseText) alertify.error(`[RadioPlayer] State return: ${err.responseText}`);
         }
       });
     };
@@ -639,6 +650,7 @@ async function doTools () {
       })
       .fail(function (err) {
         alertify.error(`[STOP] Server return Error ${err.status} (${err.statusText})`);
+        if (err.responseText) alertify.error(`[STOP] State return: ${err.responseText}`);
       });
   };
 

@@ -600,24 +600,6 @@ class website {
         })
 
         // to move to API
-        .post("/EXT-YouTubeQuery", (req, res) => {
-          if (req.user) {
-            let data = req.body.data;
-            if (!data) return res.send("error");
-            if (this.website.EXTStatus["EXT-YouTube"].hello) {
-              this.sendSocketNotification("SendNoti", {
-                noti: "EXT_YOUTUBE-SEARCH",
-                payload: data
-              });
-              res.send("ok");
-            } else {
-              res.send("error");
-            }
-          }
-          else res.send("error");
-        })
-
-        // to move to API
         .post("/EXT-FreeboxTVQuery", (req, res) => {
           if (this.website.freeTV && req.user) {
             let data = req.body.data;
@@ -1100,7 +1082,6 @@ class website {
         res.json({ done: "ok" });
         break;
       case "/api/EXT/Spotify":
-        //EXT-SpotifyQuery"
         if (!this.website.EXTStatus["EXT-Spotify"].hello) return res.status(404).send("Not Found");
         let query = req.body["query"];
         let type = req.body["type"];
@@ -1112,6 +1093,13 @@ class website {
           random: false
         };
         this.sendSocketNotification("SendNoti", { noti: "EXT_SPOTIFY-SEARCH", payload: pl });
+        res.json({ done: "ok" });
+        break;
+      case "/api/EXT/YouTube":
+        if (!this.website.EXTStatus["EXT-YouTube"].hello) return res.status(404).send("Not Found");
+        let YTquery = req.body["query"];
+        if (!YTquery || typeof(YTquery) !== "string") return res.status(400).send("Bad Request");
+        this.sendSocketNotification("SendNoti", { noti: "EXT_YOUTUBE-SEARCH", payload: YTquery });
         res.json({ done: "ok" });
         break;
       default:
