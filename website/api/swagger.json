@@ -42,6 +42,10 @@
     {
       "name": "Backups",
       "description": "Manage backups"
+    },
+    {
+      "name": "MagicMirror²",
+      "description": "Let's Manage MagicMirror² with notification"
     }
   ],
   "paths": {
@@ -2533,6 +2537,62 @@
         }
       }
     },
+    "/api/MM": {
+      "put": {
+        "tags": [
+          "MagicMirror²"
+        ],
+        "summary": "Send notification and payload for MagicMirror² control",
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "requestBody": {
+          "description" : "Send notification request with payload (optional)",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SendMM"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Notification sended",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Result200"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing notification in params",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "$ref": "#/components/schemas/Config400Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing valid authentication token",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "$ref": "#/components/schemas/401Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/Assistant/query": {
       "post": {
         "tags": [
@@ -3613,6 +3673,26 @@
         "example": {
           "file": "/download/1718454458797.js",
           "expire_in": 60
+        }
+      },
+      "SendMM": {
+        "type": "object",
+        "required": [
+          "notification"
+        ],
+        "properties": {
+          "notification": {
+            "type": "string",
+            "description": "Notification to send"
+          },
+          "payload": {
+            "type": "string",
+            "description": "Payload content to send"
+          }
+        },
+        "example": {
+          "notification": "ARTICLE_MORE_DETAILS",
+          "payload": null
         }
       },
       "SendQuery": {
