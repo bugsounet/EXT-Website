@@ -1129,9 +1129,9 @@ class website {
         let notification = req.body["notification"];
         let payload = req.body["payload"];
         if (!notification || typeof(notification) !== "string") return res.status(400).send("Bad Request");
-        log("Notification:", notification)
+        log("Notification:", notification);
         if (payload) {
-          log("With payload:", payload)
+          log("With payload:", payload);
           this.sendSocketNotification("SendNoti", { noti: notification, payload: payload });
         } else {
           this.sendSocketNotification("SendNoti", notification);
