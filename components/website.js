@@ -827,7 +827,7 @@ class website {
       case "/api/EXT/RadioPlayer":
         if (!this.website.EXTStatus["EXT-RadioPlayer"].hello || !this.website.radio) return res.status(404).send("Not Found");
         var allRadio = Object.keys(this.website.radio);
-        res.send(allRadio);
+        res.json(allRadio);
         break;
 
       case "/api/EXT/Updates":
@@ -835,6 +835,13 @@ class website {
         let updates = this.filterObject(this.website.EXTStatus["EXT-Updates"].module, "canBeUpdated", true);
         if (!updates.length) return res.status(404).send("Not Found");
         res.json(updates);
+        break;
+
+      case "/api/EXT/FreeboxTV":
+        if (!this.website.EXTStatus["EXT-FreeboxTV"].hello) return res.status(404).send("Not Found");
+        if (this.website.language !== "fr") return res.status(409).send("Reserved for French language");
+        var allTV = Object.keys(this.website.freeTV);
+        res.json(allTV);
         break;
 
       default:

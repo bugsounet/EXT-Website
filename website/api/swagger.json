@@ -1686,6 +1686,50 @@
       }
     },
     "/api/EXT/FreeboxTV": {
+      "get": {
+        "tags": [
+          "EXT"
+        ],
+        "summary": "Returns TV channel list from stream configuration file",
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "description": "Needed: `EXT-FreeboxTV` plugin<br>Reserved for French users.",
+        "responses": {
+          "200": {
+            "description": "Returns TV channel list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SendFreeboxTVList"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing valid authentication token",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "$ref": "#/components/schemas/401Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "EXT-FreeboxTV not installed or no TV channel found",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "$ref": "#/components/schemas/Config404Error"
+                }
+              }
+            }
+          }
+        }
+      },
       "put": {
         "tags": [
           "EXT"
@@ -3816,6 +3860,43 @@
         "example": {
           "power": "OFF"
         }
+      },
+      "SendFreeboxTVList" : {
+        "description": "Array of all available TV channel",
+        "type": "array",
+        "items": {
+          "type" : "string"
+        },
+        "example": [
+          "France2",
+          "France3",
+          "France4",
+          "France5",
+          "ARTE",
+          "C8",
+          "NRJ12",
+          "LCP",
+          "BFMTV",
+          "CNews",
+          "CStar",
+          "Gulli",
+          "Equipe",
+          "RMCStory",
+          "RMCDecouverte",
+          "Cherie25",
+          "FranceInfo",
+          "ParisPremiere",
+          "RTL9",
+          "GameOne",
+          "AB1",
+          "TEVA",
+          "M6Music",
+          "MCM",
+          "Mangas",
+          "Equidia",
+          "Automoto",
+          "RFMTV"
+        ]
       },
       "SendFreeboxTV": {
         "type": "object",
