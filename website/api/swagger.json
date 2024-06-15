@@ -2560,7 +2560,7 @@
           }
         },
         "responses": {
-          "201": {
+          "202": {
             "description": "Notification sended",
             "content": {
               "application/json": {

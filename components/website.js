@@ -1125,6 +1125,19 @@ class website {
           res.status(400).send("Bad Request");
         }
         break;
+      case "/api/MM":
+        let notification = req.body["notification"];
+        let payload = req.body["payload"];
+        if (!notification || typeof(notification) !== "string") return res.status(400).send("Bad Request");
+        log("Notification:", notification)
+        if (payload) {
+          log("With payload:", payload)
+          this.sendSocketNotification("SendNoti", { noti: notification, payload: payload });
+        } else {
+          this.sendSocketNotification("SendNoti", notification);
+        }
+        res.status(202).json({ done: "ok" });
+        break;
       default:
         console.warn("[WEBSITE] Don't find:", req.url);
         res.status(404).json({ error: "You Are Lost in Space" });
