@@ -1322,9 +1322,11 @@ class website {
       var MMConfig = undefined;
       let file = `${this.root_path}/config/config.js`;
       if (fs.existsSync(file)) {
+        log("Read MM² config:", file)
         MMConfig = require(file);
         MMConfig = this.configStartMerge(MMConfig);
       }
+      log("Read MM² Config: Done")
       resolve(MMConfig);
     });
   }
@@ -1446,8 +1448,9 @@ class website {
           console.log("[WEBSITE] Saved TMP configuration!");
           console.log("[WEBSITE] Backup saved in", backupPath);
           console.log("[WEBSITE] Check Function in config and revive it...");
-          var FunctionSearch = new RegExp(/(.*)(`|')\[FUNCTION\](.*)(`|')/, "g");
-          function readFileLineByLine (inputFile, outputFile) {
+
+          const readFileLineByLine = (inputFile, outputFile) => {
+            var FunctionSearch = new RegExp(/(.*)(`|')\[FUNCTION\](.*)(`|')/, "g");
             fs.unlink(outputFile, (err) => {
               if (err) {
                 resolve({ error: "Error when deleting file" });
@@ -1487,6 +1490,7 @@ class website {
               });
             });
           }
+
           readFileLineByLine(configPathTMP, configPath);
         });
       });
@@ -1517,8 +1521,8 @@ class website {
           return console.error("[WEBSITE] [WRITE] error", error);
         }
 
-        var FunctionSearch = new RegExp(/(.*)(`|')\[FUNCTION\](.*)(`|')/, "g");
-        function readFileLineByLine (inputFile, outputFile) {
+        readFileLineByLine = (inputFile, outputFile) => {
+          var FunctionSearch = new RegExp(/(.*)(`|')\[FUNCTION\](.*)(`|')/, "g");
           var instream = fs.createReadStream(inputFile);
           var outstream = new Stream();
           outstream.readable = true;
@@ -1930,6 +1934,7 @@ class website {
   // Function() in config ?
   replacer (key, value) {
     if (typeof value === "function") {
+      log("FUNCTION Replace", value.toString())
       return `[FUNCTION]${value.toString()}`;
     }
     return value;
@@ -1938,11 +1943,11 @@ class website {
   reviver (value) {
     // value[1] = feature
     // value[3] = function()
-    //console.log("[WEBSITE][FUNCTION] Function found!")
+    log("Function found!")
     var charsReplacer = value[3].replace(/\\n/g, "\n");
     charsReplacer = charsReplacer.replace(/\\/g, "");
     var result = value[1] + charsReplacer;
-    //console.log("[WEBSITE][FUNCTION] Reviver line:\n", result)
+    log("Function Reviver line:\n", result)
     return result;
   }
 
