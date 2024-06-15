@@ -1322,11 +1322,11 @@ class website {
       var MMConfig = undefined;
       let file = `${this.root_path}/config/config.js`;
       if (fs.existsSync(file)) {
-        log("Read MM² config:", file)
+        log("Read MM² config:", file);
         MMConfig = require(file);
         MMConfig = this.configStartMerge(MMConfig);
       }
-      log("Read MM² Config: Done")
+      log("Read MM² Config: Done");
       resolve(MMConfig);
     });
   }
@@ -1489,7 +1489,7 @@ class website {
                 });
               });
             });
-          }
+          };
 
           readFileLineByLine(configPathTMP, configPath);
         });
@@ -1552,7 +1552,7 @@ class website {
               resolve({ data: time });
             });
           });
-        }
+        };
         readFileLineByLine(configPathTMP, configPathOut);
       });
     });
@@ -1934,7 +1934,7 @@ class website {
   // Function() in config ?
   replacer (key, value) {
     if (typeof value === "function") {
-      log("FUNCTION Replace", value.toString())
+      log("FUNCTION Replace", value.toString());
       return `[FUNCTION]${value.toString()}`;
     }
     return value;
@@ -1943,11 +1943,11 @@ class website {
   reviver (value) {
     // value[1] = feature
     // value[3] = function()
-    log("Function found!")
+    log("Function found!");
     var charsReplacer = value[3].replace(/\\n/g, "\n");
     charsReplacer = charsReplacer.replace(/\\/g, "");
     var result = value[1] + charsReplacer;
-    log("Function Reviver line:\n", result)
+    log("Function Reviver line:\n", result);
     return result;
   }
 
