@@ -124,25 +124,36 @@ async function EditMMConfigJSEditor () {
   document.getElementById("load").onclick = function () {
     $("#load").css("display", "none");
     $("#wait").css("display", "block");
-    $.post("/loadBackup", { data: conf })
-      .done(function (back) {
-        if (back.error) {
+
+    $.ajax({
+      url: "/api/backups/file",
+      type: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        "backup": conf
+      },
+      success: function (back) {
+        $("#wait").css("display", "none");
+        $("#done").css("display", "block");
+        $("#alert").removeClass("invisible");
+        $("#messageText").text(translation.Restart);
+      },
+      error: function (request,msg,err) {
           $("#wait").css("display", "none");
           $("#error").css("display", "block");
           $("#alert").removeClass("invisible");
           $("#alert").removeClass("alert-success");
           $("#alert").addClass("alert-danger");
-          $("#messageText").text(back.error);
+        if (err.status) {
+          $("#messageText").text(err.statusText);
+          alertify.error(`[loadBackup] Server return Error ${err.status} (${err.statusText})`);
         } else {
-          $("#wait").css("display", "none");
-          $("#done").css("display", "block");
-          $("#alert").removeClass("invisible");
-          $("#messageText").text(translation.Restart);
+          $("#messageText").text(err);
+          alertify.error(`[loadBackup] Server return Error: ${err}`);
         }
-      })
-      .fail(function (err) {
-        alertify.error(`[loadBackup] Server return Error ${err.status} (${err.statusText})`);
-      });
+        if (err.responseText) alertify.error(`[loadBackup] State return: ${err.responseText}`);
+      }
+    });
   };
   document.getElementById("save").onclick = function () {
     let data = editor.get();
@@ -185,6 +196,7 @@ async function EditMMConfigJSEditor () {
           $("#messageText").text(err);
           alertify.error(`[writeConfig] Server return Error: ${err}`);
         }
+        if (err.responseText) alertify.error(`[writeConfigp] State return: ${err.responseText}`);
       }
     });
 
@@ -206,6 +218,7 @@ async function EditMMConfigJSEditor () {
             })
             .fail(function (err) {
               alertify.error(`[readExternalBackup] Server return Error ${err.status} (${err.statusText})`);
+              if (err.responseText) alertify.error(`[readExternalBackup] State return: ${err.responseText}`);
             });
         }
       }
@@ -237,7 +250,8 @@ async function EditMMConfigJSEditor () {
           }
         })
         .fail(function (err) {
-          alertify.error(`[readExternalBackup] Server return Error ${err.status} (${err.statusText})`);
+          alertify.error(`[saveExternalBackup] Server return Error ${err.status} (${err.statusText})`);
+          if (err.responseText) alertify.error(`[saveExternalBackup] State return: ${err.responseText}`);
         });
     }, function () {
       // do nothing

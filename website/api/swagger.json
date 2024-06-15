@@ -2335,6 +2335,70 @@
             }
           }
         }
+      },
+      "put": {
+        "tags": [
+          "Backups"
+        ],
+        "summary": "Send backup filename configuration and apply configuration from filename content",
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "backup",
+            "in": "header",
+            "description": "Backup Name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Configuration Updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref" : "#/components/schemas/Config200"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing valid authentication token",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "$ref": "#/components/schemas/401Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Backup not found",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "$ref": "#/components/schemas/Config404Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error on writing new configuration file",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Config500Error"
+                }
+              }
+            }
+          }
+        }
       }
     },
     "/api/Assistant/query": {

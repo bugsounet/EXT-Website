@@ -597,22 +597,6 @@ class website {
         })
 
         // to move to API
-        .post("/loadBackup", async (req, res) => {
-          if (req.user) {
-            console.log("[WEBSITE] Receiving backup data ...");
-            let file = req.body.data;
-            var loadFile = await this.loadBackupFile(file);
-            var resultSaveConfig = await this.saveConfig(loadFile);
-            console.log("[WEBSITE] Write config result:", resultSaveConfig);
-            res.send(resultSaveConfig);
-            if (resultSaveConfig.done) {
-              this.website.MMConfig = await this.readConfig();
-              console.log("[WEBSITE] Reload config");
-            }
-          } else res.status(403).sendFile(`${this.WebsitePath}/403.html`);
-        })
-
-        // to move to API
         .post("/readExternalBackup", async (req, res) => {
           if (req.user) {
             let data = req.body.data;
@@ -787,34 +771,44 @@ class website {
           res.json(version);
         }
         break;
+
       case "/api/translations/common":
         res.json(this.website.translation);
         break;
+
       case "/api/translations/homeText":
         res.json({ homeText: this.website.homeText });
         break;
+
       case "/api/system/sysInfo":
         this.website.systemInformation.result = await this.website.systemInformation.lib.Get();
         res.json(this.website.systemInformation.result);
         break;
+
       case "/api/EXT/versions":
         res.json(this.website.EXTVersions);
         break;
+
       case "/api/EXT":
         res.json(this.website.EXT);
         break;
+
       case "/api/EXT/installed":
         res.json(this.website.EXTInstalled);
         break;
+
       case "/api/EXT/configured":
         res.json(this.website.EXTConfigured);
         break;
+
       case "/api/EXT/descriptions":
         res.json(this.website.EXTDescription);
         break;
+
       case "/api/EXT/status":
         res.json(this.website.EXTStatus);
         break;
+
       case "/api/config/MM":
         try {
           let stringify = JSON.stringify(this.website.MMConfig);
@@ -824,6 +818,7 @@ class website {
           res.status(500).json({ error: e.message });
         }
         break;
+
       case "/api/config/EXT":
         if (!req.headers["ext"]) return res.status(400).send("Bad Request");
         var index = this.website.MMConfig.modules.map((e) => { return e.module; }).indexOf(req.headers["ext"]);
@@ -836,6 +831,7 @@ class website {
           res.status(404).send("Not Found");
         }
         break;
+
       case "/api/config/default":
         if (!req.headers["ext"]) return res.status(400).send("Bad Request");
         try {
@@ -847,6 +843,7 @@ class website {
           res.status(404).send("Not Found");
         }
         break;
+
       case "/api/config/schema":
         if (!req.headers["ext"]) return res.status(400).send("Bad Request");
         try {
@@ -860,13 +857,16 @@ class website {
           res.status(404).send("Not Found");
         }
         break;
+
       case "/api/config/webview":
         res.json({ webview: this.website.webviewTag });
         break;
+
       case "/api/backups":
         let names = await this.loadBackupNames();
         res.json(names);
         break;
+
       case "/api/backups/file":
         if (!req.headers["backup"]) return res.status(400).send("Bad Request");
         let availableBackups = await this.loadBackupNames();
@@ -876,17 +876,20 @@ class website {
         let encoded = btoa(stringify);
         res.json({ config: encoded });
         break;
+
       case "/api/EXT/RadioPlayer":
         if (!this.website.EXTStatus["EXT-RadioPlayer"].hello || !this.website.radio) return res.status(404).send("Not Found");
         var allRadio = Object.keys(this.website.radio);
         res.send(allRadio);
         break;
+
       case "/api/EXT/Updates":
         if (!this.website.EXTStatus["EXT-Updates"].hello) return res.status(404).send("Not Found");
         let updates = this.filterObject(this.website.EXTStatus["EXT-Updates"].module, "canBeUpdated", true);
         if (!updates.length) return res.status(404).send("Not Found");
         res.json(updates);
         break;
+
       default:
         console.warn("[WEBSITE] Don't find:", req.url);
         res.status(404).json({ error: "You Are Lost in Space" });
@@ -908,9 +911,7 @@ class website {
           res.status(400).send("Bad Request");
           return;
         }
-
         console.log("[WEBSITE] Write config result:", resultSaveConfig);
-
         if (resultSaveConfig.done) {
           res.json(resultSaveConfig);
           this.website.MMConfig = await this.readConfig();
@@ -919,6 +920,7 @@ class website {
           res.status(500).json({ error: resultSaveConfig.error });
         }
         break;
+
       case "/api/config/EXT":
         console.log("[WEBSITE] Receiving write EXT config...");
         if (!req.headers["ext"] || !req.body["config"]) return res.status(400).send("Bad Request");
@@ -939,9 +941,7 @@ class website {
           res.status(400).send("Bad Request");
           return;
         }
-
         console.log("[WEBSITE] Write config result:", resultSaveConfig);
-
         if (resultSaveConfig.done) {
           res.json(resultSaveConfig);
           this.website.MMConfig = await this.readConfig();
@@ -951,6 +951,7 @@ class website {
           res.status(500).json({ error: resultSaveConfig.error });
         }
         break;
+
       case "/api/config/webview":
         if (!this.website.webviewTag) {
           console.log("[WEBSITE] Receiving set webview...");
@@ -970,6 +971,7 @@ class website {
           res.status(400).send("Already activated");
         }
         break;
+
       case "/api/EXT":
         if (!req.headers["ext"]) return res.status(400).send("Bad Request");
         const pluginName = req.headers["ext"];
@@ -1000,6 +1002,7 @@ class website {
           res.status(400).send("Already installed");
         }
         break;
+
       case "/api/EXT/Volume/speaker":
         if (!this.website.EXTStatus["EXT-Volume"].hello) return res.status(404).send("Not Found");
         let speaker = req.body["volume"];
@@ -1007,6 +1010,7 @@ class website {
         this.sendSocketNotification("SendNoti", { noti: "EXT_VOLUME-SPEAKER_SET", payload: speaker|| "0" });
         res.json({ done: "ok" });
         break;
+
       case "/api/EXT/Volume/recorder":
         if (!this.website.EXTStatus["EXT-Volume"].hello) return res.status(404).send("Not Found");
         let recorder = req.body["volume"];
@@ -1014,6 +1018,7 @@ class website {
         this.sendSocketNotification("SendNoti", { noti: "EXT_VOLUME-RECORDER_SET", payload: recorder|| "0" });
         res.json({ done: "ok" });
         break;
+
       case "/api/EXT/RadioPlayer":
         if (!this.website.EXTStatus["EXT-RadioPlayer"].hello || !this.website.radio) return res.status(404).send("Not Found");
         if (!req.body["radio"]) return res.status(400).send("Bad Request");
@@ -1022,6 +1027,7 @@ class website {
         this.sendSocketNotification("SendNoti", { noti: "EXT_RADIO-PLAY", payload: req.body["radio"] });
         res.json({ done: "ok" });
         break;
+
       case "/api/EXT/Updates":
         if (!this.website.EXTStatus["EXT-Updates"].hello) return res.status(404).send("Not Found");
         let updates = this.filterObject(this.website.EXTStatus["EXT-Updates"].module, "canBeUpdated", true);
@@ -1029,41 +1035,48 @@ class website {
         this.sendSocketNotification("SendNoti", "EXT_UPDATES-UPDATE");
         res.json({ done: "ok" });
         break;
+
       case "/api/EXT/Spotify/play":
         if (!this.website.EXTStatus["EXT-Spotify"].hello) return res.status(404).send("Not Found");
         if (this.website.EXTStatus["EXT-Spotify"].play) return res.status(409).send("Already playing");
         this.sendSocketNotification("SendNoti", "EXT_SPOTIFY-PLAY");
         res.json({ done: "ok" });
         break;
+
       case "/api/EXT/Spotify/pause":
         if (!this.website.EXTStatus["EXT-Spotify"].hello) return res.status(404).send("Not Found");
         if (this.website.EXTStatus["EXT-Spotify"].play) return res.status(409).send("Already pausing");
         this.sendSocketNotification("SendNoti", "EXT_SPOTIFY-PAUSE");
         res.json({ done: "ok" });
         break;
+
       case "/api/EXT/Spotify/toggle":
         if (!this.website.EXTStatus["EXT-Spotify"].hello) return res.status(404).send("Not Found");
         this.sendSocketNotification("SendNoti", "EXT_SPOTIFY-PLAY-TOGGLE");
         res.json({ done: "ok" });
         break;
+
       case "/api/EXT/Spotify/stop":
         if (!this.website.EXTStatus["EXT-Spotify"].hello) return res.status(404).send("Not Found");
         if (!this.website.EXTStatus["EXT-Spotify"].play) return res.status(409).send("Not playing");
         this.sendSocketNotification("SendNoti", "EXT_SPOTIFY-STOP");
         res.json({ done: "ok" });
         break;
+
       case "/api/EXT/Spotify/next":
         if (!this.website.EXTStatus["EXT-Spotify"].hello) return res.status(404).send("Not Found");
         if (!this.website.EXTStatus["EXT-Spotify"].play) return res.status(409).send("Not playing");
         this.sendSocketNotification("SendNoti", "EXT_SPOTIFY-NEXT");
         res.json({ done: "ok" });
         break;
+
       case "/api/EXT/Spotify/previous":
         if (!this.website.EXTStatus["EXT-Spotify"].hello) return res.status(404).send("Not Found");
         if (!this.website.EXTStatus["EXT-Spotify"].play) return res.status(409).send("Not playing");
         this.sendSocketNotification("SendNoti", "EXT_SPOTIFY-PREVIOUS");
         res.json({ done: "ok" });
         break;
+
       case "/api/EXT/Spotify":
         if (!this.website.EXTStatus["EXT-Spotify"].hello) return res.status(404).send("Not Found");
         let query = req.body["query"];
@@ -1078,6 +1091,7 @@ class website {
         this.sendSocketNotification("SendNoti", { noti: "EXT_SPOTIFY-SEARCH", payload: pl });
         res.json({ done: "ok" });
         break;
+
       case "/api/EXT/YouTube":
         if (!this.website.EXTStatus["EXT-YouTube"].hello) return res.status(404).send("Not Found");
         let YTquery = req.body["query"];
@@ -1085,6 +1099,7 @@ class website {
         this.sendSocketNotification("SendNoti", { noti: "EXT_YOUTUBE-SEARCH", payload: YTquery });
         res.json({ done: "ok" });
         break;
+
       case "/api/EXT/Screen":
         //EXT-Screen
         if (!this.website.EXTStatus["EXT-Screen"].hello) return res.status(404).send("Not Found");
@@ -1102,6 +1117,23 @@ class website {
         }
         res.status(400).send("Bad Request");
         break;
+
+      case "/api/backups/file":
+        if (!req.headers["backup"]) return res.status(400).send("Bad Request");
+        let availableBackups = await this.loadBackupNames();
+        if (availableBackups.indexOf(req.headers["backup"]) === -1) return res.status(404).send("Not Found");
+        let file = await this.loadBackupFile(req.headers["backup"]);
+        var resultSaveConfig = await this.saveConfig(file);
+        console.log("[WEBSITE] Write config result:", resultSaveConfig);
+        if (resultSaveConfig.done) {
+          res.json(resultSaveConfig);
+          this.website.MMConfig = await this.readConfig();
+          console.log("[WEBSITE] Reload config");
+        } else if (resultSaveConfig.error) {
+          res.status(500).json({ error: resultSaveConfig.error });
+        }
+        break;
+
       default:
         console.warn("[WEBSITE] Don't find:", req.url);
         res.status(404).json({ error: "You Are Lost in Space" });
@@ -1116,22 +1148,27 @@ class website {
         this.sendSocketNotification("SendNoti", "EXT_STOP");
         res.json({ done: "ok" });
         break;
+
       case "/api/system/restart":
         setTimeout(() => this.sendSocketNotification("SendNoti", "EXT_GATEWAY-Restart"), 1000);
         res.json({ done: "ok" });
         break;
+
       case "/api/system/die":
         setTimeout(() => this.sendSocketNotification("SendNoti", "EXT_GATEWAY-Close"), 3000);
         res.json({ done: "ok" });
         break;
+
       case "/api/system/reboot":
         setTimeout(() => this.sendSocketNotification("SendNoti", "EXT-GATEWAY-Reboot"), 1000);
         res.json({ done: "ok" });
         break;
+
       case "/api/system/shutdown":
         setTimeout(() => this.sendSocketNotification("SendNoti", "EXT-GATEWAY-Shutdown"), 3000);
         res.json({ done: "ok" });
         break;
+
       case "/api/Assistant/query":
         if (!this.website.EXTStatus["GA_Ready"]) return res.status(404).send("Not Found");
         let query = req.body["query"];
@@ -1139,6 +1176,7 @@ class website {
         this.sendSocketNotification("SendNoti", { noti: "GA_ACTIVATE", payload: { type: "TEXT", key: query } });
         res.json({ done: "ok" });
         break;
+
       case "/api/EXT/Alert":
         if (!this.website.EXTStatus["EXT-Alert"].hello) return res.status(404).send("Not Found");
         let alert = req.body["alert"];
@@ -1156,6 +1194,7 @@ class website {
         });
         res.json({ done: "ok" });
         break;
+
       default:
         console.warn("[WEBSITE] Don't find:", req.url);
         res.status(404).json({ error: "You Are Lost in Space" });
@@ -1171,10 +1210,8 @@ class website {
         if (!req.headers["ext"]) return res.status(400).send("Bad Request");
         const plugin = this.checkPluginInConfig(req.headers["ext"]);
         if (!plugin) return res.status(404).send("Not Found");
-
         const NewConfig = await this.configDelete(req.headers["ext"]);
         const resultSaveConfig = await this.saveConfig(NewConfig);
-
         console.log("[WEBSITE] Write config result:", resultSaveConfig);
         if (resultSaveConfig.done) {
           res.json(resultSaveConfig);
@@ -1185,6 +1222,7 @@ class website {
           res.status(500).json({ error: resultSaveConfig.error });
         }
         break;
+
       case "/api/EXT":
         console.log("[WEBSITE] Receiving delete EXT...");
         if (!req.headers["ext"]) return res.status(400).send("Bad Request");
@@ -1210,12 +1248,14 @@ class website {
           res.status(404).send("Not Found");
         }
         break;
+
       case "/api/backups":
         console.log("[WEBSITE] Receiving delete backup demand...");
         let deleteBackup = await this.deleteBackup();
         console.log("[WEBSITE] Delete backup result:", deleteBackup);
         res.json(deleteBackup);
         break;
+
       default:
         console.warn("[WEBSITE] Don't find:", req.url);
         res.status(404).json({ error: "You Are Lost in Space" });
