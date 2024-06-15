@@ -597,18 +597,6 @@ class website {
         })
 
         // to move to API
-        .post("/readExternalBackup", async (req, res) => {
-          if (req.user) {
-            let data = req.body.data;
-            if (!data) return res.send({ error: "error" });
-            console.log("[WEBSITE] Receiving External backup...");
-            var transformExternalBackup = await this.transformExternalBackup(data);
-            res.send({ data: transformExternalBackup });
-          }
-          else res.status(403).sendFile(`${this.WebsitePath}/403.html`);
-        })
-
-        // to move to API
         .post("/saveExternalBackup", async (req, res) => {
           if (req.user) {
             let data = req.body.data;
@@ -1195,6 +1183,24 @@ class website {
         res.json({ done: "ok" });
         break;
 
+      case "/api/backups/external":
+        let config = req.body["config"];
+        try  {
+          let decoded = atob(req.body["config"]);
+          console.log("[WEBSITE] Receiving External backup...");
+          var transformExternalBackup = await this.transformExternalBackup(decoded);
+          if (transformExternalBackup.error) {
+            res.status(500).json({ error: transformExternalBackup.error });
+          } else {
+            let stringify = JSON.stringify(transformExternalBackup);
+            let encode = btoa(stringify);
+            res.json({ config: encode });
+          }
+        } catch (e) {
+          console.log("[WEBSITE] Request error", e.message);
+          res.status(400).send("Bad Request");
+        }
+        break;
       default:
         console.warn("[WEBSITE] Don't find:", req.url);
         res.status(404).json({ error: "You Are Lost in Space" });
@@ -1307,17 +1313,21 @@ class website {
 
   readTMPBackupConfig (file) {
     return new Promise((resolve) => {
-      var TMPConfig = undefined;
-      if (fs.existsSync(file)) {
-        TMPConfig = require(file);
-        TMPConfig = this.configStartMerge(TMPConfig);
-        fs.unlink(file, (err) => {
-          if (err) {
-            resolve({ error: "Error when deleting file" });
-            return console.error("[WEBSITE] [DELETE] error", err);
-          }
-        });
-        resolve(TMPConfig);
+      try {
+        var TMPConfig = undefined;
+        if (fs.existsSync(file)) {
+          TMPConfig = require(file);
+          TMPConfig = this.configStartMerge(TMPConfig);
+          fs.unlink(file, (err) => {
+            if (err) {
+              resolve({ error: "Error when deleting file" });
+              return console.error("[WEBSITE] [DELETE] error", err);
+            }
+          });
+          resolve(TMPConfig);
+        }
+      } catch (e) {
+        resolve ( { error: "Error on reading file" } );
       }
     });
   }
@@ -1537,16 +1547,20 @@ class website {
 
   transformExternalBackup (backup) {
     return new Promise((resolve) => {
-      var tmpFile = `${this.WebsiteModulePath}/tmp/config.tmp${this.timeStamp()}`;
-      fs.writeFile(tmpFile, backup, async (err) => {
-        if (err) {
-          console.log("[WEBSITE] [externalBackup]", err);
-          resolve({ error: "Error when writing external tmp backup file" });
-        } else {
-          const result = await this.readTMPBackupConfig(tmpFile);
-          resolve(result);
-        }
-      });
+      try {
+        var tmpFile = `${this.WebsiteModulePath}/tmp/config.${this.timeStamp()}.tmp`;
+        fs.writeFile(tmpFile, backup, async (err) => {
+          if (err) {
+            console.log("[WEBSITE] [externalBackup]", err);
+            resolve({ error: "Error when writing external tmp backup file" });
+          } else {
+            const result = await this.readTMPBackupConfig(tmpFile);
+            resolve(result);
+          }
+        });
+      } catch (e) {
+        resolve ( { error: "Invalid file" } );
+      } 
     });
   }
 

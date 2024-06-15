@@ -206,20 +206,30 @@ async function EditMMConfigJSEditor () {
     on: {
       load (event, file) {
         if (event.target.result) {
-          $.post("/readExternalBackup", { data: event.target.result })
-            .done(function (back) {
-              if (back.error) {
-                alertify.error(`[readExternalBackup]${back.error}`);
+          let encode = btoa(event.target.result);
+          $.ajax({
+            url: "/api/backups/external",
+            type: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            data: JSON.stringify({ config: encode }),
+            success: function (back) {
+              let decode = atob(back.config);
+              let config = JSON.parse(decode);
+              editor.update(config);
+              editor.refresh();
+              alertify.success("External Config Loaded !");
+            },
+            error: function (request,msg,err) {
+              if (err.status) {
+                alertify.error(`[readExternalBackup] Server return Error ${err.status} (${err.statusText})`);
               } else {
-                editor.update(back.data);
-                editor.refresh();
-                alertify.success("External Config Loaded !");
+                alertify.error(`[readExternalBackup] Server return Error: ${err}`);
               }
-            })
-            .fail(function (err) {
-              alertify.error(`[readExternalBackup] Server return Error ${err.status} (${err.statusText})`);
               if (err.responseText) alertify.error(`[readExternalBackup] State return: ${err.responseText}`);
-            });
+            }
+          });
         }
       }
     }
