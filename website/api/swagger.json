@@ -537,6 +537,7 @@
             "Bearer": []
           }
         ],
+        "description": "Install an EXT.<li>`ext` param with `EXT-Name` is needed in header.<li>`Bearer` token is needed in header",
         "parameters": [
           {
             "name": "ext",
@@ -611,6 +612,7 @@
             "Bearer": []
           }
         ],
+        "description": "Delete an EXT.<li>`ext` param with `EXT-Name` is needed in header.<li>`Bearer` token is needed in header",
         "parameters": [
           {
             "name": "ext",
@@ -687,6 +689,7 @@
             "Bearer": []
           }
         ],
+        "description": "Get installed EXTs collection (in MagicMirror² module Folder).<li>No params is needed.<li>`Bearer` token is needed in header",
         "responses": {
           "200": {
             "description": "Sends all installed EXTs in MagicMirror² modules folder",
@@ -722,6 +725,7 @@
             "Bearer": []
           }
         ],
+        "description": "Get configured EXTs (in MagicMirror² configuration file).<li>No params is needed.<li>`Bearer` token is needed in header",
         "responses": {
           "200": {
             "description": "Sends all configured EXTs in MagicMirror² config. file",
@@ -757,6 +761,7 @@
             "Bearer": []
           }
         ],
+        "description": "Get translated descriptions of all EXTs collection.<li>No params is needed.<li>`Bearer` token is needed in header",
         "responses": {
           "200": {
             "description": "Sends descriptions of all EXTs",
@@ -792,6 +797,7 @@
             "Bearer": []
           }
         ],
+        "description": "Get status database of all EXTs.<li>No params is needed.<li>`Bearer` token is needed in header<br><br>`hello`: plugin is detected (installed and configured)<br>`connected`: plugin is currently active in MAgicMirror² (display or play something)",
         "responses": {
           "200": {
             "description": "Sends status of all EXTs",
@@ -827,6 +833,7 @@
             "Bearer": []
           }
         ],
+        "description": "Send new speaker volume configuration.<li>Needed: `EXT-Volume` plugin<li>`Bearer` token is needed in header<li>`volume` param with value in percent is needed in body (JSON Format).",
         "requestBody": {
           "description" : "Send new percent speaker volume in volume key",
           "required": true,
@@ -893,6 +900,7 @@
             "Bearer": []
           }
         ],
+        "description": "Send new recorder volume configuration.<li>Needed: `EXT-Volume` plugin<li>`Bearer` token is needed in header<li>`volume` param with value in percent is needed in body (JSON Format).",
         "requestBody": {
           "description" : "Send new percent recorder volume in volume key",
           "required": true,
@@ -959,6 +967,7 @@
             "Bearer": []
           }
         ],
+        "description": "Get Radio List collection.<li>Needed `EXT-RadioPlayer` plugin<li>No params is needed.<li>`Bearer` token is needed in header",
         "responses": {
           "200": {
             "description": "Returns Radio List",
@@ -1002,6 +1011,7 @@
             "Bearer": []
           }
         ],
+        "description": "Send request For listening a Radio.<li>Needed `EXT-RadioPlayer` plugin<li>`radio` param with radio name in value is needed in body (JSON Format).<li>`Bearer` token is needed in header",
         "requestBody": {
           "description" : "Send request radio in radio key",
           "required": true,
