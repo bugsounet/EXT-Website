@@ -250,7 +250,7 @@
         "tags": [
           "EXT"
         ],
-        "summary": "Stop all EXTs running (to move to PUT)",
+        "summary": "Stop all EXTs running",
         "security": [
           {
             "Bearer": []
