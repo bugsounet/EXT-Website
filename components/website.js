@@ -605,15 +605,15 @@ class website {
             var linkExternalBackup = await this.saveExternalConfig(data);
             if (linkExternalBackup.data) {
               console.log("[WEBSITE] Generate link number:", linkExternalBackup.data);
+              setTimeout(() => {
+                this.deleteDownload(linkExternalBackup.data);
+              }, 1000 * 60);
               healthDownloader = (req_, res_) => {
                 if (req_.params[0] === linkExternalBackup.data) {
                   res_.sendFile(`${this.WebsiteModulePath}/download/${linkExternalBackup.data}.js`);
                   healthDownloader = function (req_, res_) {
                     res_.redirect("/");
                   };
-                  setTimeout(() => {
-                    this.deleteDownload(linkExternalBackup.data);
-                  }, 1000 * 60);
                 } else {
                   res_.redirect("/");
                 }
@@ -1323,6 +1323,7 @@ class website {
               resolve({ error: "Error when deleting file" });
               return console.error("[WEBSITE] [DELETE] error", err);
             }
+            log("Successfully deleted:", file);
           });
           resolve(TMPConfig);
         }
@@ -1541,7 +1542,7 @@ class website {
       if (err) {
         return console.error("[WEBSITE] error", err);
       }
-      console.log("[WEBSITE] Successfully deleted:", inputFile);
+      log("Successfully deleted:", inputFile);
     });
   }
 
