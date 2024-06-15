@@ -55,6 +55,7 @@
           "Tools"
         ],
         "summary": "Test API path",
+        "description": "Test if API is online<li>No param is needed",
         "responses": {
           "200": {
             "description": "Return api state",
@@ -80,6 +81,7 @@
             "Basic": []
           }
         ],
+        "description": "Get `Bearer` token.<li>Credentials must be sended in header with `Authorization: Basic` (base64 login:password) ",
         "responses": {
           "200": {
             "description": "Returns `access_token`, `token_type` and `expire_in` values",
@@ -110,6 +112,7 @@
           "Translations"
         ],
         "summary": "Returns current login translations",
+        "description": "Get translation for login.<li>No params is needed.<li>No Authentification required.",
         "responses": {
           "200": {
             "description": "Send login translations part",
@@ -135,6 +138,7 @@
             "Bearer": []
           }
         ],
+        "description": "Get translation all translations.<li>No params is needed.<li>`Bearer` token is needed in header",
         "responses": {
           "200": {
             "description": "Send collection of translations part",
@@ -170,6 +174,7 @@
             "Bearer": []
           }
         ],
+        "description": "Get translation home text translation.<li>No params is needed.<li>`Bearer` token is needed in header",
         "responses": {
           "200": {
             "description": "Send translated home text HTML",
@@ -205,6 +210,7 @@
             "Bearer": []
           }
         ],
+        "description": "Get EXT-Website Version informations.<li>`Bearer` token is needed in header",
         "responses": {
           "200": {
             "description": "Send EXT-Website version tools",
@@ -250,6 +256,7 @@
             "Bearer": []
           }
         ],
+        "description": "Send stop command for turn off all active EXTs.<li>No params is needed.<li>`Bearer` token is needed in header",
         "responses": {
           "200": {
             "description": "All EXTs are stopped",
@@ -460,6 +467,7 @@
             "Bearer": []
           }
         ],
+        "description": "Get version of all EXTs connected.<li>No params is needed.<li>`Bearer` token is needed in header",
         "responses": {
           "200": {
             "description": "Sends the version of the EXTs currently used",
@@ -495,6 +503,7 @@
             "Bearer": []
           }
         ],
+        "description": "Get available EXTs collection.<li>No params is needed.<li>`Bearer` token is needed in header",
         "responses": {
           "200": {
             "description": "Sends all available EXTs",
