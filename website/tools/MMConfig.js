@@ -247,22 +247,30 @@ async function EditMMConfigJSEditor () {
         }
       }
       var configToSave = editor.get();
-      $.post("/saveExternalBackup", { data: configToSave })
-        .done(function (back) {
-          if (back.error) {
-            alertify.error(back.error);
+      let encode = btoa(configToSave);
+      $.ajax({
+        url: "/api/backups/external",
+        type: "PUT",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        data: JSON.stringify({ config: encode }),
+        success: function (back) {
+          alertify.success("Download is ready !");
+          $.get(`${back.file}`, function (data) {
+            const blob = new Blob([data], { type: "application/javascript;charset=utf-8" });
+            saveAs(blob, fileName);
+          });
+        },
+        error: function (request,msg,err) {
+          if (err.status) {
+            alertify.error(`[saveExternalBackup] Server return Error ${err.status} (${err.statusText})`);
           } else {
-            alertify.success("Download is ready !");
-            $.get(`download/${back.data}`, function (data) {
-              const blob = new Blob([data], { type: "application/javascript;charset=utf-8" });
-              saveAs(blob, fileName);
-            });
+            alertify.error(`[saveExternalBackup] Server return Error: ${err}`);
           }
-        })
-        .fail(function (err) {
-          alertify.error(`[saveExternalBackup] Server return Error ${err.status} (${err.statusText})`);
           if (err.responseText) alertify.error(`[saveExternalBackup] State return: ${err.responseText}`);
-        });
+        }
+      });
     }, function () {
       // do nothing
     });

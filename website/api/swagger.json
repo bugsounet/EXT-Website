@@ -2466,6 +2466,71 @@
             }
           }
         }
+      },
+      "put": {
+        "tags": [
+          "Backups"
+        ],
+        "summary": "Analyse and Send link for download configuration",
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "description" : "For securtity:<br><li>`config` must be encoded in base64.<li>Analyse content of the config<li>Return A link for download and expire time before deleting",
+        "requestBody": {
+          "description" : "Send base64 encoded config in config key",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SendConfig"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Download link is ready",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SendExternal"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing config in params or config is not in JSON string format",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "$ref": "#/components/schemas/Config400Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing valid authentication token",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "$ref": "#/components/schemas/401Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Config500Error"
+                }
+              }
+            }
+          }
+        }
       }
     },
     "/api/Assistant/query": {
@@ -3531,6 +3596,23 @@
         },
         "example": {
           "config": "ezTrGTH....base64encoded...."
+        }
+      },
+      "SendExternal": {
+        "type": "object",
+        "properties": {
+          "file": {
+            "type": "string",
+            "description": "uri of download file"
+          },
+          "expire_in": {
+            "type": "number",
+            "description": "expire time in sec"
+          }
+        },
+        "example": {
+          "file": "/download/1718454458797.js",
+          "expire_in": 60
         }
       },
       "SendQuery": {

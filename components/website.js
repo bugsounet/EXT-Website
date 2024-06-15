@@ -103,7 +103,8 @@ class website {
       homeText: null,
       errorInit: false,
       listening: "127.0.0.1",
-      APIDocs: false
+      APIDocs: false,
+      healthDownloader: null
     };
     this.MMVersion = global.version;
     this.root_path = global.root_path;
@@ -324,7 +325,7 @@ class website {
         }
       };
 
-      var healthDownloader = function (req, res) {
+      this.website.healthDownloader = function (req, res) {
         res.redirect("/");
       };
 
@@ -596,36 +597,8 @@ class website {
           else res.send("error");
         })
 
-        // to move to API
-        .post("/saveExternalBackup", async (req, res) => {
-          if (req.user) {
-            let data = req.body.data;
-            if (!data) return res.send({ error: "error no data" });
-            console.log("[WEBSITE] Receiving External backup...");
-            var linkExternalBackup = await this.saveExternalConfig(data);
-            if (linkExternalBackup.data) {
-              console.log("[WEBSITE] Generate link number:", linkExternalBackup.data);
-              setTimeout(() => {
-                this.deleteDownload(linkExternalBackup.data);
-              }, 1000 * 60);
-              healthDownloader = (req_, res_) => {
-                if (req_.params[0] === linkExternalBackup.data) {
-                  res_.sendFile(`${this.WebsiteModulePath}/download/${linkExternalBackup.data}.js`);
-                  healthDownloader = function (req_, res_) {
-                    res_.redirect("/");
-                  };
-                } else {
-                  res_.redirect("/");
-                }
-              };
-            }
-            res.send(linkExternalBackup);
-          }
-          else res.status(403).sendFile(`${this.WebsitePath}/403.html`);
-        })
-
         .get("/download/*", (req, res) => {
-          healthDownloader(req, res);
+          this.website.healthDownloader(req, res);
         })
 
         .get("/robots.txt", (req, res) => {
@@ -1122,6 +1095,36 @@ class website {
         }
         break;
 
+      case "/api/backups/external":
+        let config = req.body["config"];
+        try  {
+          let decoded = atob(req.body["config"]);
+          console.log("[WEBSITE] Receiving External backup...");
+          var linkExternalBackup = await this.saveExternalConfig(decoded);
+          if (linkExternalBackup.data) {
+            console.log("[WEBSITE] Generate link number:", linkExternalBackup.data);
+            setTimeout(() => {
+              this.deleteDownload(linkExternalBackup.data);
+            }, 1000 * 60);
+            this.website.healthDownloader = (req_, res_) => {
+              if (req_.params[0] === linkExternalBackup.data) {
+                res_.sendFile(`${this.WebsiteModulePath}/download/${linkExternalBackup.data}.js`);
+                this.website.healthDownloader = function (req_, res_) {
+                  res_.redirect("/");
+                };
+              } else {
+                res_.redirect("/");
+              }
+            };
+            res.json({ file: `/download/${linkExternalBackup.data}.js`, expire_in: 60 });
+          } else {
+            res.status(500);
+          }
+        } catch (e) {
+          console.log("[WEBSITE] Request error", e.message);
+          res.status(400).send("Bad Request");
+        }
+        break;
       default:
         console.warn("[WEBSITE] Don't find:", req.url);
         res.status(404).json({ error: "You Are Lost in Space" });
@@ -1272,7 +1275,6 @@ class website {
   /** Start Server **/
   /******************/
   async startServer (callback = () => {}) {
-    //this.config.listening = await this.purposeIP();
     this.website.server
       .listen(8081, "0.0.0.0", () => {
         console.log("[WEBSITE] [SERVER] Start listening on port 8081");
