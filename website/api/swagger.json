@@ -3667,7 +3667,7 @@
           },
           "expire_in": {
             "type": "number",
-            "description": "expire time in sec"
+            "description": "Expire time in sec"
           }
         },
         "example": {

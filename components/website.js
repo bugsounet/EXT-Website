@@ -670,7 +670,7 @@ class website {
             APIResult = {
               access_token: token,
               token_type: "Bearer",
-              expires_in: 3600
+              expire_in: 3600
             };
             console.log(`[WEBSITE] [API] [${ip}] Welcome ${username}, happy to serve you!`);
             res.json(APIResult);
