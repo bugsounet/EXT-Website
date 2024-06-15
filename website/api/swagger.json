@@ -1685,6 +1685,83 @@
         }
       }
     },
+    "/api/EXT/FreeboxTV": {
+      "put": {
+        "tags": [
+          "EXT"
+        ],
+        "summary": "Send your TV channel to display",
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "description": "Needed: `EXT-FreeboxTV` plugin<br>Reserved for French users.",
+        "requestBody": {
+          "description" : "Send wanted TV channel",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SendFreeboxTV"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Command sended successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EXT200"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing power param",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "$ref": "#/components/schemas/Config400Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing valid authentication token",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "$ref": "#/components/schemas/401Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "EXT-FreeboxTV or channel not found",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "$ref": "#/components/schemas/Config404Error"
+                }
+              }
+            }
+          },
+          "409": {
+           "description": "Conflit",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "$ref": "#/components/schemas/409Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/config/MM": {
       "get": {
         "description" : "For securtity, response will be encoded in base64",
@@ -3738,6 +3815,21 @@
         },
         "example": {
           "power": "OFF"
+        }
+      },
+      "SendFreeboxTV": {
+        "type": "object",
+        "required": [
+          "TV"
+        ],
+        "properties": {
+          "TV": {
+            "type": "string",
+            "description": "Wanted TV channel"
+          }
+        },
+        "example": {
+          "TV": "France 2"
         }
       },
       "SendAlert": {

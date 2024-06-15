@@ -616,17 +616,26 @@ async function doTools () {
   if (EXTStatus["EXT-FreeboxTV"].hello && version.lang === "fr") {
     $("#FreeboxTV-Box").css("display", "block");
     document.getElementById("FreeboxTV-Send").onclick = function () {
-      $.post("/EXT-FreeboxTVQuery", { data: $("#FreeboxTV-Query").val() })
-        .done(function (back) {
-          if (back === "error") {
-            alertify.error(translation.Warn_Error);
+
+      $.ajax({
+        url: "/api/EXT/FreeboxTV",
+        type: "PUT",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        data: JSON.stringify({ TV: $("#FreeboxTV-Query").val() }),
+        success: function(response) {
+          alertify.success(translation.RequestDone);
+        },
+        error: function(err) {
+          if (err.status) {
+            alertify.error(`[FreeboxTV] Server return Error ${err.status} (${err.statusText})`);
           } else {
-            alertify.success(translation.RequestDone);
+            alertify.error(`[FreeboxTV] Server return Error: ${err}`);
           }
-        })
-        .fail(function (err) {
-          alertify.error(`[FreeboxTV] Server return Error ${err.status} (${err.statusText})`);
-        });
+          if (err.responseText) alertify.error(`[FreeboxTV] State return: ${err.responseText}`);
+        }
+      });
     };
   }
 

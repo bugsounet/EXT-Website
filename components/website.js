@@ -583,20 +583,6 @@ class website {
           else res.status(403).sendFile(`${this.WebsitePath}/403.html`);
         })
 
-        // to move to API
-        .post("/EXT-FreeboxTVQuery", (req, res) => {
-          if (this.website.freeTV && req.user) {
-            let data = req.body.data;
-            if (!data) return res.send("error");
-            this.sendSocketNotification("SendNoti", {
-              noti: "EXT_FREEBOXTV-PLAY",
-              payload: data
-            });
-            res.send("ok");
-          }
-          else res.send("error");
-        })
-
         .get("/download/*", (req, res) => {
           this.website.healthDownloader(req, res);
         })
@@ -1062,7 +1048,6 @@ class website {
         break;
 
       case "/api/EXT/Screen":
-        //EXT-Screen
         if (!this.website.EXTStatus["EXT-Screen"].hello) return res.status(404).send("Not Found");
         let power = req.body["power"];
         if (!power || typeof(power) !== "string") return res.status(400).send("Bad Request");
@@ -1077,6 +1062,17 @@ class website {
           return res.json({ done: "ok" });
         }
         res.status(400).send("Bad Request");
+        break;
+
+      case "/api/EXT/FreeboxTV":
+        if (!this.website.EXTStatus["EXT-FreeboxTV"].hello) return res.status(404).send("Not Found");
+        if (this.website.language !== "fr") return res.status(409).send("Reserved for French language");
+        let TV = req.body["TV"];
+        if (!TV || typeof(TV) !== "string") return res.status(400).send("Bad Request");
+        var allTV = Object.keys(this.website.freeTV);
+        if (allTV.indexOf(TV) === -1) return res.status(404).send("Not Found");
+        this.sendSocketNotification("SendNoti", { noti: "EXT_FREEBOXTV-PLAY", payload: TV });
+        res.json({ done: "ok" });
         break;
 
       case "/api/backups/file":
