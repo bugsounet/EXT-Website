@@ -292,6 +292,7 @@
             "Bearer": []
           }
         ],
+        "description": "Get system information of the system.<li>`Bearer` token is needed in header<li>No params is needed.",
         "responses": {
           "200": {
             "description": "Send System informations result",
@@ -327,6 +328,7 @@
             "Bearer": []
           }
         ],
+        "description": "Send a request for restart MagicMirror².<li>`Bearer` token is needed in header<li>No params is needed.",
         "responses": {
           "200": {
             "description": "Restart in progress",
@@ -362,6 +364,7 @@
             "Bearer": []
           }
         ],
+        "description": "Send a request for close MagicMirror².<li>`Bearer` token is needed in header<li>No params is needed.",
         "responses": {
           "200": {
             "description": "Close in progress",
@@ -397,6 +400,7 @@
             "Bearer": []
           }
         ],
+        "description": "Send a request for reboot OS.<li>`Bearer` token is needed in header<li>No params is needed.",
         "responses": {
           "200": {
             "description": "Reboot in progress",
@@ -432,6 +436,7 @@
             "Bearer": []
           }
         ],
+        "description": "Send a request for shutdown OS.<li>`Bearer` token is needed in header<li>No params is needed.",
         "responses": {
           "200": {
             "description": "Shutdown in progress",
@@ -1078,6 +1083,7 @@
             "Bearer": []
           }
         ],
+        "description": "Get Available updates.<li>Needed `EXT-Updates` plugin<li>No params is needed.<li>`Bearer` token is needed in header",
         "responses": {
           "200": {
             "description": "Sends available updates",
@@ -1121,6 +1127,7 @@
             "Bearer": []
           }
         ],
+        "description": "Update first plugins of update list.<li>Needed `EXT-Updates` plugin<li>No params is needed.<li>`Bearer` token is needed in header",
         "responses": {
           "200": {
             "description": "Update command started",
@@ -1166,6 +1173,7 @@
             "Bearer": []
           }
         ],
+        "description": "Send Alert on MagicMirror² screen.<li>Needed: `EXT-Alert` plugin<li>`Bearer` token is needed in header<li>`alert` param with message content is needed in body (JSON Format).",
         "requestBody": {
           "description" : "Send Alert on MagicMirror²",
           "required": true,
@@ -1232,6 +1240,7 @@
             "Bearer": []
           }
         ],
+        "description": "Send reqest for listening music on Spotify.<li>Needed: `EXT-Spotify` plugin<li>`Bearer` token is needed in header<li>`query` with query to send and `type` with query type (artist, album, playlist or track) are needed in body (JSON Format).",
         "requestBody": {
           "description" : "Send query and type for search and listening",
           "required": true,
@@ -1298,6 +1307,7 @@
             "Bearer": []
           }
         ],
+        "description": "Send reqest for play command on Spotify.<li>Needed: `EXT-Spotify` plugin<li>`Bearer` token is needed in header<li>No params is needed.",
         "responses": {
           "200": {
             "description": "Command sended successfully",
@@ -1353,6 +1363,7 @@
             "Bearer": []
           }
         ],
+        "description": "Send reqest for stop command on Spotify.<li>Needed: `EXT-Spotify` plugin<li>`Bearer` token is needed in header<li>No params is needed.",
         "responses": {
           "200": {
             "description": "Command sended successfully",
@@ -1408,6 +1419,7 @@
             "Bearer": []
           }
         ],
+        "description": "Send reqest for play or pause (toggle) command on Spotify.<li>Needed: `EXT-Spotify` plugin<li>`Bearer` token is needed in header<li>No params is needed.",
         "responses": {
           "200": {
             "description": "Command sended successfully",
@@ -1463,6 +1475,7 @@
             "Bearer": []
           }
         ],
+        "description": "Send reqest for next title command on Spotify.<li>Needed: `EXT-Spotify` plugin<li>`Bearer` token is needed in header<li>No params is needed.",
         "responses": {
           "200": {
             "description": "Command sended successfully",
@@ -1518,6 +1531,7 @@
             "Bearer": []
           }
         ],
+        "description": "Send reqest for previous title command on Spotify.<li>Needed: `EXT-Spotify` plugin<li>`Bearer` token is needed in header<li>No params is needed.",
         "responses": {
           "200": {
             "description": "Command sended successfully",
@@ -1573,6 +1587,7 @@
             "Bearer": []
           }
         ],
+        "description": "Send YouTube request.<li>Needed: `EXT-YouTube` plugin<li>`Bearer` token is needed in header<li>`query` param with youtube query content is needed in body (JSON Format).",
         "requestBody": {
           "description" : "Send query for YouTube Search",
           "required": true,
@@ -1639,6 +1654,7 @@
             "Bearer": []
           }
         ],
+        "description": "Send request for turn ON/OFF MagicMirror² screen.<li>Needed: `EXT-Screen` plugin<li>`Bearer` token is needed in header<li>`power` param with wanted screen state (ON/OFF) is needed in body (JSON Format).",
         "requestBody": {
           "description" : "Send wanted power state",
           "required": true,
@@ -1715,7 +1731,7 @@
             "Bearer": []
           }
         ],
-        "description": "Needed: `EXT-FreeboxTV` plugin<br>Reserved for French users.",
+        "description": "Get available TV channel list.<li>Needed: `EXT-FreeboxTV` plugin.<li>Reserved to French users<li>`Bearer` token is needed in header<li>No params is needed.",
         "responses": {
           "200": {
             "description": "Returns TV channel list",
@@ -1759,7 +1775,7 @@
             "Bearer": []
           }
         ],
-        "description": "Needed: `EXT-FreeboxTV` plugin<br>Reserved for French users.",
+        "description": "Send request For watching TV channel.<li>Needed `EXT-FreeboxTV` plugin.<li>Reserved for French users.<li>`TV` param with TV channel name in value is needed in body (JSON Format).<li>`Bearer` token is needed in header",
         "requestBody": {
           "description" : "Send wanted TV channel",
           "required": true,
@@ -2744,6 +2760,7 @@
             "Bearer": []
           }
         ],
+        "description": "Send request On MMM-GoogleAssistant.<li>`Bearer` token is needed in header<li>`query` param with your assistant request in value is needed in body (JSON Format).",
         "requestBody": {
           "description" : "Query to send in MMM-GoogleAssistant",
           "required": true,
