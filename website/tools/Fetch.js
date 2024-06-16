@@ -1,4 +1,5 @@
 /** fetch datas **/
+
 function getHomeText () {
   return new Promise((resolve) => {
     $.getJSON("/api/translations/homeText", (text) => {
@@ -6,9 +7,9 @@ function getHomeText () {
       resolve(text.homeText);
     })
       .fail(function (err) {
+        let error = err.responseJSON?.error ? err.responseJSON.error : (err.responseText ? err.responseText : err.statusText)
         if (!err.status) alertify.error("Connexion Lost!");
-        else alertify.warning(`[homeText] Server return Error ${err.status} (${err.statusText})`);
-        if (err.responseText) alertify.error(`[homeText] State return: ${err.responseText}`);
+        else alertify.error(`[homeText] Server return Error ${err.status} (${error})`);
       });
   });
 }
@@ -20,9 +21,9 @@ function getVersion () {
       resolve(ver);
     })
       .fail(function (err) {
+        let error = err.responseJSON?.error ? err.responseJSON.error : (err.responseText ? err.responseText : err.statusText)
         if (!err.status) alertify.error("Connexion Lost!");
-        else alertify.warning(`[getVersion] Server return Error ${err.status} (${err.statusText})`);
-        if (err.responseText) alertify.error(`[getVersion] State return: ${err.responseText}`);
+        else alertify.error(`[getVersion] Server return Error ${err.status} (${error})`);
       });
   });
 }
@@ -33,9 +34,9 @@ function checkSystem () {
       resolve(system);
     })
       .fail(function (err) {
+        let error = err.responseJSON?.error ? err.responseJSON.error : (err.responseText ? err.responseText : err.statusText)
         if (!err.status) alertify.error("Connexion Lost!");
-        else alertify.warning(`[sysInfo] Server return Error ${err.status} (${err.statusText})`);
-        if (err.responseText) alertify.error(`[sysInfo] State return: ${err.responseText}`);
+        else alertify.error(`[sysInfo] Server return Error ${err.status} (${error})`);
       });
   });
 }
@@ -47,9 +48,9 @@ function checkWebviewTag () {
       resolve(tag.webview);
     })
       .fail(function (err) {
+        let error = err.responseJSON?.error ? err.responseJSON.error : (err.responseText ? err.responseText : err.statusText)
         if (!err.status) alertify.error("Connexion Lost!");
-        else alertify.warning(`[checkWebviewTag] Server return Error ${err.status} (${err.statusText})`);
-        if (err.responseText) alertify.error(`[checkWebviewTag] State return: ${err.responseText}`);
+        else alertify.error(`[checkWebviewTag] Server return Error ${err.status} (${error})`);
       });
   });
 }
@@ -61,9 +62,9 @@ function checkGA () {
       resolve(GA);
     })
       .fail(function (err) {
+        let error = err.responseJSON?.error ? err.responseJSON.error : (err.responseText ? err.responseText : err.statusText)
         if (!err.status) alertify.error("Connexion Lost!");
-        else alertify.warning(`[checkGA] Server return Error ${err.status} (${err.statusText})`);
-        if (err.responseText) alertify.error(`[checkGA] State return: ${err.responseText}`);
+        else alertify.error(`[checkGA] Server return Error ${err.status} (${error})`);
       });
   });
 }
@@ -75,16 +76,11 @@ function checkEXTStatus () {
       //console.log("EXTStatus", Status)
       resolve(Status);
     })
-      .done(() => {
-        if (ErrEXTStatus) {
-          ErrEXTStatus = 0;
-          alertify.success("EXTStatus: Connected!");
-        }
-      })
       .fail((err) => {
-        ErrEXTStatus++;
-        if (ErrEXTStatus === 1) alertify.error("EXTStatus: Connexion Lost!");
+        let error = err.responseJSON?.error ? err.responseJSON.error : (err.responseText ? err.responseText : err.statusText)
         if (err.status === 403 || err.status === 401) $(location).attr("href", "/");
+        if (!err.status) alertify.error("Connexion Lost!");
+        else alertify.error(`[Status] Server return Error ${err.status} (${error})`);
       });
   });
 }
@@ -96,9 +92,9 @@ function loadLoginTranslation () {
       resolve(tr);
     })
       .fail(function (err) {
+        let error = err.responseJSON?.error ? err.responseJSON.error : (err.responseText ? err.responseText : err.statusText)
         if (!err.status) alertify.error("Connexion Lost!");
-        else alertify.warning(`[loginTranslation] Server return Error ${err.status} (${err.statusText})`);
-        if (err.responseText) alertify.error(`[loginTranslation] State return: ${err.responseText}`);
+        else alertify.error(`[loginTranslation] Server return Error ${err.status} (${error})`);
       });
   });
 }
@@ -110,9 +106,9 @@ function loadTranslation () {
       resolve(tr);
     })
       .fail(function (err) {
+        let error = err.responseJSON?.error ? err.responseJSON.error : (err.responseText ? err.responseText : err.statusText)
         if (!err.status) alertify.error("Connexion Lost!");
-        else alertify.warning(`[loadTranslation] Server return Error ${err.status} (${err.statusText})`);
-        if (err.responseText) alertify.error(`[loadTranslation] State return: ${err.responseText}`);
+        else alertify.error(`[loadTranslation] Server return Error ${err.status} (${error})`);
       });
   });
 }
@@ -124,9 +120,9 @@ function loadDataAllEXT () {
       resolve(all);
     })
       .fail(function (err) {
+        let error = err.responseJSON?.error ? err.responseJSON.error : (err.responseText ? err.responseText : err.statusText)
         if (!err.status) alertify.error("Connexion Lost!");
-        else alertify.warning(`[loadDataAllEXT] Server return Error ${err.status} (${err.statusText})`);
-        if (err.responseText) alertify.error(`[loadDataAllEXT] State return: ${err.responseText}`);
+        else alertify.error(`[loadDataAllEXT] Server return Error ${err.status} (${error})`);
       });
   });
 }
@@ -138,9 +134,9 @@ function loadDataConfiguredEXT () {
       resolve(confEXT);
     })
       .fail(function (err) {
+        let error = err.responseJSON?.error ? err.responseJSON.error : (err.responseText ? err.responseText : err.statusText)
         if (!err.status) alertify.error("Connexion Lost!");
-        else alertify.warning(`[loadDataConfiguredEXT] Server return Error ${err.status} (${err.statusText})`);
-        if (err.responseText) alertify.error(`[loadDataConfiguredEXT] State return: ${err.responseText}`);
+        else alertify.error(`[loadDataConfiguredEXT] Server return Error ${err.status} (${error})`);
       });
   });
 }
@@ -152,9 +148,9 @@ function loadDataInstalledEXT () {
       resolve(instEXT);
     })
       .fail(function (err) {
+        let error = err.responseJSON?.error ? err.responseJSON.error : (err.responseText ? err.responseText : err.statusText)
         if (!err.status) alertify.error("Connexion Lost!");
-        else alertify.warning(`[loadDataInstalledEXT] Server return Error ${err.status} (${err.statusText})`);
-        if (err.responseText) alertify.error(`[loadDataInstalledEXT] State return: ${err.responseText}`);
+        else alertify.error(`[loadDataInstalledEXT] Server return Error ${err.status} (${error})`);
       });
   });
 }
@@ -166,9 +162,9 @@ function loadDataDescriptionEXT () {
       resolve(desEXT);
     })
       .fail(function (err) {
+        let error = err.responseJSON?.error ? err.responseJSON.error : (err.responseText ? err.responseText : err.statusText)
         if (!err.status) alertify.error("Connexion Lost!");
-        else alertify.warning(`[loadDataDescriptionEXT] Server return Error ${err.status} (${err.statusText})`);
-        if (err.responseText) alertify.error(`[loadDataDescriptionEXT] State return: ${err.responseText}`);
+        else alertify.error(`[loadDataDescriptionEXT] Server return Error ${err.status} (${error})`);
       });
   });
 }
@@ -185,9 +181,50 @@ function loadMMConfig () {
       }
     })
       .fail(function (err) {
+        let error = err.responseJSON?.error ? err.responseJSON.error : (err.responseText ? err.responseText : err.statusText)
         if (!err.status) alertify.error("Connexion Lost!");
-        else alertify.warning(`[loadMMConfig] Server return Error ${err.status} (${err.statusText})`);
-        if (err.responseText) alertify.error(`[loadMMConfig] State return: ${err.responseText}`);
+        else alertify.error(`[loadMMConfig] Server return Error ${err.status} (${error})`);
+      });
+  });
+}
+
+function getEXTVersions () {
+  return new Promise((resolve) => {
+    $.getJSON("/api/EXT/versions", (EXTs) => {
+      resolve(EXTs);
+    })
+      .fail(function (err) {
+        let error = err.responseJSON?.error ? err.responseJSON.error : (err.responseText ? err.responseText : err.statusText)
+        if (!err.status) alertify.error("Connexion Lost!");
+        else alertify.error(`[getEXTVersions] Server return Error ${err.status} (${error})`);
+      });
+  });
+}
+
+function loadBackupNames () {
+  return new Promise((resolve) => {
+    $.getJSON("/api/backups", (backups) => {
+      //console.log("backups", backups)
+      resolve(backups);
+    })
+      .fail(function (err) {
+        let error = err.responseJSON?.error ? err.responseJSON.error : (err.responseText ? err.responseText : err.statusText)
+        if (!err.status) alertify.error("Connexion Lost!");
+        else alertify.error(`[loadBackupNames] Server return Error ${err.status} (${error})`);
+      });
+  });
+}
+
+function loadRadio () {
+  return new Promise((resolve) => {
+    $.getJSON("/api/EXT/RadioPlayer", (radio) => {
+      //console.log("radio", radio)
+      resolve(radio);
+    })
+      .fail(function (err) {
+        let error = err.responseJSON?.error ? err.responseJSON.error : (err.responseText ? err.responseText : err.statusText)
+        if (!err.status) alertify.error("Connexion Lost!");
+        else alertify.error(`[loadRadio] Server return Error ${err.status} (${error})`);
       });
   });
 }
@@ -210,9 +247,9 @@ function loadPluginConfig (plugin) {
           }
         },
         error: function(err) {
+          let error = err.responseJSON?.error ? err.responseJSON.error : (err.responseText ? err.responseText : err.statusText)
           if (!err.status) alertify.error("Connexion Lost!");
-          else alertify.warning(`[loadPluginConfig] Server return Error ${err.status} (${err.statusText})`);
-          if (err.responseText) alertify.error(`[loadPluginConfig] State return: ${err.responseText}`);
+          else alertify.error(`[loadPluginConfig] Server return Error ${err.status} (${error})`);
         }
       }
     )
@@ -237,9 +274,9 @@ function loadPluginTemplate (plugin) {
           }
         },
         error: function(err) {
+          let error = err.responseJSON?.error ? err.responseJSON.error : (err.responseText ? err.responseText : err.statusText)
           if (!err.status) alertify.error("Connexion Lost!");
-          else alertify.warning(`[loadPluginTemplate] Server return Error ${err.status} (${err.statusText})`);
-          if (err.responseText) alertify.error(`[loadPluginTemplate] State return: ${err.responseText}`);
+          else alertify.error(`[loadPluginTemplate] Server return Error ${err.status} (${error})`);
         }
       }
     )
@@ -264,9 +301,9 @@ function loadPluginCurrentConfig (plugin) {
           }
         },
         error: function(err) {
+          let error = err.responseJSON?.error ? err.responseJSON.error : (err.responseText ? err.responseText : err.statusText)
           if (!err.status) alertify.error("Connexion Lost!");
-          else alertify.warning(`[loadPluginConfig] Server return Error ${err.status} (${err.statusText})`);
-          if (err.responseText) alertify.error(`[loadPluginConfig] State return: ${err.responseText}`);
+          else alertify.error(`[loadPluginConfig] Server return Error ${err.status} (${error})`);
         }
       }
     )
@@ -291,41 +328,12 @@ function loadBackupConfig (file) {
           }
         },
         error: function(err) {
+          let error = err.responseJSON?.error ? err.responseJSON.error : (err.responseText ? err.responseText : err.statusText)
           if (!err.status) alertify.error("Connexion Lost!");
-          else alertify.warning(`[loadBackupConfig] Server return Error ${err.status} (${err.statusText})`);
-          if (err.responseText) alertify.error(`[Screen] State return: ${err.responseText}`);
+          else alertify.error(`[loadBackupConfig] Server return Error ${err.status} (${error})`);
         }
       }
     )
-  });
-}
-
-function loadBackupNames () {
-  return new Promise((resolve) => {
-    $.getJSON("/api/backups", (backups) => {
-      //console.log("backups", backups)
-      resolve(backups);
-    })
-      .fail(function (err) {
-        if (!err.status) alertify.error("Connexion Lost!");
-        else alertify.warning(`[loadBackupNames] Server return Error ${err.status} (${err.statusText})`);
-        if (err.responseText) alertify.error(`[loadBackupNames] State return: ${err.responseText}`);
-      });
-  });
-}
-
-function loadRadio () {
-  return new Promise((resolve) => {
-    $.getJSON("/api/EXT/RadioPlayer", (radio) => {
-      //console.log("radio", radio)
-      resolve(radio);
-    })
-      .fail(function (err) {
-        if (!err.status) alertify.error("Connexion Lost!");
-        if (err.status === 404) resolve([]);
-        else alertify.warning(`[loadRadio] Server return Error ${err.status} (${err.statusText})`);
-        if (err.responseText) alertify.error(`[loadRadio] State return: ${err.responseText}`);
-      });
   });
 }
 
@@ -415,17 +423,4 @@ function doTranslateNavBar () {
   if (path === "/ptyProcess") path = "/Terminal";
   $(`a[href="${path}"]`).closest("a").addClass("active");
   $(`a[href="${path}"]`).removeAttr("href");
-}
-
-function getEXTVersions () {
-  return new Promise((resolve) => {
-    $.getJSON("/api/EXT/versions", (EXTs) => {
-      resolve(EXTs);
-    })
-      .fail(function (err) {
-        if (!err.status) alertify.error("Connexion Lost!");
-        else alertify.warning(`[getEXTVersions] Server return Error ${err.status} (${err.statusText})`);
-        if (err.responseText) alertify.error(`[getEXTVersions] State return: ${err.responseText}`);
-      });
-  });
 }

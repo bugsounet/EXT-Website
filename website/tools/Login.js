@@ -40,8 +40,9 @@ function doLogin () {
         }
       })
       .fail(function (err) {
-        alertify.error(`[Login] Server return Error ${err.status} (${err.statusText})`);
-        console.log(err);
+        let error = err.responseJSON?.error ? err.responseJSON.error : (err.responseText ? err.responseText : err.statusText)
+        if (!err.status) alertify.error("Connexion Lost!");
+        else alertify.error(`[Login] Server return Error ${err.status} (${error})`);
       });
   });
 }

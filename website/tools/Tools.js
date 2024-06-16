@@ -616,7 +616,6 @@ async function doTools () {
   if (EXTStatus["EXT-FreeboxTV"].hello && version.lang === "fr") {
     $("#FreeboxTV-Box").css("display", "block");
     document.getElementById("FreeboxTV-Send").onclick = function () {
-
       $.ajax({
         url: "/api/EXT/FreeboxTV",
         type: "PUT",
