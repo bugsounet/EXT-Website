@@ -132,34 +132,36 @@ async function EditMMConfigJSEditor () {
         "Content-Type": "application/json",
         "backup": conf
       },
+      dataType: "json",
       success: function (back) {
         $("#wait").css("display", "none");
         $("#done").css("display", "block");
         $("#alert").removeClass("invisible");
         $("#messageText").text(translation.Restart);
       },
-      error: function (request,msg,err) {
-          $("#wait").css("display", "none");
-          $("#error").css("display", "block");
-          $("#alert").removeClass("invisible");
-          $("#alert").removeClass("alert-success");
-          $("#alert").addClass("alert-danger");
-        if (err.status) {
-          $("#messageText").text(err.statusText);
-          alertify.error(`[loadBackup] Server return Error ${err.status} (${err.statusText})`);
-        } else {
+      error: function(err) {
+        $("#wait").css("display", "none");
+        $("#error").css("display", "block");
+        $("#alert").removeClass("invisible");
+        $("#alert").removeClass("alert-success");
+        $("#alert").addClass("alert-danger");
+        let error = err.responseJSON?.error ? err.responseJSON.error : (err.responseText ? err.responseText : err.statusText)
+        if (!err.status) {
           $("#messageText").text(err);
-          alertify.error(`[loadBackup] Server return Error: ${err}`);
+          alertify.error("Connexion Lost!");
+        } else {
+          $("#messageText").text(err.statusText);
+          alertify.error(`[loadBackup] Server return Error ${err.status} (${error})`);
         }
-        if (err.responseText) alertify.error(`[loadBackup] State return: ${err.responseText}`);
       }
+
     });
   };
   document.getElementById("save").onclick = function () {
-    let data = editor.get();
+    let data = editor.getText();
     $("#save").css("display", "none");
     $("#wait").css("display", "block");
-    let encode = btoa(JSON.stringify(data));
+    let encode = btoa(data);
 
     $.ajax({
       url: "/api/config/MM",
@@ -167,36 +169,28 @@ async function EditMMConfigJSEditor () {
       headers: {
         "Content-Type": "application/json"
       },
+      dataType: "json",
       data: JSON.stringify({ config: encode }),
       success: function (back) {
-        if (back.error) {
-          $("#wait").css("display", "none");
-          $("#error").css("display", "block");
-          $("#alert").removeClass("invisible");
-          $("#alert").removeClass("alert-success");
-          $("#alert").addClass("alert-danger");
-          $("#messageText").text(back.error);
-        } else {
-          $("#wait").css("display", "none");
-          $("#done").css("display", "block");
-          $("#alert").removeClass("invisible");
-          $("#messageText").text(translation.Restart);
-        }
+        $("#wait").css("display", "none");
+        $("#done").css("display", "block");
+        $("#alert").removeClass("invisible");
+        $("#messageText").text(translation.Restart);
       },
-      error: function (request,msg,err) {
+      error: function (err) {
         $("#wait").css("display", "none");
         $("#error").css("display", "block");
         $("#alert").removeClass("invisible");
         $("#alert").removeClass("alert-success");
         $("#alert").addClass("alert-danger");
-        if (err.status) {
-          $("#messageText").text(err.statusText);
-          alertify.error(`[writeConfig] Server return Error ${err.status} (${err.statusText})`);
-        } else {
+        let error = err.responseJSON?.error ? err.responseJSON.error : (err.responseText ? err.responseText : err.statusText)
+        if (!err.status) {
           $("#messageText").text(err);
-          alertify.error(`[writeConfig] Server return Error: ${err}`);
+          alertify.error("Connexion Lost!");
+        } else {
+          $("#messageText").text(err.statusText);
+          alertify.error(`[lwriteConfig] Server return Error ${err.status} (${error})`);
         }
-        if (err.responseText) alertify.error(`[writeConfigp] State return: ${err.responseText}`);
       }
     });
 
@@ -213,6 +207,7 @@ async function EditMMConfigJSEditor () {
             headers: {
               "Content-Type": "application/json"
             },
+            dataType: "json",
             data: JSON.stringify({ config: encode }),
             success: function (back) {
               let decode = atob(back.config);
@@ -221,13 +216,10 @@ async function EditMMConfigJSEditor () {
               editor.refresh();
               alertify.success("External Config Loaded !");
             },
-            error: function (request,msg,err) {
-              if (err.status) {
-                alertify.error(`[readExternalBackup] Server return Error ${err.status} (${err.statusText})`);
-              } else {
-                alertify.error(`[readExternalBackup] Server return Error: ${err}`);
-              }
-              if (err.responseText) alertify.error(`[readExternalBackup] State return: ${err.responseText}`);
+            error: function (err) {
+              let error = err.responseJSON?.error ? err.responseJSON.error : (err.responseText ? err.responseText : err.statusText)
+              if (!err.status) alertify.error("Connexion Lost!");
+              else alertify.error(`[readExternalBackup] Server return Error ${err.status} (${error})`);
             }
           });
         }
@@ -246,7 +238,7 @@ async function EditMMConfigJSEditor () {
           fileName = `${fileName.split(".")[0]}.js`;
         }
       }
-      var configToSave = editor.get();
+      var configToSave = editor.getText();
       let encode = btoa(configToSave);
       $.ajax({
         url: "/api/backups/external",
@@ -254,6 +246,7 @@ async function EditMMConfigJSEditor () {
         headers: {
           "Content-Type": "application/json"
         },
+        dataType: "json",
         data: JSON.stringify({ config: encode }),
         success: function (back) {
           alertify.success("Download is ready !");
@@ -262,13 +255,10 @@ async function EditMMConfigJSEditor () {
             saveAs(blob, fileName);
           });
         },
-        error: function (request,msg,err) {
-          if (err.status) {
-            alertify.error(`[saveExternalBackup] Server return Error ${err.status} (${err.statusText})`);
-          } else {
-            alertify.error(`[saveExternalBackup] Server return Error: ${err}`);
-          }
-          if (err.responseText) alertify.error(`[saveExternalBackup] State return: ${err.responseText}`);
+        error: function (err) {
+          let error = err.responseJSON?.error ? err.responseJSON.error : (err.responseText ? err.responseText : err.statusText)
+          if (!err.status) alertify.error("Connexion Lost!");
+          else alertify.error(`[readExternalBackup] Server return Error ${err.status} (${error})`);
         }
       });
     }, function () {

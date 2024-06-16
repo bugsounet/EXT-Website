@@ -878,10 +878,11 @@ class website {
       case "/api/config/EXT":
         console.log("[WEBSITE] Receiving write EXT config...");
         if (!req.headers["ext"] || !req.body["config"]) return res.status(400).send("Bad Request");
-        const plugin = this.checkPluginInConfig(req.headers["ext"]);
-        if (!plugin) {
-          return res.status(404).send("Not Found");
-        }
+
+        if (this.website.EXT.indexOf(req.headers["ext"]) === -1) return res.status(404).send("Not Found");
+        if (this.website.EXTInstalled.indexOf(req.headers["ext"]) === -1) return res.status(409).send("Not installed");
+        if (this.website.EXTConfigured.indexOf(req.headers["ext"]) > -1) return res.status(409).send("Already configured");
+
         var resultSaveConfig = {};
         try  {
           const dataConfig = JSON.parse(atob(req.body["config"]));
@@ -922,7 +923,7 @@ class website {
           }
         } else {
           console.log("[WEBSITE] Already activated");
-          res.status(400).send("Already activated");
+          res.status(409).send("Already activated");
         }
         break;
 
@@ -953,7 +954,7 @@ class website {
           }
         } else {
           console.log(`[WEBSITE] [INSTALL] EXT Already Installed: ${pluginName}`);
-          res.status(400).send("Already installed");
+          res.status(409).send("Already installed");
         }
         break;
 
@@ -1099,19 +1100,19 @@ class website {
         break;
 
       case "/api/backups/external":
-        let config = req.body["config"];
         try  {
-          let decoded = atob(req.body["config"]);
           console.log("[WEBSITE] Receiving External backup...");
+          let config = req.body["config"];
+          let decoded = JSON.parse(atob(config));
           var linkExternalBackup = await this.saveExternalConfig(decoded);
           if (linkExternalBackup.data) {
-            console.log("[WEBSITE] Generate link number:", linkExternalBackup.data);
+            console.log("[WEBSITE] Generate link:", linkExternalBackup.data);
             setTimeout(() => {
               this.deleteDownload(linkExternalBackup.data);
             }, 1000 * 60);
             this.website.healthDownloader = (req_, res_) => {
               if (req_.params[0] === linkExternalBackup.data) {
-                res_.sendFile(`${this.WebsiteModulePath}/download/${linkExternalBackup.data}.js`);
+                res_.sendFile(`${this.WebsiteModulePath}/download/${linkExternalBackup.data}`);
                 this.website.healthDownloader = function (req_, res_) {
                   res_.redirect("/");
                 };
@@ -1119,7 +1120,7 @@ class website {
                 res_.redirect("/");
               }
             };
-            res.json({ file: `/download/${linkExternalBackup.data}.js`, expire_in: 60 });
+            res.json({ file: `/download/${linkExternalBackup.data}`, expire_in: 60 });
           } else {
             res.status(500);
           }
@@ -1521,7 +1522,7 @@ class website {
           return console.error("[WEBSITE] [WRITE] error", error);
         }
 
-        readFileLineByLine = (inputFile, outputFile) => {
+        const readFileLineByLine = (inputFile, outputFile) => {
           var FunctionSearch = new RegExp(/(.*)(`|')\[FUNCTION\](.*)(`|')/, "g");
           var instream = fs.createReadStream(inputFile);
           var outstream = new Stream();
@@ -1549,7 +1550,7 @@ class website {
                 resolve({ error: "Error when deleting file" });
                 return console.error("[WEBSITE] [DELETE] error", err);
               }
-              resolve({ data: time });
+              resolve({ data: `${time}.js` });
             });
           });
         };
@@ -1559,7 +1560,7 @@ class website {
   }
 
   deleteDownload (file) {
-    var inputFile = `${this.WebsiteModulePath}/download/${file}.js`;
+    var inputFile = `${this.WebsiteModulePath}/download/${file}`;
     fs.unlink(inputFile, (err) => {
       if (err) {
         return console.error("[WEBSITE] error", err);
