@@ -642,7 +642,7 @@ class website {
             return res.status(401).json(APIResult);
           }
 
-          const base64Credentials = atob(params[1]);
+          const base64Credentials = this.decode(params[1]);
           const [ username, password ] = base64Credentials.split(":");
 
           if (username === this.website.user.username && password === this.website.user.password) {
@@ -759,7 +759,7 @@ class website {
       case "/api/config/MM":
         try {
           let stringify = JSON.stringify(this.website.MMConfig);
-          let encoded = btoa(stringify);
+          let encoded = this.encode(stringify);
           res.json({ config: encoded });
         } catch (e) {
           res.status(500).json({ error: e.message });
@@ -772,7 +772,7 @@ class website {
         if (index > -1) {
           log(`Request config of ${req.headers["ext"]}`);
           let stringify = JSON.stringify(this.website.MMConfig.modules[index]);
-          let encoded = btoa(stringify);
+          let encoded = this.encode(stringify);
           res.json({ config: encoded });
         } else {
           res.status(404).send("Not Found");
@@ -784,7 +784,7 @@ class website {
         try {
           let data = require(`../website/config/${req.headers["ext"]}/config.js`);
           let stringify = JSON.stringify(data.default);
-          let encoded = btoa(stringify);
+          let encoded = this.encode(stringify);
           res.json({ config: encoded });
         } catch (e) {
           res.status(404).send("Not Found");
@@ -797,7 +797,7 @@ class website {
           let data = require(`../website/config/${req.headers["ext"]}/config.js`);
           data.schema = this.makeSchemaTranslate(data.schema, this.website.schemaTranslatation);
           data.stringify = JSON.stringify(data.schema);
-          data.encoded = btoa(data.stringify);
+          data.encoded = this.encode(data.stringify);
           res.json({ schema: data.encoded });
         } catch (e) {
           console.error("[WEBSITE] Schema:", e.message);
@@ -820,7 +820,7 @@ class website {
         if (availableBackups.indexOf(req.headers["backup"]) === -1) return res.status(404).send("Not Found");
         let file = await this.loadBackupFile(req.headers["backup"]);
         let stringify = JSON.stringify(file);
-        let encoded = btoa(stringify);
+        let encoded = this.encode(stringify);
         res.json({ config: encoded });
         break;
 
@@ -858,7 +858,7 @@ class website {
         if (!req.body["config"]) return res.status(400).send("Bad Request");
         var resultSaveConfig = {};
         try  {
-          let decoded = JSON.parse(atob(req.body["config"]));
+          let decoded = JSON.parse(this.decode(req.body["config"]));
           resultSaveConfig = await this.saveConfig(decoded);
         } catch (e) {
           console.log("[WEBSITE] Request error", e.message);
@@ -885,7 +885,7 @@ class website {
 
         var resultSaveConfig = {};
         try  {
-          const dataConfig = JSON.parse(atob(req.body["config"]));
+          const dataConfig = JSON.parse(this.decode(req.body["config"]));
           if (dataConfig.module !== req.headers["ext"]) {
             return res.status(400).send("Bad Request");
           }
@@ -1103,7 +1103,7 @@ class website {
         try  {
           console.log("[WEBSITE] Receiving External backup...");
           let config = req.body["config"];
-          let decoded = JSON.parse(atob(config));
+          let decoded = JSON.parse(this.decode(config));
           var linkExternalBackup = await this.saveExternalConfig(decoded);
           if (linkExternalBackup.data) {
             console.log("[WEBSITE] Generate link:", linkExternalBackup.data);
@@ -1206,14 +1206,14 @@ class website {
       case "/api/backups/external":
         let config = req.body["config"];
         try  {
-          let decoded = atob(req.body["config"]);
+          let decoded = this.decode(req.body["config"]);
           console.log("[WEBSITE] Receiving External backup...");
           var transformExternalBackup = await this.transformExternalBackup(decoded);
           if (transformExternalBackup.error) {
             res.status(500).json({ error: transformExternalBackup.error });
           } else {
             let stringify = JSON.stringify(transformExternalBackup);
-            let encode = btoa(stringify);
+            let encode = this.encode(stringify);
             res.json({ config: encode });
           }
         } catch (e) {
@@ -1318,6 +1318,15 @@ class website {
   /*************/
   /*** Tools ***/
   /*************/
+
+  encode (input) {
+    return btoa(input);
+  }
+
+  decode (input) {
+    return atob(input);
+  }
+
   readConfig () {
     return new Promise((resolve) => {
       var MMConfig = undefined;
