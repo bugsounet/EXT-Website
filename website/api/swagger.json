@@ -55,7 +55,7 @@
           "Tools"
         ],
         "summary": "Test API path",
-        "description": "Test if API is online<li>No param is needed",
+        "description": "Test if API is online.<li>No param is needed.",
         "responses": {
           "200": {
             "description": "Return api state",
@@ -81,7 +81,7 @@
             "Basic": []
           }
         ],
-        "description": "Get `Bearer` token.<li>Credentials must be sended in header with `Authorization: Basic` (base64 login:password) ",
+        "description": "Get `Bearer` token.<li>Credentials must be sended in header with `Authorization: Basic` (base64 login:password).",
         "responses": {
           "200": {
             "description": "Returns `access_token`, `token_type` and `expire_in` values",
@@ -138,7 +138,7 @@
             "Bearer": []
           }
         ],
-        "description": "Get translation all translations.<li>No params is needed.<li>`Bearer` token is needed in header",
+        "description": "Get translation all translations.<li>Required: `Bearer` token in header.<li>No params is needed.",
         "responses": {
           "200": {
             "description": "Send collection of translations part",
@@ -174,7 +174,7 @@
             "Bearer": []
           }
         ],
-        "description": "Get translation home text translation.<li>No params is needed.<li>`Bearer` token is needed in header",
+        "description": "Get translation home text translation.<li>Required: `Bearer` token in header.<li>No params is needed.",
         "responses": {
           "200": {
             "description": "Send translated home text HTML",
@@ -210,7 +210,7 @@
             "Bearer": []
           }
         ],
-        "description": "Get EXT-Website Version informations.<li>`Bearer` token is needed in header",
+        "description": "Get EXT-Website Version informations.<li>Required: `Bearer` token in header.",
         "responses": {
           "200": {
             "description": "Send EXT-Website version tools",
@@ -256,7 +256,7 @@
             "Bearer": []
           }
         ],
-        "description": "Send stop command for turn off all active EXTs.<li>No params is needed.<li>`Bearer` token is needed in header",
+        "description": "Send stop command for turn off all active EXTs.<li>Required: `Bearer` token in header.<li>No params is needed.",
         "responses": {
           "200": {
             "description": "All EXTs are stopped",
@@ -292,7 +292,7 @@
             "Bearer": []
           }
         ],
-        "description": "Get system information of the system.<li>`Bearer` token is needed in header<li>No params is needed.",
+        "description": "Get system information of the system.<li>Required: `Bearer` token in header.<li>No params is needed.",
         "responses": {
           "200": {
             "description": "Send System informations result",
@@ -328,7 +328,7 @@
             "Bearer": []
           }
         ],
-        "description": "Send a request for restart MagicMirror².<li>`Bearer` token is needed in header<li>No params is needed.",
+        "description": "Send a request for restart MagicMirror².<li>Required: `Bearer` token in header.<li>No params is needed.",
         "responses": {
           "200": {
             "description": "Restart in progress",
@@ -364,7 +364,7 @@
             "Bearer": []
           }
         ],
-        "description": "Send a request for close MagicMirror².<li>`Bearer` token is needed in header<li>No params is needed.",
+        "description": "Send a request for close MagicMirror².<li>Required: `Bearer` token in header.<li>No params is needed.",
         "responses": {
           "200": {
             "description": "Close in progress",
@@ -400,7 +400,7 @@
             "Bearer": []
           }
         ],
-        "description": "Send a request for reboot OS.<li>`Bearer` token is needed in header<li>No params is needed.",
+        "description": "Send a request for reboot OS.<li>Required: `Bearer` token in header.<li>No params is needed.",
         "responses": {
           "200": {
             "description": "Reboot in progress",
@@ -436,7 +436,7 @@
             "Bearer": []
           }
         ],
-        "description": "Send a request for shutdown OS.<li>`Bearer` token is needed in header<li>No params is needed.",
+        "description": "Send a request for shutdown OS.<li>Required: `Bearer` token in header.<li>No params is needed.",
         "responses": {
           "200": {
             "description": "Shutdown in progress",
@@ -472,7 +472,7 @@
             "Bearer": []
           }
         ],
-        "description": "Get version of all EXTs connected.<li>No params is needed.<li>`Bearer` token is needed in header",
+        "description": "Get version of all EXTs connected.<li>Required: `Bearer` token in header.<li>No params is needed.",
         "responses": {
           "200": {
             "description": "Sends the version of the EXTs currently used",
@@ -508,7 +508,7 @@
             "Bearer": []
           }
         ],
-        "description": "Get available EXTs collection.<li>No params is needed.<li>`Bearer` token is needed in header",
+        "description": "Get available EXTs collection.<li>Required: `Bearer` token in header.<li>No params is needed.",
         "responses": {
           "200": {
             "description": "Sends all available EXTs",
@@ -542,7 +542,7 @@
             "Bearer": []
           }
         ],
-        "description": "Install an EXT.<li>`ext` param with `EXT-Name` is needed in header.<li>`Bearer` token is needed in header",
+        "description": "Install an EXT.<li>Required: `Bearer` token in header.<li>Required: `ext` param with `EXT-Name` in header.",
         "parameters": [
           {
             "name": "ext",
@@ -617,7 +617,7 @@
             "Bearer": []
           }
         ],
-        "description": "Delete an EXT.<li>`ext` param with `EXT-Name` is needed in header.<li>`Bearer` token is needed in header",
+        "description": "Delete an EXT.<li>Required: `Bearer` token in header.<li>Required: `ext` param with `EXT-Name` in header.",
         "parameters": [
           {
             "name": "ext",
@@ -694,7 +694,7 @@
             "Bearer": []
           }
         ],
-        "description": "Get installed EXTs collection (in MagicMirror² module Folder).<li>No params is needed.<li>`Bearer` token is needed in header",
+        "description": "Get installed EXTs collection (in MagicMirror² module Folder).<li>Required: `Bearer` token in header.<li>No params is needed.",
         "responses": {
           "200": {
             "description": "Sends all installed EXTs in MagicMirror² modules folder",
@@ -730,7 +730,7 @@
             "Bearer": []
           }
         ],
-        "description": "Get configured EXTs (in MagicMirror² configuration file).<li>No params is needed.<li>`Bearer` token is needed in header",
+        "description": "Get configured EXTs (in MagicMirror² configuration file).<li>Required: `Bearer` token in header.<li>No params is needed.",
         "responses": {
           "200": {
             "description": "Sends all configured EXTs in MagicMirror² config. file",
@@ -766,7 +766,7 @@
             "Bearer": []
           }
         ],
-        "description": "Get translated descriptions of all EXTs collection.<li>No params is needed.<li>`Bearer` token is needed in header",
+        "description": "Get translated descriptions of all EXTs collection.<li>Required: `Bearer` token in header.<li>No params is needed.",
         "responses": {
           "200": {
             "description": "Sends descriptions of all EXTs",
@@ -802,7 +802,7 @@
             "Bearer": []
           }
         ],
-        "description": "Get status database of all EXTs.<li>No params is needed.<li>`Bearer` token is needed in header<br><br>`hello`: plugin is detected (installed and configured)<br>`connected`: plugin is currently active in MAgicMirror² (display or play something)",
+        "description": "Get status database of all EXTs.<li>Required: `Bearer` token in header.<li>No params is needed.<br><br>Response object in deep:<br>`hello`: plugin is detected (installed and configured).<br>`connected`: plugin is currently active in MagicMirror² (display or play something).",
         "responses": {
           "200": {
             "description": "Sends status of all EXTs",
@@ -838,7 +838,7 @@
             "Bearer": []
           }
         ],
-        "description": "Send new speaker volume configuration.<li>Needed: `EXT-Volume` plugin<li>`Bearer` token is needed in header<li>`volume` param with value in percent is needed in body (JSON Format).",
+        "description": "Send new speaker volume configuration.<li>Required: `EXT-Volume` plugin<li>Required: `Bearer` token in header.<li>Required: `volume` param with percent value [0-100] in body (JSON Format).",
         "requestBody": {
           "description" : "Send new percent speaker volume in volume key",
           "required": true,
@@ -905,7 +905,7 @@
             "Bearer": []
           }
         ],
-        "description": "Send new recorder volume configuration.<li>Needed: `EXT-Volume` plugin<li>`Bearer` token is needed in header<li>`volume` param with value in percent is needed in body (JSON Format).",
+        "description": "Send new recorder volume configuration.<li>Required: `EXT-Volume` plugin<li>Required: `Bearer` token in header.<li>Required: `volume` param with percent value [0-100] in body (JSON Format).",
         "requestBody": {
           "description" : "Send new percent recorder volume in volume key",
           "required": true,
@@ -972,7 +972,7 @@
             "Bearer": []
           }
         ],
-        "description": "Get Radio List collection.<li>Needed `EXT-RadioPlayer` plugin<li>No params is needed.<li>`Bearer` token is needed in header",
+        "description": "Get Radio List collection.<li>Needed `EXT-RadioPlayer` plugin.<li>Required: `Bearer` token in header.<li>No params is needed.",
         "responses": {
           "200": {
             "description": "Returns Radio List",
@@ -1016,7 +1016,7 @@
             "Bearer": []
           }
         ],
-        "description": "Send request For listening a Radio.<li>Needed `EXT-RadioPlayer` plugin<li>`radio` param with radio name in value is needed in body (JSON Format).<li>`Bearer` token is needed in header",
+        "description": "Send request For listening a Radio.<li>Needed `EXT-RadioPlayer` plugin.<li>Required: `Bearer` token in header.<li>Required: `radio` param with radio name value in body (JSON Format).",
         "requestBody": {
           "description" : "Send request radio in radio key",
           "required": true,
@@ -1083,7 +1083,7 @@
             "Bearer": []
           }
         ],
-        "description": "Get Available updates.<li>Needed `EXT-Updates` plugin<li>No params is needed.<li>`Bearer` token is needed in header",
+        "description": "Get Available updates.<li>Needed `EXT-Updates` plugin.<li>Required: `Bearer` token in header.<li>No params is needed.",
         "responses": {
           "200": {
             "description": "Sends available updates",
@@ -1127,7 +1127,7 @@
             "Bearer": []
           }
         ],
-        "description": "Update first plugins of update list.<li>Needed `EXT-Updates` plugin<li>No params is needed.<li>`Bearer` token is needed in header",
+        "description": "Update first plugins of update list.<li>Needed `EXT-Updates` plugin.<li>Required: `Bearer` token in header.<li>No params is needed.",
         "responses": {
           "200": {
             "description": "Update command started",
@@ -1173,7 +1173,7 @@
             "Bearer": []
           }
         ],
-        "description": "Send Alert on MagicMirror² screen.<li>Needed: `EXT-Alert` plugin<li>`Bearer` token is needed in header<li>`alert` param with message content is needed in body (JSON Format).",
+        "description": "Send Alert on MagicMirror² screen.<li>Required: `EXT-Alert` plugin.<li>Required: `Bearer` token in header.<li>Required: `alert` param with message content in body (JSON Format).",
         "requestBody": {
           "description" : "Send Alert on MagicMirror²",
           "required": true,
@@ -1240,7 +1240,7 @@
             "Bearer": []
           }
         ],
-        "description": "Send reqest for listening music on Spotify.<li>Needed: `EXT-Spotify` plugin<li>`Bearer` token is needed in header<li>`query` with query to send and `type` with query type (artist, album, playlist or track) are needed in body (JSON Format).",
+        "description": "Send reqest for listening music on Spotify.<li>Required: `EXT-Spotify` plugin.<li>Required: `Bearer` token in header.<li>Required: `query` with query to send and `type` with query type (artist, album, playlist or track) in body (JSON Format).",
         "requestBody": {
           "description" : "Send query and type for search and listening",
           "required": true,
@@ -1307,7 +1307,7 @@
             "Bearer": []
           }
         ],
-        "description": "Send reqest for play command on Spotify.<li>Needed: `EXT-Spotify` plugin<li>`Bearer` token is needed in header<li>No params is needed.",
+        "description": "Send reqest for play command on Spotify.<li>Required: `EXT-Spotify` plugin.<li>Required: `Bearer` token in header.<li>No params is needed.",
         "responses": {
           "200": {
             "description": "Command sended successfully",
@@ -1363,7 +1363,7 @@
             "Bearer": []
           }
         ],
-        "description": "Send reqest for stop command on Spotify.<li>Needed: `EXT-Spotify` plugin<li>`Bearer` token is needed in header<li>No params is needed.",
+        "description": "Send reqest for stop command on Spotify.<li>Required: `EXT-Spotify` plugin.<li>Required: `Bearer` token in header.<li>No params is needed.",
         "responses": {
           "200": {
             "description": "Command sended successfully",
@@ -1419,7 +1419,7 @@
             "Bearer": []
           }
         ],
-        "description": "Send reqest for play or pause (toggle) command on Spotify.<li>Needed: `EXT-Spotify` plugin<li>`Bearer` token is needed in header<li>No params is needed.",
+        "description": "Send reqest for play or pause (toggle) command on Spotify.<li>Required: `EXT-Spotify` plugin.<li>Required: `Bearer` token in header.<li>No params is needed.",
         "responses": {
           "200": {
             "description": "Command sended successfully",
@@ -1475,7 +1475,7 @@
             "Bearer": []
           }
         ],
-        "description": "Send reqest for next title command on Spotify.<li>Needed: `EXT-Spotify` plugin<li>`Bearer` token is needed in header<li>No params is needed.",
+        "description": "Send reqest for next title command on Spotify.<li>Required: `EXT-Spotify` plugin.<li>Required: `Bearer` token in header.<li>No params is needed.",
         "responses": {
           "200": {
             "description": "Command sended successfully",
@@ -1531,7 +1531,7 @@
             "Bearer": []
           }
         ],
-        "description": "Send reqest for previous title command on Spotify.<li>Needed: `EXT-Spotify` plugin<li>`Bearer` token is needed in header<li>No params is needed.",
+        "description": "Send reqest for previous title command on Spotify.<li>Required: `EXT-Spotify` plugin.<li>Required: `Bearer` token in header.<li>No params is needed.",
         "responses": {
           "200": {
             "description": "Command sended successfully",
@@ -1587,7 +1587,7 @@
             "Bearer": []
           }
         ],
-        "description": "Send YouTube request.<li>Needed: `EXT-YouTube` plugin<li>`Bearer` token is needed in header<li>`query` param with youtube query content is needed in body (JSON Format).",
+        "description": "Send YouTube request.<li>Required: `EXT-YouTube` plugin.<li>Required: `Bearer` token in header.<li>`query` param with youtube query content is needed in body (JSON Format).",
         "requestBody": {
           "description" : "Send query for YouTube Search",
           "required": true,
@@ -1654,7 +1654,7 @@
             "Bearer": []
           }
         ],
-        "description": "Send request for turn ON/OFF MagicMirror² screen.<li>Needed: `EXT-Screen` plugin<li>`Bearer` token is needed in header<li>`power` param with wanted screen state (ON/OFF) is needed in body (JSON Format).",
+        "description": "Send request for turn ON/OFF MagicMirror² screen.<li>Required: `EXT-Screen` plugin.<li>Required: `Bearer` token in header.<li>`power` param with wanted screen state (ON/OFF) is needed in body (JSON Format).",
         "requestBody": {
           "description" : "Send wanted power state",
           "required": true,
@@ -1731,7 +1731,7 @@
             "Bearer": []
           }
         ],
-        "description": "Get available TV channel list.<li>Needed: `EXT-FreeboxTV` plugin.<li>Reserved to French users<li>`Bearer` token is needed in header<li>No params is needed.",
+        "description": "Get available TV channel list.<li>Required: `EXT-FreeboxTV` plugin.<li>Required: `Bearer` token in header.<li>Reserved to French users.<li>No params is needed.",
         "responses": {
           "200": {
             "description": "Returns TV channel list",
@@ -1775,7 +1775,7 @@
             "Bearer": []
           }
         ],
-        "description": "Send request For watching TV channel.<li>Needed `EXT-FreeboxTV` plugin.<li>Reserved for French users.<li>`TV` param with TV channel name in value is needed in body (JSON Format).<li>`Bearer` token is needed in header",
+        "description": "Send request For watching TV channel.<li>Needed `EXT-FreeboxTV` plugin.<li>Required: `Bearer` token in header.<li>Reserved for French users.<li>Required: `TV` param with TV channel name value in body (JSON Format).",
         "requestBody": {
           "description" : "Send wanted TV channel",
           "required": true,
@@ -1843,7 +1843,7 @@
     },
     "/api/config/MM": {
       "get": {
-        "description" : "For securtity, response will be encoded in base64",
+        "description": "Get MagicMirror² configuration.<li>Required: `Bearer` token in header.<li>No params is needed.<br><br><b>For securtity, response will be encoded in base64.",
         "tags": [
           "Configuration"
         ],
@@ -1886,7 +1886,7 @@
             "Bearer": []
           }
         ],
-        "description" : "For securtity:<br><li>`config` must be encoded in base64<li>Last configuration will be saved into a file",
+        "description": "Update new configuration of MagicMirror².<li>Required: `Bearer` token in header.<li>Required: `config` param with MagicMirror² configuration value in body (JSON Format).<li>Required: `config` must be encoded in base64.<li>Last configuration will be saved into a file.",
         "requestBody": {
           "description" : "Send new base64 encoded config in config key",
           "required": true,
@@ -1953,7 +1953,7 @@
             "Bearer": []
           }
         ],
-        "description" : "For securtity, response will be encoded in base64",
+        "description": "Get configuration of an EXT.<li>Required: `Bearer` token in header.<li>Required: `ext` param with `EXT-Name` in header.<br><br><b>For securtity, response will be encoded in base64",
         "parameters": [
           {
             "name": "ext",
@@ -2018,7 +2018,7 @@
             "Bearer": []
           }
         ],
-        "description" : "For securtity:<br><li>`config` must be encoded in base64<li>Last configuration will be saved into a file",
+        "description": "Update new configuration of MagicMirror².<li>Required: `Bearer` token in header.<li>Required: `ext` param with `EXT-Name` in header.<li>Required: `config` param with MagicMirror² configuration in body (JSON Format).<li>Required: `config` must be encoded in base64.<li>Last configuration will be saved into a file.",
         "parameters": [
           {
             "name": "ext",
@@ -2094,7 +2094,7 @@
             "Bearer": []
           }
         ],
-        "description" : "For securtity, last configuration will be saved into a file",
+        "description": "Update new configuration of MagicMirror².<li>Required: `Bearer` token in header.<li>Required: `ext` param with `EXT-Name` in header.<li>Last configuration will be saved into a file.",
         "parameters": [
           {
             "name": "ext",
@@ -2171,7 +2171,8 @@
             "Bearer": []
           }
         ],
-        "description" : "For securtity, response will be encoded in base64",
+        #"description" : "For securtity, response will be encoded in base64",
+        "description": "Get default configuration of an EXT.<li>Required: `Bearer` token in header.<li>Required: `ext` param with `EXT-Name` in header.<br><br><b>For securtity, response will be encoded in base64.",
         "parameters": [
           {
             "name": "ext",
@@ -2238,7 +2239,7 @@
             "Bearer": []
           }
         ],
-        "description" : "For securtity, response will be encoded in base64",
+        "description": "Get template schema configuration of an EXT.<li>Required: `Bearer` token in header.<li>Required: `ext` param with `EXT-Name` in header.<br><br><b>For securtity, response will be encoded in base64.",
         "parameters": [
           {
             "name": "ext",
@@ -2305,6 +2306,7 @@
             "Bearer": []
           }
         ],
+        "description": "Get electron webview option.<li>Required: `Bearer` token in header.<li>No params is needed.",
         "responses": {
           "200": {
             "description": "Send result if webview is activated in MagicMirror² configuration",
@@ -2338,6 +2340,7 @@
             "Bearer": []
           }
         ],
+        "description": "Set electron webview option.<li>Required: `Bearer` token in header.<li>No params is needed.<li>Last configuration will be saved into a file.",
         "responses": {
           "200": {
             "description": "Send result if webview is activated in MagicMirror² configuration",
@@ -2383,6 +2386,7 @@
             "Bearer": []
           }
         ],
+        "description": "Get available backups filename collection.<li>Required: `Bearer` token in header.<li>No params is needed.",
         "responses": {
           "200": {
             "description": "Sends all available backup",
@@ -2416,6 +2420,7 @@
             "Bearer": []
           }
         ],
+        "description": "Delete all backups.<li>Required: `Bearer` token in header.<li>No params is needed.",
         "responses": {
           "200": {
             "description": "Backup Delete confirmation",
@@ -2451,7 +2456,7 @@
             "Bearer": []
           }
         ],
-        "description" : "For securtity, response will be encoded in base64",
+        "description": "Return backup configuration content.<li>Required: `Bearer` token in header.<li>Required: `backup` param with backup name in header.<br><br><b>For securtity, response will be encoded in base64",
         "parameters": [
           {
             "name": "backup",
@@ -2500,12 +2505,13 @@
         "tags": [
           "Backups"
         ],
-        "summary": "Send backup filename configuration and apply configuration from filename content",
+        "summary": "Apply backup configuration from backup filename",
         "security": [
           {
             "Bearer": []
           }
         ],
+        "description": "Apply backup configuration.<li>Required: `Bearer` token in header.<li>Required: `backup` param with backup name in header.<li>Last configuration will be saved into a file.",
         "parameters": [
           {
             "name": "backup",
@@ -2760,7 +2766,7 @@
             "Bearer": []
           }
         ],
-        "description": "Send request On MMM-GoogleAssistant.<li>`Bearer` token is needed in header<li>`query` param with your assistant request in value is needed in body (JSON Format).",
+        "description": "Send request On MMM-GoogleAssistant.<li>Required: `Bearer` token in header.<li>Required: `query` param with your assistant request in body (JSON Format).",
         "requestBody": {
           "description" : "Query to send in MMM-GoogleAssistant",
           "required": true,
