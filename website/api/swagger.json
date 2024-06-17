@@ -2577,7 +2577,7 @@
             "Bearer": []
           }
         ],
-        "description" : "For securtity:<br><li>`config` must be encoded in base64.<li>Analyse content of the config<li>Return an EXT-Website config compliant",
+        "description": "Analyse text base backup.<li>Required: `Bearer` token in header.<li>Required: `config` param with MagicMirror² configuration in body (JSON Format).<li>Required: `config` must be in text format and encoded in base64.<br><br><b>For securtity, response will be encoded in base64<br>Return an EXT-Website config compliant",
         "requestBody": {
           "description" : "Send base64 encoded config in config key",
           "required": true,
@@ -2642,7 +2642,7 @@
             "Bearer": []
           }
         ],
-        "description" : "For securtity:<br><li>`config` must be encoded in base64.<li>Analyse content of the config<li>Return A link for download and expire time before deleting",
+        "description": "Analyse MagicMirror² configuration an offer an download link.<li>Required: `Bearer` token in header.<li>Required: `config` param with MagicMirror² configuration in body (JSON Format).<li>Required: `config` encoded in base64.",
         "requestBody": {
           "description" : "Send base64 encoded config in config key",
           "required": true,
@@ -2709,6 +2709,7 @@
             "Bearer": []
           }
         ],
+        "description": "Send MagicMirror² notification and payload.<li>Required: `Bearer` token in header.<li>Required: `notification` param with notification name in body (JSON Format).<li>Optional: `payload` param with additional parameter in body (JSON Format).",
         "requestBody": {
           "description" : "Send notification request with payload (optional)",
           "required": true,
