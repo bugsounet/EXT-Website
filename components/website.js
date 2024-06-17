@@ -112,7 +112,7 @@ class website {
     this.WebsiteModulePath = `${this.root_path}/modules/EXT-Website`;
     this.WebsitePath = `${this.root_path}/modules/EXT-Website/website`;
     this.APIDOCS = {};
-    this.secret = this.encode(`EXT-Website v:${require("../package.json").version} rev:${require("../package.json").rev} API:v${require("../package.json").api}`)
+    this.secret = this.encode(`EXT-Website v:${require("../package.json").version} rev:${require("../package.json").rev} API:v${require("../package.json").api}`);
   }
 
   async init (data) {
