@@ -2171,7 +2171,6 @@
             "Bearer": []
           }
         ],
-        #"description" : "For securtity, response will be encoded in base64",
         "description": "Get default configuration of an EXT.<li>Required: `Bearer` token in header.<li>Required: `ext` param with `EXT-Name` in header.<br><br><b>For securtity, response will be encoded in base64.",
         "parameters": [
           {
