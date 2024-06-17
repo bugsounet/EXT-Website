@@ -112,6 +112,7 @@ class website {
     this.WebsiteModulePath = `${this.root_path}/modules/EXT-Website`;
     this.WebsitePath = `${this.root_path}/modules/EXT-Website/website`;
     this.APIDOCS = {};
+    this.secret = this.encode(`EXT-Website v:${require("../package.json").version} rev:${require("../package.json").rev} API:v${require("../package.json").api}`)
   }
 
   async init (data) {
@@ -203,7 +204,7 @@ class website {
 
     const jwtOptions = {
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-      secretOrKey: "some-secret"
+      secretOrKey: this.secret
     };
 
     passport.use(new JwtStrategy(jwtOptions, (jwtPayload, done) => {
@@ -282,7 +283,7 @@ class website {
       }
 
       this.website.app.use(session({
-        secret: "some-secret",
+        secret: this.secret,
         saveUninitialized: false,
         resave: true
       }));
@@ -650,7 +651,7 @@ class website {
               {
                 user: this.website.user.username
               },
-              "some-secret",
+              this.secret,
               { expiresIn: "1h" }
             );
             APIResult = {
