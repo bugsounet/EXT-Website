@@ -972,7 +972,7 @@
             "Bearer": []
           }
         ],
-        "description": "Get Radio List collection.<li>Needed `EXT-RadioPlayer` plugin.<li>Required: `Bearer` token in header.<li>No params is needed.",
+        "description": "Get Radio List collection.<liRequired: `EXT-RadioPlayer` plugin.<li>Required: `Bearer` token in header.<li>No params is needed.",
         "responses": {
           "200": {
             "description": "Returns Radio List",
@@ -1016,7 +1016,7 @@
             "Bearer": []
           }
         ],
-        "description": "Send request For listening a Radio.<li>Needed `EXT-RadioPlayer` plugin.<li>Required: `Bearer` token in header.<li>Required: `radio` param with radio name value in body (JSON Format).",
+        "description": "Send request For listening a Radio.<li>Required: `EXT-RadioPlayer` plugin.<li>Required: `Bearer` token in header.<li>Required: `radio` param with radio name value in body (JSON Format).",
         "requestBody": {
           "description" : "Send request radio in radio key",
           "required": true,
@@ -1083,7 +1083,7 @@
             "Bearer": []
           }
         ],
-        "description": "Get Available updates.<li>Needed `EXT-Updates` plugin.<li>Required: `Bearer` token in header.<li>No params is needed.",
+        "description": "Get Available updates.<li>Required: `EXT-Updates` plugin.<li>Required: `Bearer` token in header.<li>No params is needed.",
         "responses": {
           "200": {
             "description": "Sends available updates",
@@ -1127,7 +1127,7 @@
             "Bearer": []
           }
         ],
-        "description": "Update first plugins of update list.<li>Needed `EXT-Updates` plugin.<li>Required: `Bearer` token in header.<li>No params is needed.",
+        "description": "Update first plugins of update list.<li>Required: `EXT-Updates` plugin.<li>Required: `Bearer` token in header.<li>No params is needed.",
         "responses": {
           "200": {
             "description": "Update command started",
@@ -1775,7 +1775,7 @@
             "Bearer": []
           }
         ],
-        "description": "Send request For watching TV channel.<li>Needed `EXT-FreeboxTV` plugin.<li>Required: `Bearer` token in header.<li>Reserved for French users.<li>Required: `TV` param with TV channel name value in body (JSON Format).",
+        "description": "Send request For watching TV channel.<li>Required: `EXT-FreeboxTV` plugin.<li>Required: `Bearer` token in header.<li>Reserved for French users.<li>Required: `TV` param with TV channel name value in body (JSON Format).",
         "requestBody": {
           "description" : "Send wanted TV channel",
           "required": true,
