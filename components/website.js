@@ -913,7 +913,6 @@ class website {
 
         if (this.website.EXT.indexOf(req.headers["ext"]) === -1) return res.status(404).send("Not Found");
         if (this.website.EXTInstalled.indexOf(req.headers["ext"]) === -1) return res.status(409).send("Not installed");
-        if (this.website.EXTConfigured.indexOf(req.headers["ext"]) > -1) return res.status(409).send("Already configured");
 
         var resultSaveConfig = {};
         try  {
