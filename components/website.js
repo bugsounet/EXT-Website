@@ -20,6 +20,7 @@ const cors = require("cors");
 const Socket = require("socket.io");
 const { createProxyMiddleware } = require("http-proxy-middleware");
 
+const cookieParser = require('cookie-parser')
 const JwtStrategy = require("passport-jwt").Strategy;
 const ExtractJwt = require("passport-jwt").ExtractJwt;
 const jwt = require("jsonwebtoken");
@@ -310,6 +311,8 @@ class website {
         }
       ));
 
+      this.website.app.use(cookieParser())
+
       // Tells app to use password session
       this.website.app.use(passport.initialize());
       this.website.app.use(passport.session());
@@ -355,12 +358,12 @@ class website {
         .use("/xterm-addon-fit", express.static(`${this.WebsiteModulePath}/node_modules/xterm-addon-fit`))
         .use("/jquery.min.js", express.static(`${this.WebsiteModulePath}/node_modules/jquery/dist/jquery.min.js`))
 
-        .get("/", (req, res) => {
+        .get("/", (req,res,next) => this.auth(req,res,next), (req, res) => {
           if (req.user) res.sendFile(`${this.WebsitePath}/index.html`);
           else res.redirect("/login");
         })
 
-        .get("/EXT", (req, res) => {
+        .get("/EXT", (req,res,next) => this.auth(req,res,next), (req, res) => {
           if (req.user) res.sendFile(`${this.WebsitePath}/EXT.html`);
           else res.redirect("/login");
         })
@@ -372,34 +375,62 @@ class website {
 
         .post("/auth", (req, res, next) => {
           var ip = req.headers["x-forwarded-for"] || req.connection.remoteAddress;
-          passport.authenticate("login", (err, user, info) => {
-            if (err) {
-              console.error(`[WEBSITE] [${ip}] Error`, err);
-              return next(err);
-            }
-            if (!user) {
-              console.warn(`[WEBSITE] [${ip}] Bad Login`, info);
-              return res.send({ err: info });
-            }
-            req.logIn(user, (err) => {
-              if (err) {
-                console.warn(`[WEBSITE] [${ip}] Login error:`, err);
-                return res.send({ err: err });
-              }
-              console.log(`[WEBSITE] [${ip}] Welcome ${user.username}, happy to serve you!`);
-              return res.send({ login: true });
+
+          const authorization = req.headers.authorization;
+          const params = authorization?.split(" ");
+          var APIResult = {
+            error: "Invalid credentials"
+          };
+
+          if (!authorization) {
+            console.warn(`[WEBSITE] [${ip}] Bad Login: missing authorization type`);
+            APIResult.description = "Missing authorization type";
+            return res.status(401).json(APIResult);
+          };
+
+          if (params[0] !== "Basic") {
+            console.warn(`[WEBSITE] [${ip}] Bad Login: Basic authorization type only`);
+            APIResult.description = "Authorization type Basic only";
+            return res.status(401).json(APIResult);
+          }
+
+          if (!params[1]) { // must never happen
+            console.warn(`[WEBSITE] [${ip}] Bad Login: missing Basic params`);
+            APIResult.description = "Missing Basic params";
+            return res.status(401).json(APIResult);
+          }
+
+          const base64Credentials = this.decode(params[1]);
+          const [ username, password ] = base64Credentials.split(":");
+
+          if (username === this.website.user.username && password === this.website.user.password) {
+            const token = jwt.sign(
+              {
+                user: this.website.user.username
+              },
+              this.secret,
+              { expiresIn: "1h" }
+            );
+            console.log(`[WEBSITE] [${ip}] Welcome ${username}, happy to serve you!`);
+            res.cookie('access_token', token, {
+              httpOnly: true,
+              secure: true,
+              maxAge: 3600000
             });
-          })(req, res, next);
+            res.send({ login: true });
+          } else {
+            console.warn(`[WEBSITE] [${ip}] Bad Login: Invalid username or password`);
+            APIResult.description = "Invalid username or password";
+            res.status(401).json(APIResult);
+          }
         })
 
         .get("/logout", (req, res) => {
-          req.logout((err) => {
-            if (err) { return console.error("[WEBSITE] Logout:", err); }
-            res.redirect("/");
-          });
+          res.clearCookie("access_token")
+          res.redirect("/");
         })
 
-        .get("/Terminal", (req, res) => {
+        .get("/Terminal", (req,res,next) => this.auth(req,res,next), (req, res) => {
           if (req.user) {
             var ip = req.headers["x-forwarded-for"] || req.connection.remoteAddress;
             res.sendFile(`${this.WebsitePath}/terminal.html`);
@@ -419,7 +450,7 @@ class website {
           else res.status(403).sendFile(`${this.WebsitePath}/403.html`);
         })
 
-        .get("/ptyProcess", (req, res) => {
+        .get("/ptyProcess", (req,res,next) => this.auth(req,res,next), (req, res) => {
           if (req.user) {
             var ip = req.headers["x-forwarded-for"] || req.connection.remoteAddress;
             res.sendFile(`${this.WebsitePath}/pty.html`);
@@ -451,7 +482,7 @@ class website {
           else res.status(403).sendFile(`${this.WebsitePath}/403.html`);
         })
 
-        .get("/install", (req, res) => {
+        .get("/install", (req,res,next) => this.auth(req,res,next), (req, res) => {
           if (req.user) {
             var ip = req.headers["x-forwarded-for"] || req.connection.remoteAddress;
             if (req.query.ext && this.website.EXTInstalled.indexOf(req.query.ext) === -1 && this.website.EXT.indexOf(req.query.ext) > -1) {
@@ -471,7 +502,7 @@ class website {
           else res.status(403).sendFile(`${this.WebsitePath}/403.html`);
         })
 
-        .get("/delete", (req, res) => {
+        .get("/delete", (req,res,next) => this.auth(req,res,next), (req, res) => {
           if (req.user) {
             var ip = req.headers["x-forwarded-for"] || req.connection.remoteAddress;
             if (req.query.ext && this.website.EXTInstalled.indexOf(req.query.ext) > -1 && this.website.EXT.indexOf(req.query.ext) > -1) {
@@ -491,12 +522,12 @@ class website {
           else res.status(403).sendFile(`${this.WebsitePath}/403.html`);
         })
 
-        .get("/MMConfig", (req, res) => {
+        .get("/MMConfig", (req,res,next) => this.auth(req,res,next), (req, res) => {
           if (req.user) res.sendFile(`${this.WebsitePath}/mmconfig.html`);
           else res.status(403).sendFile(`${this.WebsitePath}/403.html`);
         })
 
-        .get("/EXTCreateConfig", (req, res) => {
+        .get("/EXTCreateConfig", (req,res,next) => this.auth(req,res,next), (req, res) => {
           if (req.user) {
             if (req.query.ext
               && this.website.EXTInstalled.indexOf(req.query.ext) > -1 // is installed
@@ -510,7 +541,7 @@ class website {
           else res.status(403).sendFile(`${this.WebsitePath}/403.html`);
         })
 
-        .get("/EXTModifyConfig", (req, res) => {
+        .get("/EXTModifyConfig", (req,res,next) => this.auth(req,res,next), (req, res) => {
           if (req.user) {
             if (req.query.ext
               && this.website.EXTInstalled.indexOf(req.query.ext) > -1 // is installed
@@ -524,7 +555,7 @@ class website {
           else res.status(403).sendFile(`${this.WebsitePath}/403.html`);
         })
 
-        .get("/EXTDeleteConfig", (req, res) => {
+        .get("/EXTDeleteConfig", (req,res,next) => this.auth(req,res,next), (req, res) => {
           if (req.user) {
             if (req.query.ext
               && this.website.EXTInstalled.indexOf(req.query.ext) === -1 // is not installed
@@ -538,48 +569,48 @@ class website {
           else res.status(403).sendFile(`${this.WebsitePath}/403.html`);
         })
 
-        .get("/Tools", (req, res) => {
+        .get("/Tools", (req,res,next) => this.auth(req,res,next), (req, res) => {
           if (req.user) res.sendFile(`${this.WebsitePath}/tools.html`);
           else res.status(403).sendFile(`${this.WebsitePath}/403.html`);
         })
 
-        .get("/System", (req, res) => {
+        .get("/System", (req,res,next) => this.auth(req,res,next), (req, res) => {
           if (req.user) {
             res.sendFile(`${this.WebsitePath}/system.html`);
           } else res.status(403).sendFile(`${this.WebsitePath}/403.html`);
         })
 
-        .get("/About", (req, res) => {
+        .get("/About", (req,res,next) => this.auth(req,res,next), (req, res) => {
           if (req.user) res.sendFile(`${this.WebsitePath}/about.html`);
           else res.status(403).sendFile(`${this.WebsitePath}/403.html`);
         })
 
-        .get("/3rdpartymodules", (req, res) => {
+        .get("/3rdpartymodules", (req,res,next) => this.auth(req,res,next), (req, res) => {
           if (req.user) res.sendFile(`${this.WebsitePath}/3rdpartymodules.html`);
           else res.status(403).sendFile(`${this.WebsitePath}/403.html`);
         })
 
-        .get("/Restart", (req, res) => {
+        .get("/Restart", (req,res,next) => this.auth(req,res,next), (req, res) => {
           if (req.user) res.sendFile(`${this.WebsitePath}/restarting.html`);
           else res.status(403).sendFile(`${this.WebsitePath}/403.html`);
         })
 
-        .get("/Die", (req, res) => {
+        .get("/Die", (req,res,next) => this.auth(req,res,next), (req, res) => {
           if (req.user) res.sendFile(`${this.WebsitePath}/die.html`);
           else res.status(403).sendFile(`${this.WebsitePath}/403.html`);
         })
 
-        .get("/SystemRestart", (req, res) => {
+        .get("/SystemRestart", (req,res,next) => this.auth(req,res,next), (req, res) => {
           if (req.user) res.sendFile(`${this.WebsitePath}/reboot.html`);
           else res.status(403).sendFile(`${this.WebsitePath}/403.html`);
         })
 
-        .get("/SystemDie", (req, res) => {
+        .get("/SystemDie", (req,res,next) => this.auth(req,res,next), (req, res) => {
           if (req.user) res.sendFile(`${this.WebsitePath}/shutdown.html`);
           else res.status(403).sendFile(`${this.WebsitePath}/403.html`);
         })
 
-        .get("/EditMMConfig", (req, res) => {
+        .get("/EditMMConfig", (req,res,next) => this.auth(req,res,next), (req, res) => {
           if (req.user) res.sendFile(`${this.WebsitePath}/EditMMConfig.html`);
           else res.status(403).sendFile(`${this.WebsitePath}/403.html`);
         })
@@ -668,25 +699,25 @@ class website {
           }
         })
 
-        .get("/api/*", (req,res,next) => {
+        .get("/api/*", (req,res,next) => this.auth(req,res,next), (req,res,next) => {
           if (req.user) this.GetAPI(req,res);
           else next();
         })
         .get("/api/*", passport.authenticate("jwt", { session: false }), (req, res) => this.GetAPI(req,res))
 
-        .put("/api/*", (req,res,next) => {
+        .put("/api/*", (req,res,next) => this.auth(req,res,next), (req,res,next) => {
           if (req.user) this.PutAPI(req,res);
           else next();
         })
         .put("/api/*", passport.authenticate("jwt", { session: false }), (req, res) => this.PutAPI(req,res))
 
-        .delete("/api/*", (req,res,next) => {
+        .delete("/api/*", (req,res,next) => this.auth(req,res,next), (req,res,next) => {
           if (req.user) this.DeleteAPI(req,res);
           else next();
         })
         .delete("/api/*", passport.authenticate("jwt", { session: false }), (req, res) => this.DeleteAPI(req,res))
 
-        .post("/api/*", (req,res,next) => {
+        .post("/api/*", (req,res,next) => this.auth(req,res,next), (req,res,next) => {
           if (req.user) this.PostAPI(req,res);
           else next();
         })
@@ -882,7 +913,6 @@ class website {
 
         if (this.website.EXT.indexOf(req.headers["ext"]) === -1) return res.status(404).send("Not Found");
         if (this.website.EXTInstalled.indexOf(req.headers["ext"]) === -1) return res.status(409).send("Not installed");
-        if (this.website.EXTConfigured.indexOf(req.headers["ext"]) > -1) return res.status(409).send("Already configured");
 
         var resultSaveConfig = {};
         try  {
@@ -1319,6 +1349,31 @@ class website {
   /*************/
   /*** Tools ***/
   /*************/
+
+  async auth(req, res, next) {
+    try {
+      const { cookies, headers } = req;
+      if (!cookies || !cookies.access_token) {
+        console.log('[Website] Missing token in cookie');
+        return res.redirect("/login");
+      }
+
+      const accessToken = cookies.access_token;
+      const decodedToken = jwt.verify(accessToken, this.secret);
+      const user = decodedToken.user;
+
+      if (!user || user !== this.website.user.username) {
+        console.log(`[Website] User ${user} not exists`);
+        return res.redirect("/login");
+      }
+
+      req.user = user;
+      return next();
+    } catch (err) {
+      console.log(err)
+      return res.status(500).json({ error: 'Internal error' });
+    }
+  }
 
   encode (input) {
     return btoa(input);

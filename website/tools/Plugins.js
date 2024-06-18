@@ -193,11 +193,7 @@ function doInstall () {
       headers: { "ext": EXT },
       dataType: "json",
       success: function (back) {
-        if (back.done) {
-          $("#messageText").text(translation.Plugins_Install_Confirmed);
-        } else {
-          $("#messageText").text(translation.Warn_Error);
-        }
+        $("#messageText").text(translation.Plugins_Install_Confirmed);
         setTimeout(() => socketInstall.close(), 500);
       },
       error: function (err) {
@@ -377,7 +373,7 @@ async function EXTConfigJSEditor () {
         $("#alert").removeClass("invisible");
         $("#alert").removeClass("alert-success");
         $("#alert").addClass("alert-danger");
-
+        $("#messageText").text(err.statusText);
         let error = err.responseJSON?.error ? err.responseJSON.error : (err.responseText ? err.responseText : err.statusText)
         if (!err.status) alertify.error("Connexion Lost!");
         else alertify.error(`[writeConfig] Server return Error ${err.status} (${error})`);
@@ -494,7 +490,7 @@ async function EXTModifyConfigJSEditor () {
         $("#alert").removeClass("invisible");
         $("#alert").removeClass("alert-success");
         $("#alert").addClass("alert-danger");
-
+        $("#messageText").text(err.statusText);
         let error = err.responseJSON?.error ? err.responseJSON.error : (err.responseText ? err.responseText : err.statusText)
         if (!err.status) alertify.error("Connexion Lost!");
         else alertify.error(`[writeConfig] Server return Error ${err.status} (${error})`);
@@ -565,12 +561,11 @@ async function EXTDeleteConfigJSEditor () {
         $("#alert").removeClass("invisible");
         $("#alert").removeClass("alert-success");
         $("#alert").addClass("alert-danger");
-
+        $("#messageText").text(err.statusText);
         let error = err.responseJSON?.error ? err.responseJSON.error : (err.responseText ? err.responseText : err.statusText)
         if (!err.status) alertify.error("Connexion Lost!");
         else {
           alertify.error(`[writeConfig] Server return Error ${err.status} (${error})`);
-          $("#messageText").text(err.statusText);
         }
       }
     });
