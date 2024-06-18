@@ -20,7 +20,7 @@ const cors = require("cors");
 const Socket = require("socket.io");
 const { createProxyMiddleware } = require("http-proxy-middleware");
 
-const cookieParser = require('cookie-parser')
+const cookieParser = require("cookie-parser");
 const JwtStrategy = require("passport-jwt").Strategy;
 const ExtractJwt = require("passport-jwt").ExtractJwt;
 const jwt = require("jsonwebtoken");
@@ -311,7 +311,7 @@ class website {
         }
       ));
 
-      this.website.app.use(cookieParser())
+      this.website.app.use(cookieParser());
 
       // Tells app to use password session
       this.website.app.use(passport.initialize());
@@ -412,7 +412,7 @@ class website {
               { expiresIn: "1h" }
             );
             console.log(`[WEBSITE] [${ip}] Welcome ${username}, happy to serve you!`);
-            res.cookie('access_token', token, {
+            res.cookie("access_token", token, {
               httpOnly: true,
               secure: true,
               maxAge: 3600000
@@ -426,7 +426,7 @@ class website {
         })
 
         .get("/logout", (req, res) => {
-          res.clearCookie("access_token")
+          res.clearCookie("access_token");
           res.redirect("/");
         })
 
@@ -1350,11 +1350,11 @@ class website {
   /*** Tools ***/
   /*************/
 
-  async auth(req, res, next) {
+  auth (req, res, next) {
     try {
       const { cookies, headers } = req;
       if (!cookies || !cookies.access_token) {
-        console.log('[Website] Missing token in cookie');
+        console.log("[WEBSITE] Missing token in cookie");
         return res.redirect("/login");
       }
 
@@ -1363,15 +1363,15 @@ class website {
       const user = decodedToken.user;
 
       if (!user || user !== this.website.user.username) {
-        console.log(`[Website] User ${user} not exists`);
+        console.log(`[WEBSITE] User ${user} not exists`);
         return res.redirect("/login");
       }
 
       req.user = user;
       return next();
     } catch (err) {
-      console.log(err)
-      return res.status(500).json({ error: 'Internal error' });
+      console.error("[WEBSITE] [AUTH] Error 500!", err);
+      return res.status(500).json({ error: "Internal error" });
     }
   }
 
