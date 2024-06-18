@@ -27,22 +27,27 @@ function doLogin () {
   $("#login").submit(function (event) {
     event.preventDefault();
     alertify.set("notifier", "position", "top-center");
-    $.post("/auth", $(this).serialize())
-      .done((back) => {
-        if (back.err) {
-          alertify.error(`[Login] ${back.err.message}`);
-          $("#username").val("");
-          $("#password").val("");
-          $("#Login-submit").addClass("disabled");
-        }
-        else {
-          $(location).attr("href", "/");
-        }
-      })
-      .fail(function (err) {
+
+    let credentials = $("#username").val() + ":" + $("#password").val()
+    let encode = btoa(credentials);
+    $.ajax({
+      url: "/auth",
+      type: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Basic ${encode}`
+      },
+      dataType: "json",
+      success: function () {
+        $(location).attr("href", "/");
+      },
+      error: function (err) {
+        $("#username").val("");
+        $("#password").val("");
         let error = err.responseJSON?.error ? err.responseJSON.error : (err.responseText ? err.responseText : err.statusText)
         if (!err.status) alertify.error("Connexion Lost!");
         else alertify.error(`[Login] Server return Error ${err.status} (${error})`);
-      });
+      }
+    });
   });
 }
