@@ -412,6 +412,17 @@ function doTranslateNavBar () {
   $("#accordionSidebar").removeClass("invisible");
   $("li.active").removeClass("active");
   var path = location.pathname;
+
+  if (path === "/"
+    || path === "/EXT"
+    || path === "/Terminal"
+    || path === "/MMConfig"
+    || path === "/3rdpartymodules"
+    || path === "/Tools"
+    || path === "/System"
+    || path === "/About"
+  ) $(`a[href="${path}"]`).removeAttr("href");
+
   if (path === "/install"
     || path === "/delete"
     || path === "/EXTModifyConfig"
@@ -422,5 +433,4 @@ function doTranslateNavBar () {
   if (path === "/SystemDie" || path === "/SystemRestart") path = "/System";
   if (path === "/ptyProcess") path = "/Terminal";
   $(`a[href="${path}"]`).closest("a").addClass("active");
-  $(`a[href="${path}"]`).removeAttr("href");
 }
