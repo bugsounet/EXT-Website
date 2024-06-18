@@ -23,12 +23,12 @@ window.addEventListener("load", async (event) => {
   forceMobileRotate();
   doSystem(() => { doStatic(); });
   doTranslateNavBar();
+  SystemInterval = setInterval(() => {
+    doSystem();
+  }, 15000);
 });
 
 async function doSystem (cb = null) {
-  clearInterval(SystemInterval);
-  SystemInterval = null;
-
   system = await checkSystem();
   EXTVersions = await getEXTVersions();
 
@@ -36,10 +36,6 @@ async function doSystem (cb = null) {
   window.addEventListener("resize", function () {
     progressOrText(system);
   });
-
-  SystemInterval = setInterval(() => {
-    doSystem();
-  }, 15000);
 
   //CPU
   $("#SPEED").text(system.CPU.speed);

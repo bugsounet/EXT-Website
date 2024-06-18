@@ -20,7 +20,7 @@ function getVersion () {
       //console.log("Version", ver)
       resolve(ver);
     })
-      .fail(function (err) {
+      .fail((err) => {
         let error = err.responseJSON?.error ? err.responseJSON.error : (err.responseText ? err.responseText : err.statusText)
         if (!err.status) alertify.error("Connexion Lost!");
         else alertify.error(`[getVersion] Server return Error ${err.status} (${error})`);
@@ -33,7 +33,7 @@ function checkSystem () {
     $.getJSON("/api/system/sysInfo", (system) => {
       resolve(system);
     })
-      .fail(function (err) {
+      .fail((err) => {
         let error = err.responseJSON?.error ? err.responseJSON.error : (err.responseText ? err.responseText : err.statusText)
         if (!err.status) alertify.error("Connexion Lost!");
         else alertify.error(`[sysInfo] Server return Error ${err.status} (${error})`);
