@@ -18,7 +18,7 @@ function doRestart () {
   $("#text1").text(translation.Tools_Restart_Text1);
   $("#text2").text(translation.Tools_Restart_Text2);
 
-  $.post("/api/system/reboot")
+  Request ("/api/system/reboot", "POST", null, null, "REBOOT", null, null);
 
   function handle200 () {
     window.location.href = "/";

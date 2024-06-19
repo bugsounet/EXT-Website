@@ -1,340 +1,210 @@
 /** fetch datas **/
 
+function getCurrentToken() {
+  return JSON.parse(localStorage.getItem('EXT-WEBSITE'));
+}
+
 function getHomeText () {
   return new Promise((resolve) => {
-    $.getJSON("/api/translations/homeText", (text) => {
-      //console.log("homeText", text)
-      resolve(text.homeText);
-    })
-      .fail(function (err) {
-        let error = err.responseJSON?.error ? err.responseJSON.error : (err.responseText ? err.responseText : err.statusText)
-        if (!err.status) alertify.error("Connexion Lost!");
-        else alertify.error(`[homeText] Server return Error ${err.status} (${error})`);
-      });
+    //Request (url, type, headers, data, from, success, fail)
+    Request ("/api/translations/homeText", "GET", null, null, "homeText", (text) => resolve(text.homeText), null);
   });
 }
 
 function getVersion () {
   return new Promise((resolve) => {
-    $.getJSON("/api/version", (ver) => {
-      //console.log("Version", ver)
-      resolve(ver);
-    })
-      .fail((err) => {
-        let error = err.responseJSON?.error ? err.responseJSON.error : (err.responseText ? err.responseText : err.statusText)
-        if (!err.status) alertify.error("Connexion Lost!");
-        else alertify.error(`[getVersion] Server return Error ${err.status} (${error})`);
-      });
+    Request ("/api/version", "GET", null, null, "getVersion", (version) => resolve(version), null);
   });
 }
 
 function checkSystem () {
   return new Promise((resolve) => {
-    $.getJSON("/api/system/sysInfo", (system) => {
-      resolve(system);
-    })
-      .fail((err) => {
-        let error = err.responseJSON?.error ? err.responseJSON.error : (err.responseText ? err.responseText : err.statusText)
-        if (!err.status) alertify.error("Connexion Lost!");
-        else alertify.error(`[sysInfo] Server return Error ${err.status} (${error})`);
-      });
+    Request ("/api/system/sysInfo", "GET", null, null, "sysInfo", (system) => resolve(system), null);
   });
 }
 
 function checkWebviewTag () {
   return new Promise((resolve) => {
-    $.getJSON("/api/config/webview", (tag) => {
-      //console.log("webviewTag", tag)
-      resolve(tag.webview);
-    })
-      .fail(function (err) {
-        let error = err.responseJSON?.error ? err.responseJSON.error : (err.responseText ? err.responseText : err.statusText)
-        if (!err.status) alertify.error("Connexion Lost!");
-        else alertify.error(`[checkWebviewTag] Server return Error ${err.status} (${error})`);
-      });
-  });
-}
-
-function checkGA () {
-  return new Promise((resolve) => {
-    $.getJSON("/getGAVersion", (GA) => {
-      //console.log("GAVersion", GA)
-      resolve(GA);
-    })
-      .fail(function (err) {
-        let error = err.responseJSON?.error ? err.responseJSON.error : (err.responseText ? err.responseText : err.statusText)
-        if (!err.status) alertify.error("Connexion Lost!");
-        else alertify.error(`[checkGA] Server return Error ${err.status} (${error})`);
-      });
+    Request ("/api/config/webview", "GET", null, null, "checkWebviewTag", (tag) => resolve(tag.webview), null);
   });
 }
 
 function checkEXTStatus () {
-  var ErrEXTStatus = 0;
   return new Promise((resolve) => {
-    $.getJSON("/api/EXT/status", (Status) => {
-      //console.log("EXTStatus", Status)
-      resolve(Status);
-    })
-      .fail((err) => {
+    Request ("/api/EXT/status", "GET", null, null, "Status", (Status) => resolve(Status),
+      (err) => {
         let error = err.responseJSON?.error ? err.responseJSON.error : (err.responseText ? err.responseText : err.statusText)
         if (err.status === 403 || err.status === 401) $(location).attr("href", "/");
         if (!err.status) alertify.error("Connexion Lost!");
         else alertify.error(`[Status] Server return Error ${err.status} (${error})`);
-      });
+      }
+    )
   });
 }
 
 function loadLoginTranslation () {
   return new Promise((resolve) => {
-    $.getJSON("/api/translations/login", (tr) => {
-      //console.log("Translation", tr)
-      resolve(tr);
-    })
-      .fail(function (err) {
-        let error = err.responseJSON?.error ? err.responseJSON.error : (err.responseText ? err.responseText : err.statusText)
-        if (!err.status) alertify.error("Connexion Lost!");
-        else alertify.error(`[loginTranslation] Server return Error ${err.status} (${error})`);
-      });
+    Request ("/api/translations/login", "GET", null, null, "loginTranslation", (tr) => resolve(tr), null);
   });
 }
 
 function loadTranslation () {
   return new Promise((resolve) => {
-    $.getJSON("/api/translations/common", (tr) => {
-      //console.log("Translation", tr)
-      resolve(tr);
-    })
-      .fail(function (err) {
-        let error = err.responseJSON?.error ? err.responseJSON.error : (err.responseText ? err.responseText : err.statusText)
-        if (!err.status) alertify.error("Connexion Lost!");
-        else alertify.error(`[loadTranslation] Server return Error ${err.status} (${error})`);
-      });
+    Request ("/api/translations/common", "GET", null, null, "loadTranslation", (tr) => resolve(tr), null);
   });
 }
 
 function loadDataAllEXT () {
   return new Promise((resolve) => {
-    $.getJSON("/api/EXT", (all) => {
-      //console.log("allEXT", all)
-      resolve(all);
-    })
-      .fail(function (err) {
-        let error = err.responseJSON?.error ? err.responseJSON.error : (err.responseText ? err.responseText : err.statusText)
-        if (!err.status) alertify.error("Connexion Lost!");
-        else alertify.error(`[loadDataAllEXT] Server return Error ${err.status} (${error})`);
-      });
+    Request ("/api/EXT", "GET", null, null, "loadDataAllEXT", (all) => resolve(all), null);
   });
 }
 
 function loadDataConfiguredEXT () {
   return new Promise((resolve) => {
-    $.getJSON("/api/EXT/configured", (confEXT) => {
-      //console.log("ConfiguredEXT", confEXT)
-      resolve(confEXT);
-    })
-      .fail(function (err) {
-        let error = err.responseJSON?.error ? err.responseJSON.error : (err.responseText ? err.responseText : err.statusText)
-        if (!err.status) alertify.error("Connexion Lost!");
-        else alertify.error(`[loadDataConfiguredEXT] Server return Error ${err.status} (${error})`);
-      });
+    Request ("/api/EXT/configured", "GET", null, null, "loadDataConfiguredEXT", (confEXT) => resolve(confEXT), null);
   });
 }
 
 function loadDataInstalledEXT () {
   return new Promise((resolve) => {
-    $.getJSON("/api/EXT/installed", (instEXT) => {
-      //console.log("InstalledEXT", instEXT)
-      resolve(instEXT);
-    })
-      .fail(function (err) {
-        let error = err.responseJSON?.error ? err.responseJSON.error : (err.responseText ? err.responseText : err.statusText)
-        if (!err.status) alertify.error("Connexion Lost!");
-        else alertify.error(`[loadDataInstalledEXT] Server return Error ${err.status} (${error})`);
-      });
+    Request ("/api/EXT/installed", "GET", null, null, "loadDataInstalledEXT", (instEXT) => resolve(instEXT), null);
   });
 }
 
 function loadDataDescriptionEXT () {
   return new Promise((resolve) => {
-    $.getJSON("/api/EXT/descriptions", (desEXT) => {
-      //console.log("DescriptionEXT", desEXT)
-      resolve(desEXT);
-    })
-      .fail(function (err) {
-        let error = err.responseJSON?.error ? err.responseJSON.error : (err.responseText ? err.responseText : err.statusText)
-        if (!err.status) alertify.error("Connexion Lost!");
-        else alertify.error(`[loadDataDescriptionEXT] Server return Error ${err.status} (${error})`);
-      });
+    Request ("/api/EXT/descriptions", "GET", null, null, "loadDataDescriptionEXT", (desEXT) => resolve(desEXT), null);
   });
 }
 
 function loadMMConfig () {
   return new Promise((resolve) => {
-    $.getJSON("/api/config/MM", (response) => {
-      try {
-        let parse = atob(response.config);
-        let config = JSON.parse(parse);
-        resolve(config);
-      } catch (e) {
-        alertify.error("[loadMMConfig] Error on decode server response");
-      }
-    })
-      .fail(function (err) {
-        let error = err.responseJSON?.error ? err.responseJSON.error : (err.responseText ? err.responseText : err.statusText)
-        if (!err.status) alertify.error("Connexion Lost!");
-        else alertify.error(`[loadMMConfig] Server return Error ${err.status} (${error})`);
-      });
+    Request ("api/config/MM", "GET", null, null, "loadMMConfig",
+      (response) => {
+        try {
+          let parse = atob(response.config);
+          let config = JSON.parse(parse);
+          resolve(config);
+        } catch (e) {
+          alertify.error("[loadMMConfig] Error on decode server response");
+        }
+      }, null
+    )
   });
 }
 
 function getEXTVersions () {
   return new Promise((resolve) => {
-    $.getJSON("/api/EXT/versions", (EXTs) => {
-      resolve(EXTs);
-    })
-      .fail(function (err) {
-        let error = err.responseJSON?.error ? err.responseJSON.error : (err.responseText ? err.responseText : err.statusText)
-        if (!err.status) alertify.error("Connexion Lost!");
-        else alertify.error(`[getEXTVersions] Server return Error ${err.status} (${error})`);
-      });
+    Request ("/api/EXT/versions", "GET", null, null, "getEXTVersions", (EXTs) => resolve(EXTs), null);
   });
 }
 
 function loadBackupNames () {
   return new Promise((resolve) => {
-    $.getJSON("/api/backups", (backups) => {
-      //console.log("backups", backups)
-      resolve(backups);
-    })
-      .fail(function (err) {
-        let error = err.responseJSON?.error ? err.responseJSON.error : (err.responseText ? err.responseText : err.statusText)
-        if (!err.status) alertify.error("Connexion Lost!");
-        else alertify.error(`[loadBackupNames] Server return Error ${err.status} (${error})`);
-      });
+    Request ("/api/backups", "GET", null, null, "loadBackupNames", (backups) => resolve(backups), null);
   });
 }
 
 function loadRadio () {
   return new Promise((resolve) => {
-    $.getJSON("/api/EXT/RadioPlayer", (radio) => {
-      //console.log("radio", radio)
-      resolve(radio);
-    })
-      .fail(function (err) {
-        let error = err.responseJSON?.error ? err.responseJSON.error : (err.responseText ? err.responseText : err.statusText)
-        if (!err.status) alertify.error("Connexion Lost!");
-        else alertify.error(`[loadRadio] Server return Error ${err.status} (${error})`);
-      });
+    Request ("/api/EXT/RadioPlayer", "GET", null, null, "loadRadio", (radio) => resolve(radio), null);
   });
 }
 
 function loadPluginConfig (plugin) {
   return new Promise((resolve) => {
-    $.ajax(
-      {
-        url: "/api/config/default",
-        type: "GET",
-        headers: {"ext": plugin},
-        dataType: "json",
-        success: function(response) {
-          try {
-            let parse = atob(response.config);
-            let config = JSON.parse(parse);
-            resolve(config);
-          } catch (e) {
-            alertify.error("[loadPluginConfig] Error on decode server response");
-          }
-        },
-        error: function(err) {
-          let error = err.responseJSON?.error ? err.responseJSON.error : (err.responseText ? err.responseText : err.statusText)
-          if (!err.status) alertify.error("Connexion Lost!");
-          else alertify.error(`[loadPluginConfig] Server return Error ${err.status} (${error})`);
+    Request ("/api/config/default", "GET", {"ext": plugin} , null, "loadPluginConfig",
+      (response) => {
+        try {
+          let parse = atob(response.config);
+          let config = JSON.parse(parse);
+          resolve(config);
+        } catch (e) {
+          alertify.error("[loadPluginConfig] Error on decode server response");
         }
-      }
-    )
+      } , null
+    );
   })
 }
 
 function loadPluginTemplate (plugin) {
   return new Promise((resolve) => {
-    $.ajax(
-      {
-        url: "/api/config/schema",
-        type: "GET",
-        headers: {"ext": plugin},
-        dataType: "json",
-        success: function(response) {
-          try {
-            let parse = atob(response.schema);
-            let schema = JSON.parse(parse);
-            resolve(schema);
-          } catch (e) {
-            alertify.error("[loadPluginTemplate] Error on decode server response");
-          }
-        },
-        error: function(err) {
-          let error = err.responseJSON?.error ? err.responseJSON.error : (err.responseText ? err.responseText : err.statusText)
-          if (!err.status) alertify.error("Connexion Lost!");
-          else alertify.error(`[loadPluginTemplate] Server return Error ${err.status} (${error})`);
+    Request ("/api/config/schema", "GET", {"ext": plugin} , null, "loadPluginTemplate",
+      (response) => {
+        try {
+          let parse = atob(response.schema);
+          let schema = JSON.parse(parse);
+          resolve(schema);
+        } catch (e) {
+          alertify.error("[loadPluginTemplate] Error on decode server response");
         }
-      }
-    )
+      }, null
+    );
   })
 }
 
 function loadPluginCurrentConfig (plugin) {
   return new Promise((resolve) => {
-    $.ajax(
-      {
-        url: "/api/config/EXT",
-        type: "GET",
-        headers: {"ext": plugin},
-        dataType: "json",
-        success: function(response){
-          try {
-            let parse = atob(response.config);
-            let config = JSON.parse(parse);
-            resolve(config);
-          } catch (e) {
-            alertify.error("[loadPluginConfig] Error on decode server response");
-          }
-        },
-        error: function(err) {
-          let error = err.responseJSON?.error ? err.responseJSON.error : (err.responseText ? err.responseText : err.statusText)
-          if (!err.status) alertify.error("Connexion Lost!");
-          else alertify.error(`[loadPluginConfig] Server return Error ${err.status} (${error})`);
+    Request ("/api/config/EXT", "GET", {"ext": plugin} , null, "loadPluginConfig",
+      (response) => {
+        try {
+          let parse = atob(response.config);
+          let config = JSON.parse(parse);
+          resolve(config);
+        } catch (e) {
+          alertify.error("[loadPluginConfig] Error on decode server response");
         }
-      }
-    )
+      }, null
+    );
   })
 }
 
 function loadBackupConfig (file) {
   return new Promise((resolve) => {
-    $.ajax(
-      {
-        url: "/api/backups/file",
-        type: "GET",
-        headers: {"backup": file},
-        dataType: "json",
-        success: function(response){
-          try {
-            let parse = atob(response.config);
-            let backup = JSON.parse(parse);
-            resolve(backup);
-          } catch (e) {
-            alertify.error("[loadBackupConfig] Error on decode server response");
-          }
-        },
-        error: function(err) {
-          let error = err.responseJSON?.error ? err.responseJSON.error : (err.responseText ? err.responseText : err.statusText)
-          if (!err.status) alertify.error("Connexion Lost!");
-          else alertify.error(`[loadBackupConfig] Server return Error ${err.status} (${error})`);
+    Request ("/api/backups/file", "GET", {"backup": file} , null, "loadPluginConfig",
+      (response) => {
+        try {
+          let parse = atob(response.config);
+          let backup = JSON.parse(parse);
+          resolve(backup);
+        } catch (e) {
+          alertify.error("[loadBackupConfig] Error on decode server response");
         }
-      }
-    )
+      }, null
+    );
   });
+}
+
+function Request (url, type, header, data, from, success, fail) {
+  // console.log(url, type, header, data, from, success, fail)
+  var headers = {
+    "Content-Type": "application/json",
+    "Authorization": `Bearer ${getCurrentToken()}`
+  }
+
+  if (header) {
+    headers = Object.assign(headers, header);
+  }
+
+  $.ajax(
+    {
+      url: url,
+      type: type,
+      headers,
+      dataType: "json",
+      data: data,
+      success: (response) => {
+        if (success) success(response);
+      },
+      error: (err) => {
+        if (fail) return fail(err);
+        let error = err.responseJSON?.error ? err.responseJSON.error : (err.responseText ? err.responseText : err.statusText);
+        if (!err.status) alertify.error("Connexion Lost!");
+        else alertify.error(`[${from}] Server return Error ${err.status} (${error})`);
+      }
+    }
+  )
 }
 
 function hasPluginConnected (obj, key, value) {

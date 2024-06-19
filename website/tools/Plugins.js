@@ -131,22 +131,18 @@ function doDelete () {
     $("#messageText").text(translation.Plugins_Delete_Progress);
     $("#delete").addClass("disabled");
 
-    $.ajax({
-      url: "/api/EXT",
-      type: "DELETE",
-      headers: { "ext": EXT },
-      dataType: "json",
-      success: function (back) {
+    Request ("/api/EXT", "DELETE", { "ext": EXT }, null, "doDelete",
+      () => {
         $("#messageText").text(translation.Plugins_Delete_Confirmed);
         setTimeout(() => socketDelete.close(), 500);
       },
-      error: function (err) {
+      (err) => {
         $("#messageText").text(translation.Warn_Error);
         let error = err.responseJSON?.error ? err.responseJSON.error : (err.responseText ? err.responseText : err.statusText)
         if (!err.status) alertify.error("Connexion Lost!");
         else alertify.error(`[doDelete] Server return Error ${err.status} (${error})`);
       }
-    });
+    );
   };
 }
 
@@ -187,22 +183,18 @@ function doInstall () {
   document.getElementById("install").onclick = function () {
     $("#messageText").text(translation.Plugins_Install_Progress);
     $("#install").addClass("disabled");
-    $.ajax({
-      url: "/api/EXT",
-      type: "PUT",
-      headers: { "ext": EXT },
-      dataType: "json",
-      success: function (back) {
+    Request ("/api/EXT", "PUT", { "ext": EXT }, null, "doInstall",
+      () => {
         $("#messageText").text(translation.Plugins_Install_Confirmed);
         setTimeout(() => socketInstall.close(), 500);
       },
-      error: function (err) {
+      (err) => {
         $("#messageText").text(translation.Warn_Error);
         let error = err.responseJSON?.error ? err.responseJSON.error : (err.responseText ? err.responseText : err.statusText)
         if (!err.status) alertify.error("Connexion Lost!");
         else alertify.error(`[doInstall] Server return Error ${err.status} (${error})`);
       }
-    });
+    )
   };
 }
 
@@ -352,22 +344,14 @@ async function EXTConfigJSEditor () {
     $("#wait").css("display", "block");
     let encode = btoa(data);
 
-    $.ajax({
-      url: "/api/config/EXT",
-      type: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        "ext": EXT
-      },
-      dataType: "json",
-      data: JSON.stringify({ config: encode }),
-      success: function (back) {
+    Request ("/api/config/EXT", "PUT", { "ext": EXT }, JSON.stringify({ config: encode }) , "writeConfig",
+      () => {
         $("#wait").css("display", "none");
         $("#done").css("display", "block");
         $("#alert").removeClass("invisible");
         $("#messageText").text(translation.Restart);
       },
-      error: function (err) {
+      (err) => {
         $("#wait").css("display", "none");
         $("#error").css("display", "block");
         $("#alert").removeClass("invisible");
@@ -378,7 +362,7 @@ async function EXTConfigJSEditor () {
         if (!err.status) alertify.error("Connexion Lost!");
         else alertify.error(`[writeConfig] Server return Error ${err.status} (${error})`);
       }
-    });
+    );
   };
 }
 
@@ -469,22 +453,14 @@ async function EXTModifyConfigJSEditor () {
     $("#wait").css("display", "block");
     let encode = btoa(data);
 
-    $.ajax({
-      url: "/api/config/EXT",
-      type: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        "ext": EXT
-      },
-      dataType: "json",
-      data: JSON.stringify({ config: encode }),
-      success: function (back) {
+    Request ("/api/config/EXT", "PUT", { "ext": EXT }, JSON.stringify({ config: encode }) , "writeConfig",
+      () => {
         $("#wait").css("display", "none");
         $("#done").css("display", "block");
         $("#alert").removeClass("invisible");
         $("#messageText").text(translation.Restart);
       },
-      error: function (err) {
+      (err) => {
         $("#wait").css("display", "none");
         $("#error").css("display", "block");
         $("#alert").removeClass("invisible");
@@ -495,7 +471,7 @@ async function EXTModifyConfigJSEditor () {
         if (!err.status) alertify.error("Connexion Lost!");
         else alertify.error(`[writeConfig] Server return Error ${err.status} (${error})`);
       }
-    });
+    );
   };
   document.getElementById("loadDefault").onclick = async function () {
     editor.set(defaultConfig);
@@ -544,18 +520,14 @@ async function EXTDeleteConfigJSEditor () {
   document.getElementById("confirm").onclick = function () {
     $("#confirm").css("display", "none");
     $("#wait").css("display", "block");
-    $.ajax({
-      url: "/api/config/EXT",
-      type: "DELETE",
-      headers: { "ext": EXT },
-      dataType: "json",
-      success: function (back) {
+    Request ("/api/config/EXT", "DELETE", { "ext": EXT }, null , "writeConfig",
+      () => {
         $("#wait").css("display", "none");
         $("#done").css("display", "block");
         $("#alert").removeClass("invisible");
         $("#messageText").text(translation.Plugins_DeleteConfig_Confirmed);
       },
-      error: function (err) {
+      (err) => {
         $("#wait").css("display", "none");
         $("#error").css("display", "block");
         $("#alert").removeClass("invisible");
@@ -568,6 +540,6 @@ async function EXTDeleteConfigJSEditor () {
           alertify.error(`[writeConfig] Server return Error ${err.status} (${error})`);
         }
       }
-    });
+    );
   };
 }

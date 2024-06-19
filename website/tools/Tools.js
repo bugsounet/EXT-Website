@@ -56,32 +56,20 @@ async function doTools () {
     $("#backup-Box").css("display", "block");
 
     document.getElementById("backup-Delete").onclick = function () {
-      $.ajax({
-        url: "/api/backups",
-        type: "DELETE",
-        dataType: "json",
-        success: function (back) {
-          if (back.error) {
-            $("#backup-Delete").css("display", "none");
-            $("#backup-Error").css("display", "inline-block");
-            alertify.error(back.error);
-          } else {
-            $("#backup-Delete").css("display", "none");
-            $("#backup-Done").css("display", "inline-block");
-            alertify.success(translation.Tools_Backup_Deleted);
-          }
+      Request ("/api/backups", "DELETE", null, null, "backup-Delete",
+        () => {
+          $("#backup-Delete").css("display", "none");
+          $("#backup-Done").css("display", "inline-block");
+          alertify.success(translation.Tools_Backup_Deleted);
         },
-        error: function (err) {
+        (err) => {
           $("#backup-Delete").css("display", "none");
           $("#backup-Error").css("display", "inline-block");
-          if (err.status) {
-            alertify.error(`[backup-Delete] Server return Error ${err.status} (${err.statusText})`);
-          } else {
-            alertify.error(`[backup-Delete] Server return Error: ${err}`);
-          }
-          if (err.responseText) alertify.error(`[backup-Delete] State return: ${err.responseText}`);
+          let error = err.responseJSON?.error ? err.responseJSON.error : (err.responseText ? err.responseText : err.statusText);
+          if (!err.status) alertify.error("Connexion Lost!");
+          else alertify.error(`[backup-Delete] Server return Error ${err.status} (${error})`);
         }
-      });
+      );
     };
 
     document.getElementById("backup-Done").onclick = function () {
@@ -107,32 +95,20 @@ async function doTools () {
     if (displayNeeded) $("#webview-Box").css("display", "block");
 
     document.getElementById("webviewbtn-Apply").onclick = function () {
-      $.ajax({
-        url: "/api/config/webview",
-        type: "PUT",
-        dataType: "json",
-        success: function (back) {
-          if (back.done) {
-            $("#webviewbtn-Apply").css("display", "none");
-            $("#webviewbtn-Done").css("display", "inline-block");
-            alertify.success(translation.Restart);
-          } else {
-            $("#webviewbtn-Apply").css("display", "none");
-            $("#webviewbtn-Error").css("display", "inline-block");
-            alertify.success(back.error);
-          }
+      Request ("/api/config/webview", "PUT", null, null, "WebviewTag",
+        () => {
+          $("#webviewbtn-Apply").css("display", "none");
+          $("#webviewbtn-Done").css("display", "inline-block");
+          alertify.success(translation.Restart);
         },
-        error: function (err) {
+        (err) => {
           $("#webviewbtn-Apply").css("display", "none");
           $("#webviewbtn-Error").css("display", "inline-block");
-          if (err.status) {
-            alertify.error(`[WebviewTag] Server return Error ${err.status} (${err.statusText})`);
-          } else {
-            alertify.error(`[WebviewTag] Server return Error: ${err}`);
-          }
-          if (err.responseText) alertify.error(`[WebviewTag] State return: ${err.responseText}`);
+          let error = err.responseJSON?.error ? err.responseJSON.error : (err.responseText ? err.responseText : err.statusText);
+          if (!err.status) alertify.error("Connexion Lost!");
+          else alertify.error(`[WebviewTag] Server return Error ${err.status} (${error})`);
         }
-      });
+      );
     };
 
     document.getElementById("webviewbtn-Done").onclick = function () {
@@ -153,26 +129,11 @@ async function doTools () {
     $("#Screen-Box").css("display", "block");
 
     document.getElementById("Screen-Control").onclick = function () {
-      $.ajax({
-        url: "/api/EXT/Screen",
-        type: "PUT",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        dataType: "json",
-        data: JSON.stringify( { power: EXTStatus["EXT-Screen"].power ? "OFF" : "ON" } ),
-        success: function (back) {
+      Request ("/api/EXT/Screen", "PUT", null, null, "Screen",
+        () => {
           alertify.success(translation.RequestDone);
-        },
-        error: function (err) {
-          if (err.status) {
-            alertify.error(`[Screen] Server return Error ${err.status} (${err.statusText})`);
-          } else {
-            alertify.error(`[Screen] Server return Error: ${err}`);
-          }
-          if (err.responseText) alertify.error(`[Screen] State return: ${err.responseText}`);
-        }
-      });
+        }, null
+      );
     };
   }
 
@@ -192,30 +153,11 @@ async function doTools () {
 
     document.getElementById("Alert-Send").onclick = function () {
       $("#Alert-Send").addClass("disabled");
-      $.ajax({
-        url: "/api/EXT/Alert",
-        type: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        dataType: "json",
-        data: JSON.stringify( { alert: $("#Alert-Query").val() } ),
-        success: function (back) {
-          if (back.done) {
-            alertify.success(translation.RequestDone);
-          } else {
-            alertify.error(translation.Warn_Error);
-          }
-        },
-        error: function (err) {
-          if (err.status) {
-            alertify.error(`[Alert] Server return Error ${err.status} (${err.statusText})`);
-          } else {
-            alertify.error(`[Alert] Server return Error: ${err}`);
-          }
-          if (err.responseText) alertify.error(`[Alert] State return: ${err.responseText}`);
-        }
-      });
+      Request ("/api/EXT/Alert", "POST", null, JSON.stringify( { alert: $("#Alert-Query").val() } ), "Alert",
+        () => {
+          alertify.success(translation.RequestDone);
+        }, null
+      );
     };
   }
 
@@ -231,27 +173,11 @@ async function doTools () {
     }, 1000);
 
     document.getElementById("Volume-Send").onclick = function () {
-      $.ajax({
-        url: "/api/EXT/Volume/speaker",
-        type: "PUT",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        dataType: "json",
-        data: JSON.stringify({ volume: Number($("#Volume-Query").val()) }),
-        success: function (back) {
-          if (back.done) {
-            alertify.success(translation.RequestDone);
-          } else {
-            alertify.error(translation.Warn_Error);
-          }
-        },
-        error: function (err) {
-          let error = err.responseJSON?.error ? err.responseJSON.error : (err.responseText ? err.responseText : err.statusText)
-          if (!err.status) alertify.error("Connexion Lost!");
-          else alertify.error(`[Volume] Server return Error ${err.status} (${error})`);
-        }
-      });
+      Request ("/api/EXT/Volume/speaker", "PUT", null, JSON.stringify({ volume: Number($("#Volume-Query").val()) }), "Volume",
+        () => {
+          alertify.success(translation.RequestDone);
+        }, null
+      );
     };
   }
 
@@ -267,27 +193,11 @@ async function doTools () {
     }, 1000);
 
     document.getElementById("Volume-Send-Record").onclick = function () {
-      $.ajax({
-        url: "/api/EXT/Volume/recorder",
-        type: "PUT",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        dataType: "json",
-        data: JSON.stringify({ volume: Number($("#Volume-Query-Record").val()) }),
-        success: function (back) {
-          if (back.done) {
-            alertify.success(translation.RequestDone);
-          } else {
-            alertify.error(translation.Warn_Error);
-          }
-        },
-        error: function (err) {
-          let error = err.responseJSON?.error ? err.responseJSON.error : (err.responseText ? err.responseText : err.statusText)
-          if (!err.status) alertify.error("Connexion Lost!");
-          else alertify.error(`[Volume] Server return Error ${err.status} (${error})`);
-        }
-      });
+      Request ("/api/EXT/Volume/recorder", "PUT", null, JSON.stringify({ volume: Number($("#Volume-Query-Record").val()) }), "Volume",
+        () => {
+          alertify.success(translation.RequestDone);
+        }, null
+      );
     };
   }
 
@@ -316,19 +226,11 @@ async function doTools () {
     }, 1000);
     document.getElementById("Update-Confirm").onclick = function () {
       $("#Update-Confirm").addClass("disabled");
-      $.ajax({
-        url: "/api/EXT/Updates",
-        type: "PUT",
-        dataType: "json",
-        success: function(response) {
+      Request ("/api/EXT/Updates", "PUT", null, null, "Updates",
+        () => {
           alertify.success(translation.RequestDone);
-        },
-        error: function(err) {
-          let error = err.responseJSON?.error ? err.responseJSON.error : (err.responseText ? err.responseText : err.statusText)
-          if (!err.status) alertify.error("Connexion Lost!");
-          else alertify.error(`[Updates] Server return Error ${err.status} (${error})`);
-        }
-      });
+        }, null
+      );
     };
   }
 

@@ -38,7 +38,8 @@ function doLogin () {
         "Authorization": `Basic ${encode}`
       },
       dataType: "json",
-      success: function () {
+      success: function (response) {
+        localStorage.setItem('EXT-WEBSITE', JSON.stringify(response.session));
         $(location).attr("href", "/");
       },
       error: function (err) {

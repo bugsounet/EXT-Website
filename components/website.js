@@ -11,7 +11,6 @@ const si = require("systeminformation");
 const pm2 = require("pm2");
 const semver = require("semver");
 const passport = require("passport");
-const LocalStrategy = require("passport-local");
 const express = require("express");
 const session = require("express-session");
 const bodyParserErrorHandler = require("express-body-parser-error-handler");
@@ -194,15 +193,6 @@ class website {
 
   /** passport local strategy with username/password defined on config **/
   passportConfig () {
-    passport.use("login", new LocalStrategy.Strategy(
-      (username, password, done) => {
-        if (username === this.website.user.username && password === this.website.user.password) {
-          return done(null, this.website.user);
-        }
-        else done(null, false, { message: this.website.translation["Login_Error"] });
-      }
-    ));
-
     const jwtOptions = {
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       secretOrKey: this.secret
@@ -215,14 +205,6 @@ class website {
         done(null, false);
       }
     }));
-
-    passport.serializeUser((user, done) => {
-      done(null, user._id);
-    });
-
-    passport.deserializeUser((id, done) => {
-      done(null, this.website.user);
-    });
   }
 
   /** GA Middleware **/
@@ -412,12 +394,12 @@ class website {
               { expiresIn: "1h" }
             );
             console.log(`[WEBSITE] [${ip}] Welcome ${username}, happy to serve you!`);
-            res.cookie("access_token", token, {
+            res.cookie("EXT-Website", token, {
               httpOnly: true,
               secure: true,
               maxAge: 3600000
             });
-            res.send({ login: true });
+            res.send({ session: token });
           } else {
             console.warn(`[WEBSITE] [${ip}] Bad Login: Invalid username or password`);
             APIResult.description = "Invalid username or password";
@@ -426,7 +408,7 @@ class website {
         })
 
         .get("/logout", (req, res) => {
-          res.clearCookie("access_token");
+          res.clearCookie("EXT-Website");
           res.redirect("/");
         })
 
@@ -436,9 +418,9 @@ class website {
             res.sendFile(`${this.WebsitePath}/terminal.html`);
 
             io.once("connection", async (socket) => {
-              log(`[${ip}] Connected to Terminal Logs:`, req.user.username);
+              log(`[${ip}] Connected to Terminal Logs:`, req.user);
               socket.on("disconnect", (err) => {
-                log(`[${ip}] Disconnected from Terminal Logs:`, req.user.username, `[${err}]`);
+                log(`[${ip}] Disconnected from Terminal Logs:`, req.user, `[${err}]`);
               });
               var pastLogs = await this.readAllMMLogs(this.lib.HyperWatch.logs());
               io.emit("terminal.logs", pastLogs);
@@ -455,9 +437,9 @@ class website {
             var ip = req.headers["x-forwarded-for"] || req.connection.remoteAddress;
             res.sendFile(`${this.WebsitePath}/pty.html`);
             io.once("connection", (client) => {
-              log(`[${ip}] Connected to Terminal:`, req.user.username);
+              log(`[${ip}] Connected to Terminal:`, req.user);
               client.on("disconnect", (err) => {
-                log(`[${ip}] Disconnected from Terminal:`, req.user.username, `[${err}]`);
+                log(`[${ip}] Disconnected from Terminal:`, req.user, `[${err}]`);
               });
               var cols = 80;
               var rows = 24;
@@ -488,9 +470,9 @@ class website {
             if (req.query.ext && this.website.EXTInstalled.indexOf(req.query.ext) === -1 && this.website.EXT.indexOf(req.query.ext) > -1) {
               res.sendFile(`${this.WebsitePath}/install.html`);
               io.once("connection", async (socket) => {
-                log(`[${ip}] Connected to installer Terminal Logs:`, req.user.username);
+                log(`[${ip}] Connected to installer Terminal Logs:`, req.user);
                 socket.on("disconnect", (err) => {
-                  log(`[${ip}] Disconnected from installer Terminal Logs:`, req.user.username, `[${err}]`);
+                  log(`[${ip}] Disconnected from installer Terminal Logs:`, req.user, `[${err}]`);
                 });
                 this.lib.HyperWatch.stream().on("stdData", (data) => {
                   if (typeof data === "string") io.to(socket.id).emit("terminal.installer", data.replace(/\r?\n/g, "\r\n"));
@@ -508,9 +490,9 @@ class website {
             if (req.query.ext && this.website.EXTInstalled.indexOf(req.query.ext) > -1 && this.website.EXT.indexOf(req.query.ext) > -1) {
               res.sendFile(`${this.WebsitePath}/delete.html`);
               io.once("connection", async (socket) => {
-                log(`[${ip}] Connected to uninstaller Terminal Logs:`, req.user.username);
+                log(`[${ip}] Connected to uninstaller Terminal Logs:`, req.user);
                 socket.on("disconnect", (err) => {
-                  log(`[${ip}] Disconnected from uninstaller Terminal Logs:`, req.user.username, `[${err}]`);
+                  log(`[${ip}] Disconnected from uninstaller Terminal Logs:`, req.user, `[${err}]`);
                 });
                 this.lib.HyperWatch.stream().on("stdData", (data) => {
                   if (typeof data === "string") io.to(socket.id).emit("terminal.delete", data.replace(/\r?\n/g, "\r\n"));
@@ -699,29 +681,10 @@ class website {
           }
         })
 
-        .get("/api/*", (req,res,next) => this.auth(req,res,next), (req,res,next) => {
-          if (req.user) this.GetAPI(req,res);
-          else next();
-        })
         .get("/api/*", passport.authenticate("jwt", { session: false }), (req, res) => this.GetAPI(req,res))
-
-        .put("/api/*", (req,res,next) => this.auth(req,res,next), (req,res,next) => {
-          if (req.user) this.PutAPI(req,res);
-          else next();
-        })
-        .put("/api/*", passport.authenticate("jwt", { session: false }), (req, res) => this.PutAPI(req,res))
-
-        .delete("/api/*", (req,res,next) => this.auth(req,res,next), (req,res,next) => {
-          if (req.user) this.DeleteAPI(req,res);
-          else next();
-        })
-        .delete("/api/*", passport.authenticate("jwt", { session: false }), (req, res) => this.DeleteAPI(req,res))
-
-        .post("/api/*", (req,res,next) => this.auth(req,res,next), (req,res,next) => {
-          if (req.user) this.PostAPI(req,res);
-          else next();
-        })
         .post("/api/*", passport.authenticate("jwt", { session: false }), (req, res) => this.PostAPI(req,res))
+        .put("/api/*", passport.authenticate("jwt", { session: false }), (req, res) => this.PutAPI(req,res))
+        .delete("/api/*", passport.authenticate("jwt", { session: false }), (req, res) => this.DeleteAPI(req,res))
 
         .get("/*", (req, res) => {
           console.warn("[WEBSITE] Don't find:", req.url);
@@ -1225,7 +1188,7 @@ class website {
           payload: {
             type: "information",
             message: alert,
-            sender: req.user ? req.user.username : "EXT-Website",
+            sender: req.user?.id ? req.user.id : "EXT-Website",
             timer: 30 * 1000,
             sound: "modules/EXT-Website/website/tools/message.mp3",
             icon: "modules/EXT-Website/website/assets/img/GA_Small.png"
@@ -1353,12 +1316,13 @@ class website {
   auth (req, res, next) {
     try {
       const { cookies, headers } = req;
-      if (!cookies || !cookies.access_token) {
-        console.log("[WEBSITE] Missing token in cookie");
+
+      if (!cookies || !cookies["EXT-Website"]) {
+        console.log("[WEBSITE] Missing EXT-Website cookie");
         return res.redirect("/login");
       }
 
-      const accessToken = cookies.access_token;
+      const accessToken = cookies["EXT-Website"];
       const decodedToken = jwt.verify(accessToken, this.secret);
       const user = decodedToken.user;
 

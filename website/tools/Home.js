@@ -22,7 +22,6 @@ window.addEventListener("load", async (event) => {
   forceMobileRotate();
   doIndex();
   doTranslateNavBar();
-  // @todo Add ID in src
   $("#HomeText").html(homeText);
 });
 

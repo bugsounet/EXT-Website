@@ -125,21 +125,14 @@ async function EditMMConfigJSEditor () {
     $("#load").css("display", "none");
     $("#wait").css("display", "block");
 
-    $.ajax({
-      url: "/api/backups/file",
-      type: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        "backup": conf
-      },
-      dataType: "json",
-      success: function (back) {
+    Request ("/api/backups/file", "PUT", {"backup": conf}, null, "loadBackup",
+      () => {
         $("#wait").css("display", "none");
         $("#done").css("display", "block");
         $("#alert").removeClass("invisible");
         $("#messageText").text(translation.Restart);
       },
-      error: function(err) {
+      (err) => {
         $("#wait").css("display", "none");
         $("#error").css("display", "block");
         $("#alert").removeClass("invisible");
@@ -154,8 +147,7 @@ async function EditMMConfigJSEditor () {
           alertify.error(`[loadBackup] Server return Error ${err.status} (${error})`);
         }
       }
-
-    });
+    );
   };
   document.getElementById("save").onclick = function () {
     let data = editor.getText();
@@ -163,21 +155,14 @@ async function EditMMConfigJSEditor () {
     $("#wait").css("display", "block");
     let encode = btoa(data);
 
-    $.ajax({
-      url: "/api/config/MM",
-      type: "PUT",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      dataType: "json",
-      data: JSON.stringify({ config: encode }),
-      success: function (back) {
+    Request ("api/config/MM", "PUT", null, JSON.stringify({ config: encode }), "writeConfig",
+      () => {
         $("#wait").css("display", "none");
         $("#done").css("display", "block");
         $("#alert").removeClass("invisible");
         $("#messageText").text(translation.Restart);
       },
-      error: function (err) {
+      (err) => {
         $("#wait").css("display", "none");
         $("#error").css("display", "block");
         $("#alert").removeClass("invisible");
@@ -189,11 +174,10 @@ async function EditMMConfigJSEditor () {
           alertify.error("Connexion Lost!");
         } else {
           $("#messageText").text(err.statusText);
-          alertify.error(`[lwriteConfig] Server return Error ${err.status} (${error})`);
+          alertify.error(`[writeConfig] Server return Error ${err.status} (${error})`);
         }
       }
-    });
-
+    )
   };
   FileReaderJS.setupInput(document.getElementById("fileToLoad"), {
     readAsDefault: "Text",
@@ -201,27 +185,15 @@ async function EditMMConfigJSEditor () {
       load (event, file) {
         if (event.target.result) {
           let encode = btoa(event.target.result);
-          $.ajax({
-            url: "/api/backups/external",
-            type: "POST",
-            headers: {
-              "Content-Type": "application/json"
-            },
-            dataType: "json",
-            data: JSON.stringify({ config: encode }),
-            success: function (back) {
+          Request ("/api/backups/external", "POST", null, JSON.stringify({ config: encode }), "readExternalBackup",
+            (back) => {
               let decode = atob(back.config);
               let config = JSON.parse(decode);
               editor.update(config);
               editor.refresh();
               alertify.success("External Config Loaded !");
-            },
-            error: function (err) {
-              let error = err.responseJSON?.error ? err.responseJSON.error : (err.responseText ? err.responseText : err.statusText)
-              if (!err.status) alertify.error("Connexion Lost!");
-              else alertify.error(`[readExternalBackup] Server return Error ${err.status} (${error})`);
-            }
-          });
+            }, null
+          );
         }
       }
     }
@@ -240,27 +212,15 @@ async function EditMMConfigJSEditor () {
       }
       var configToSave = editor.getText();
       let encode = btoa(configToSave);
-      $.ajax({
-        url: "/api/backups/external",
-        type: "PUT",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        dataType: "json",
-        data: JSON.stringify({ config: encode }),
-        success: function (back) {
+      Request ("/api/backups/external", "PUT", null, JSON.stringify({ config: encode }), "saveExternalBackup",
+        (back) => {
           alertify.success("Download is ready !");
           $.get(`${back.file}`, function (data) {
             const blob = new Blob([data], { type: "application/javascript;charset=utf-8" });
             saveAs(blob, fileName);
           });
-        },
-        error: function (err) {
-          let error = err.responseJSON?.error ? err.responseJSON.error : (err.responseText ? err.responseText : err.statusText)
-          if (!err.status) alertify.error("Connexion Lost!");
-          else alertify.error(`[readExternalBackup] Server return Error ${err.status} (${error})`);
-        }
-      });
+        }, null
+      );
     }, function () {
       // do nothing
     });
