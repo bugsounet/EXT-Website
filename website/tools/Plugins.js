@@ -131,18 +131,15 @@ function doDelete () {
     $("#messageText").text(translation.Plugins_Delete_Progress);
     $("#delete").addClass("disabled");
 
-    Request ("/api/EXT", "DELETE", { "ext": EXT }, null, "doDelete",
-      () => {
-        $("#messageText").text(translation.Plugins_Delete_Confirmed);
-        setTimeout(() => socketDelete.close(), 500);
-      },
-      (err) => {
-        $("#messageText").text(translation.Warn_Error);
-        let error = err.responseJSON?.error ? err.responseJSON.error : (err.responseText ? err.responseText : err.statusText)
-        if (!err.status) alertify.error("Connexion Lost!");
-        else alertify.error(`[doDelete] Server return Error ${err.status} (${error})`);
-      }
-    );
+    Request ("/api/EXT", "DELETE", { ext: EXT }, null, "doDelete", () => {
+      $("#messageText").text(translation.Plugins_Delete_Confirmed);
+      setTimeout(() => socketDelete.close(), 500);
+    }, (err) => {
+      $("#messageText").text(translation.Warn_Error);
+      let error = err.responseJSON?.error ? err.responseJSON.error : (err.responseText ? err.responseText : err.statusText);
+      if (!err.status) alertify.error("Connexion Lost!");
+      else alertify.error(`[doDelete] Server return Error ${err.status} (${error})`);
+    });
   };
 }
 
@@ -183,18 +180,15 @@ function doInstall () {
   document.getElementById("install").onclick = function () {
     $("#messageText").text(translation.Plugins_Install_Progress);
     $("#install").addClass("disabled");
-    Request ("/api/EXT", "PUT", { "ext": EXT }, null, "doInstall",
-      () => {
-        $("#messageText").text(translation.Plugins_Install_Confirmed);
-        setTimeout(() => socketInstall.close(), 500);
-      },
-      (err) => {
-        $("#messageText").text(translation.Warn_Error);
-        let error = err.responseJSON?.error ? err.responseJSON.error : (err.responseText ? err.responseText : err.statusText)
-        if (!err.status) alertify.error("Connexion Lost!");
-        else alertify.error(`[doInstall] Server return Error ${err.status} (${error})`);
-      }
-    )
+    Request ("/api/EXT", "PUT", { ext: EXT }, null, "doInstall", () => {
+      $("#messageText").text(translation.Plugins_Install_Confirmed);
+      setTimeout(() => socketInstall.close(), 500);
+    }, (err) => {
+      $("#messageText").text(translation.Warn_Error);
+      let error = err.responseJSON?.error ? err.responseJSON.error : (err.responseText ? err.responseText : err.statusText);
+      if (!err.status) alertify.error("Connexion Lost!");
+      else alertify.error(`[doInstall] Server return Error ${err.status} (${error})`);
+    });
   };
 }
 
@@ -344,25 +338,22 @@ async function EXTConfigJSEditor () {
     $("#wait").css("display", "block");
     let encode = btoa(data);
 
-    Request ("/api/config/EXT", "PUT", { "ext": EXT }, JSON.stringify({ config: encode }) , "writeConfig",
-      () => {
-        $("#wait").css("display", "none");
-        $("#done").css("display", "block");
-        $("#alert").removeClass("invisible");
-        $("#messageText").text(translation.Restart);
-      },
-      (err) => {
-        $("#wait").css("display", "none");
-        $("#error").css("display", "block");
-        $("#alert").removeClass("invisible");
-        $("#alert").removeClass("alert-success");
-        $("#alert").addClass("alert-danger");
-        $("#messageText").text(err.statusText);
-        let error = err.responseJSON?.error ? err.responseJSON.error : (err.responseText ? err.responseText : err.statusText)
-        if (!err.status) alertify.error("Connexion Lost!");
-        else alertify.error(`[writeConfig] Server return Error ${err.status} (${error})`);
-      }
-    );
+    Request ("/api/config/EXT", "PUT", { ext: EXT }, JSON.stringify({ config: encode }) , "writeConfig", () => {
+      $("#wait").css("display", "none");
+      $("#done").css("display", "block");
+      $("#alert").removeClass("invisible");
+      $("#messageText").text(translation.Restart);
+    }, (err) => {
+      $("#wait").css("display", "none");
+      $("#error").css("display", "block");
+      $("#alert").removeClass("invisible");
+      $("#alert").removeClass("alert-success");
+      $("#alert").addClass("alert-danger");
+      $("#messageText").text(err.statusText);
+      let error = err.responseJSON?.error ? err.responseJSON.error : (err.responseText ? err.responseText : err.statusText);
+      if (!err.status) alertify.error("Connexion Lost!");
+      else alertify.error(`[writeConfig] Server return Error ${err.status} (${error})`);
+    });
   };
 }
 
@@ -453,25 +444,22 @@ async function EXTModifyConfigJSEditor () {
     $("#wait").css("display", "block");
     let encode = btoa(data);
 
-    Request ("/api/config/EXT", "PUT", { "ext": EXT }, JSON.stringify({ config: encode }) , "writeConfig",
-      () => {
-        $("#wait").css("display", "none");
-        $("#done").css("display", "block");
-        $("#alert").removeClass("invisible");
-        $("#messageText").text(translation.Restart);
-      },
-      (err) => {
-        $("#wait").css("display", "none");
-        $("#error").css("display", "block");
-        $("#alert").removeClass("invisible");
-        $("#alert").removeClass("alert-success");
-        $("#alert").addClass("alert-danger");
-        $("#messageText").text(err.statusText);
-        let error = err.responseJSON?.error ? err.responseJSON.error : (err.responseText ? err.responseText : err.statusText)
-        if (!err.status) alertify.error("Connexion Lost!");
-        else alertify.error(`[writeConfig] Server return Error ${err.status} (${error})`);
-      }
-    );
+    Request ("/api/config/EXT", "PUT", { ext: EXT }, JSON.stringify({ config: encode }) , "writeConfig", () => {
+      $("#wait").css("display", "none");
+      $("#done").css("display", "block");
+      $("#alert").removeClass("invisible");
+      $("#messageText").text(translation.Restart);
+    }, (err) => {
+      $("#wait").css("display", "none");
+      $("#error").css("display", "block");
+      $("#alert").removeClass("invisible");
+      $("#alert").removeClass("alert-success");
+      $("#alert").addClass("alert-danger");
+      $("#messageText").text(err.statusText);
+      let error = err.responseJSON?.error ? err.responseJSON.error : (err.responseText ? err.responseText : err.statusText);
+      if (!err.status) alertify.error("Connexion Lost!");
+      else alertify.error(`[writeConfig] Server return Error ${err.status} (${error})`);
+    });
   };
   document.getElementById("loadDefault").onclick = async function () {
     editor.set(defaultConfig);
@@ -520,26 +508,23 @@ async function EXTDeleteConfigJSEditor () {
   document.getElementById("confirm").onclick = function () {
     $("#confirm").css("display", "none");
     $("#wait").css("display", "block");
-    Request ("/api/config/EXT", "DELETE", { "ext": EXT }, null , "writeConfig",
-      () => {
-        $("#wait").css("display", "none");
-        $("#done").css("display", "block");
-        $("#alert").removeClass("invisible");
-        $("#messageText").text(translation.Plugins_DeleteConfig_Confirmed);
-      },
-      (err) => {
-        $("#wait").css("display", "none");
-        $("#error").css("display", "block");
-        $("#alert").removeClass("invisible");
-        $("#alert").removeClass("alert-success");
-        $("#alert").addClass("alert-danger");
-        $("#messageText").text(err.statusText);
-        let error = err.responseJSON?.error ? err.responseJSON.error : (err.responseText ? err.responseText : err.statusText)
-        if (!err.status) alertify.error("Connexion Lost!");
-        else {
-          alertify.error(`[writeConfig] Server return Error ${err.status} (${error})`);
-        }
+    Request ("/api/config/EXT", "DELETE", { ext: EXT }, null , "writeConfig", () => {
+      $("#wait").css("display", "none");
+      $("#done").css("display", "block");
+      $("#alert").removeClass("invisible");
+      $("#messageText").text(translation.Plugins_DeleteConfig_Confirmed);
+    }, (err) => {
+      $("#wait").css("display", "none");
+      $("#error").css("display", "block");
+      $("#alert").removeClass("invisible");
+      $("#alert").removeClass("alert-success");
+      $("#alert").addClass("alert-danger");
+      $("#messageText").text(err.statusText);
+      let error = err.responseJSON?.error ? err.responseJSON.error : (err.responseText ? err.responseText : err.statusText);
+      if (!err.status) alertify.error("Connexion Lost!");
+      else {
+        alertify.error(`[writeConfig] Server return Error ${err.status} (${error})`);
       }
-    );
+    });
   };
 }

@@ -28,24 +28,24 @@ function doLogin () {
     event.preventDefault();
     alertify.set("notifier", "position", "top-center");
 
-    let credentials = $("#username").val() + ":" + $("#password").val()
+    let credentials = `${$("#username").val()  }:${  $("#password").val()}`;
     let encode = btoa(credentials);
     $.ajax({
       url: "/auth",
       type: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Basic ${encode}`
+        Authorization: `Basic ${encode}`
       },
       dataType: "json",
-      success: function (response) {
-        localStorage.setItem('EXT-WEBSITE', JSON.stringify(response.session));
+      success (response) {
+        localStorage.setItem("EXT-WEBSITE", JSON.stringify(response.session));
         $(location).attr("href", "/");
       },
-      error: function (err) {
+      error (err) {
         $("#username").val("");
         $("#password").val("");
-        let error = err.responseJSON?.error ? err.responseJSON.error : (err.responseText ? err.responseText : err.statusText)
+        let error = err.responseJSON?.error ? err.responseJSON.error : (err.responseText ? err.responseText : err.statusText);
         if (!err.status) alertify.error("Connexion Lost!");
         else alertify.error(`[Login] Server return Error ${err.status} (${error})`);
       }

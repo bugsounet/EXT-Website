@@ -125,29 +125,26 @@ async function EditMMConfigJSEditor () {
     $("#load").css("display", "none");
     $("#wait").css("display", "block");
 
-    Request ("/api/backups/file", "PUT", {"backup": conf}, null, "loadBackup",
-      () => {
-        $("#wait").css("display", "none");
-        $("#done").css("display", "block");
-        $("#alert").removeClass("invisible");
-        $("#messageText").text(translation.Restart);
-      },
-      (err) => {
-        $("#wait").css("display", "none");
-        $("#error").css("display", "block");
-        $("#alert").removeClass("invisible");
-        $("#alert").removeClass("alert-success");
-        $("#alert").addClass("alert-danger");
-        let error = err.responseJSON?.error ? err.responseJSON.error : (err.responseText ? err.responseText : err.statusText)
-        if (!err.status) {
-          $("#messageText").text(err);
-          alertify.error("Connexion Lost!");
-        } else {
-          $("#messageText").text(err.statusText);
-          alertify.error(`[loadBackup] Server return Error ${err.status} (${error})`);
-        }
+    Request ("/api/backups/file", "PUT", { backup: conf }, null, "loadBackup", () => {
+      $("#wait").css("display", "none");
+      $("#done").css("display", "block");
+      $("#alert").removeClass("invisible");
+      $("#messageText").text(translation.Restart);
+    }, (err) => {
+      $("#wait").css("display", "none");
+      $("#error").css("display", "block");
+      $("#alert").removeClass("invisible");
+      $("#alert").removeClass("alert-success");
+      $("#alert").addClass("alert-danger");
+      let error = err.responseJSON?.error ? err.responseJSON.error : (err.responseText ? err.responseText : err.statusText);
+      if (!err.status) {
+        $("#messageText").text(err);
+        alertify.error("Connexion Lost!");
+      } else {
+        $("#messageText").text(err.statusText);
+        alertify.error(`[loadBackup] Server return Error ${err.status} (${error})`);
       }
-    );
+    });
   };
   document.getElementById("save").onclick = function () {
     let data = editor.getText();
@@ -155,29 +152,26 @@ async function EditMMConfigJSEditor () {
     $("#wait").css("display", "block");
     let encode = btoa(data);
 
-    Request ("api/config/MM", "PUT", null, JSON.stringify({ config: encode }), "writeConfig",
-      () => {
-        $("#wait").css("display", "none");
-        $("#done").css("display", "block");
-        $("#alert").removeClass("invisible");
-        $("#messageText").text(translation.Restart);
-      },
-      (err) => {
-        $("#wait").css("display", "none");
-        $("#error").css("display", "block");
-        $("#alert").removeClass("invisible");
-        $("#alert").removeClass("alert-success");
-        $("#alert").addClass("alert-danger");
-        let error = err.responseJSON?.error ? err.responseJSON.error : (err.responseText ? err.responseText : err.statusText)
-        if (!err.status) {
-          $("#messageText").text(err);
-          alertify.error("Connexion Lost!");
-        } else {
-          $("#messageText").text(err.statusText);
-          alertify.error(`[writeConfig] Server return Error ${err.status} (${error})`);
-        }
+    Request ("api/config/MM", "PUT", null, JSON.stringify({ config: encode }), "writeConfig", () => {
+      $("#wait").css("display", "none");
+      $("#done").css("display", "block");
+      $("#alert").removeClass("invisible");
+      $("#messageText").text(translation.Restart);
+    }, (err) => {
+      $("#wait").css("display", "none");
+      $("#error").css("display", "block");
+      $("#alert").removeClass("invisible");
+      $("#alert").removeClass("alert-success");
+      $("#alert").addClass("alert-danger");
+      let error = err.responseJSON?.error ? err.responseJSON.error : (err.responseText ? err.responseText : err.statusText);
+      if (!err.status) {
+        $("#messageText").text(err);
+        alertify.error("Connexion Lost!");
+      } else {
+        $("#messageText").text(err.statusText);
+        alertify.error(`[writeConfig] Server return Error ${err.status} (${error})`);
       }
-    )
+    });
   };
   FileReaderJS.setupInput(document.getElementById("fileToLoad"), {
     readAsDefault: "Text",
@@ -185,15 +179,13 @@ async function EditMMConfigJSEditor () {
       load (event, file) {
         if (event.target.result) {
           let encode = btoa(event.target.result);
-          Request ("/api/backups/external", "POST", null, JSON.stringify({ config: encode }), "readExternalBackup",
-            (back) => {
-              let decode = atob(back.config);
-              let config = JSON.parse(decode);
-              editor.update(config);
-              editor.refresh();
-              alertify.success("External Config Loaded !");
-            }, null
-          );
+          Request ("/api/backups/external", "POST", null, JSON.stringify({ config: encode }), "readExternalBackup", (back) => {
+            let decode = atob(back.config);
+            let config = JSON.parse(decode);
+            editor.update(config);
+            editor.refresh();
+            alertify.success("External Config Loaded !");
+          }, null);
         }
       }
     }
@@ -212,15 +204,13 @@ async function EditMMConfigJSEditor () {
       }
       var configToSave = editor.getText();
       let encode = btoa(configToSave);
-      Request ("/api/backups/external", "PUT", null, JSON.stringify({ config: encode }), "saveExternalBackup",
-        (back) => {
-          alertify.success("Download is ready !");
-          $.get(`${back.file}`, function (data) {
-            const blob = new Blob([data], { type: "application/javascript;charset=utf-8" });
-            saveAs(blob, fileName);
-          });
-        }, null
-      );
+      Request ("/api/backups/external", "PUT", null, JSON.stringify({ config: encode }), "saveExternalBackup", (back) => {
+        alertify.success("Download is ready !");
+        $.get(`${back.file}`, function (data) {
+          const blob = new Blob([data], { type: "application/javascript;charset=utf-8" });
+          saveAs(blob, fileName);
+        });
+      }, null);
     }, function () {
       // do nothing
     });

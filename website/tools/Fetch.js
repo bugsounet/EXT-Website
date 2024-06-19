@@ -1,7 +1,7 @@
 /** fetch datas **/
 
-function getCurrentToken() {
-  return JSON.parse(localStorage.getItem('EXT-WEBSITE'));
+function getCurrentToken () {
+  return JSON.parse(localStorage.getItem("EXT-WEBSITE"));
 }
 
 function getHomeText () {
@@ -31,14 +31,12 @@ function checkWebviewTag () {
 
 function checkEXTStatus () {
   return new Promise((resolve) => {
-    Request ("/api/EXT/status", "GET", null, null, "Status", (Status) => resolve(Status),
-      (err) => {
-        let error = err.responseJSON?.error ? err.responseJSON.error : (err.responseText ? err.responseText : err.statusText)
-        if (err.status === 403 || err.status === 401) $(location).attr("href", "/");
-        if (!err.status) alertify.error("Connexion Lost!");
-        else alertify.error(`[Status] Server return Error ${err.status} (${error})`);
-      }
-    )
+    Request ("/api/EXT/status", "GET", null, null, "Status", (Status) => resolve(Status), (err) => {
+      let error = err.responseJSON?.error ? err.responseJSON.error : (err.responseText ? err.responseText : err.statusText);
+      if (err.status === 403 || err.status === 401) $(location).attr("href", "/");
+      if (!err.status) alertify.error("Connexion Lost!");
+      else alertify.error(`[Status] Server return Error ${err.status} (${error})`);
+    });
   });
 }
 
@@ -80,17 +78,15 @@ function loadDataDescriptionEXT () {
 
 function loadMMConfig () {
   return new Promise((resolve) => {
-    Request ("api/config/MM", "GET", null, null, "loadMMConfig",
-      (response) => {
-        try {
-          let parse = atob(response.config);
-          let config = JSON.parse(parse);
-          resolve(config);
-        } catch (e) {
-          alertify.error("[loadMMConfig] Error on decode server response");
-        }
-      }, null
-    )
+    Request ("api/config/MM", "GET", null, null, "loadMMConfig", (response) => {
+      try {
+        let parse = atob(response.config);
+        let config = JSON.parse(parse);
+        resolve(config);
+      } catch (e) {
+        alertify.error("[loadMMConfig] Error on decode server response");
+      }
+    }, null);
   });
 }
 
@@ -114,65 +110,57 @@ function loadRadio () {
 
 function loadPluginConfig (plugin) {
   return new Promise((resolve) => {
-    Request ("/api/config/default", "GET", {"ext": plugin} , null, "loadPluginConfig",
-      (response) => {
-        try {
-          let parse = atob(response.config);
-          let config = JSON.parse(parse);
-          resolve(config);
-        } catch (e) {
-          alertify.error("[loadPluginConfig] Error on decode server response");
-        }
-      } , null
-    );
-  })
+    Request ("/api/config/default", "GET", { ext: plugin } , null, "loadPluginConfig", (response) => {
+      try {
+        let parse = atob(response.config);
+        let config = JSON.parse(parse);
+        resolve(config);
+      } catch (e) {
+        alertify.error("[loadPluginConfig] Error on decode server response");
+      }
+    } , null);
+  });
 }
 
 function loadPluginTemplate (plugin) {
   return new Promise((resolve) => {
-    Request ("/api/config/schema", "GET", {"ext": plugin} , null, "loadPluginTemplate",
-      (response) => {
-        try {
-          let parse = atob(response.schema);
-          let schema = JSON.parse(parse);
-          resolve(schema);
-        } catch (e) {
-          alertify.error("[loadPluginTemplate] Error on decode server response");
-        }
-      }, null
-    );
-  })
+    Request ("/api/config/schema", "GET", { ext: plugin } , null, "loadPluginTemplate", (response) => {
+      try {
+        let parse = atob(response.schema);
+        let schema = JSON.parse(parse);
+        resolve(schema);
+      } catch (e) {
+        alertify.error("[loadPluginTemplate] Error on decode server response");
+      }
+    }, null);
+  });
 }
 
 function loadPluginCurrentConfig (plugin) {
   return new Promise((resolve) => {
-    Request ("/api/config/EXT", "GET", {"ext": plugin} , null, "loadPluginConfig",
-      (response) => {
-        try {
-          let parse = atob(response.config);
-          let config = JSON.parse(parse);
-          resolve(config);
-        } catch (e) {
-          alertify.error("[loadPluginConfig] Error on decode server response");
-        }
-      }, null
-    );
-  })
+    Request ("/api/config/EXT", "GET", { ext: plugin } , null, "loadPluginConfig", (response) => {
+      try {
+        let parse = atob(response.config);
+        let config = JSON.parse(parse);
+        resolve(config);
+      } catch (e) {
+        alertify.error("[loadPluginConfig] Error on decode server response");
+      }
+    }, null);
+  });
 }
 
 function loadBackupConfig (file) {
   return new Promise((resolve) => {
-    Request ("/api/backups/file", "GET", {"backup": file} , null, "loadPluginConfig",
-      (response) => {
-        try {
-          let parse = atob(response.config);
-          let backup = JSON.parse(parse);
-          resolve(backup);
-        } catch (e) {
-          alertify.error("[loadBackupConfig] Error on decode server response");
-        }
-      }, null
-    );
+    Request ("/api/backups/file", "GET", { backup: file } , null, "loadPluginConfig", (response) => {
+      try {
+        let parse = atob(response.config);
+        let backup = JSON.parse(parse);
+        resolve(backup);
+      } catch (e) {
+        alertify.error("[loadBackupConfig] Error on decode server response");
+      }
+    }, null);
   });
 }
 
@@ -180,8 +168,8 @@ function Request (url, type, header, data, from, success, fail) {
   // console.log(url, type, header, data, from, success, fail)
   var headers = {
     "Content-Type": "application/json",
-    "Authorization": `Bearer ${getCurrentToken()}`
-  }
+    Authorization: `Bearer ${getCurrentToken()}`
+  };
 
   if (header) {
     headers = Object.assign(headers, header);
@@ -204,7 +192,7 @@ function Request (url, type, header, data, from, success, fail) {
         else alertify.error(`[${from}] Server return Error ${err.status} (${error})`);
       }
     }
-  )
+  );
 }
 
 function hasPluginConnected (obj, key, value) {
