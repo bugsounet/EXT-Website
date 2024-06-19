@@ -351,7 +351,9 @@ class website {
         })
 
         .get("/login", (req, res) => {
-          if (req.user) res.redirect("/");
+          const logged = this.cookieTest(req)
+          if (logged) return res.redirect("/");
+          res.clearCookie("EXT-Website");
           res.sendFile(`${this.WebsitePath}/login.html`);
         })
 
@@ -1315,7 +1317,7 @@ class website {
 
   auth (req, res, next) {
     try {
-      const { cookies, headers } = req;
+      const { cookies } = req;
 
       if (!cookies || !cookies["EXT-Website"]) {
         console.log("[WEBSITE] Missing EXT-Website cookie");
@@ -1338,6 +1340,26 @@ class website {
       return res.status(500).json({ error: "Internal error" });
     }
   }
+
+  cookieTest = (req) => {
+    try {
+      var token = null;
+      const { cookies } = req;
+
+      if (!cookies || !cookies["EXT-Website"]) return null;
+
+      const accessToken = cookies["EXT-Website"];
+      const decodedToken = jwt.verify(accessToken, this.secret);
+      const user = decodedToken.user;
+
+      if (!user || user !== this.website.user.username) return null;
+
+      return true;
+    } catch (err) {
+      console.error("[WEBSITE] [cookieTest] Error !", err);
+      return null
+    }
+  };
 
   encode (input) {
     return btoa(input);
