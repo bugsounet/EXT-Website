@@ -250,87 +250,33 @@ async function doTools () {
 
     document.getElementById("Spotify-Send").onclick = function () {
       $("#Spotify-Send").addClass("disabled");
-      $.ajax({
-        url: "/api/EXT/Spotify",
-        type: "PUT",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        dataType: "json",
-        data: JSON.stringify({ query: $("#Spotify-Query").val(), type: type }),
-        success (response) {
-          alertify.success(translation.RequestDone);
-        },
-        error (err) {
-          let error = err.responseJSON?.error ? err.responseJSON.error : (err.responseText ? err.responseText : err.statusText);
-          if (!err.status) alertify.error("Connexion Lost!");
-          else alertify.error(`[Spotify] Server return Error ${err.status} (${error})`);
-        }
-      });
+      Request ("/api/EXT/Spotify", "PUT", null, JSON.stringify({ query: $("#Spotify-Query").val(), type: type }), "Spotify", () => {
+        alertify.success(translation.RequestDone);
+      }, null);
     };
 
     document.getElementById("Spotify-Play").onclick = function () {
-      $.ajax({
-        url: "/api/EXT/Spotify/play",
-        type: "PUT",
-        dataType: "json",
-        success (response) {
-          alertify.success(translation.RequestDone);
-        },
-        error (err) {
-          let error = err.responseJSON?.error ? err.responseJSON.error : (err.responseText ? err.responseText : err.statusText);
-          if (!err.status) alertify.error("Connexion Lost!");
-          else alertify.error(`[Spotify] Server return Error ${err.status} (${error})`);
-        }
-      });
+      Request ("/api/EXT/Spotify/play", "PUT", null, null, "Spotify", () => {
+        alertify.success(translation.RequestDone);
+      }, null);
     };
 
     document.getElementById("Spotify-Stop").onclick = function () {
-      $.ajax({
-        url: "/api/EXT/Spotify/stop",
-        type: "PUT",
-        dataType: "json",
-        success (response) {
-          alertify.success(translation.RequestDone);
-        },
-        error (err) {
-          let error = err.responseJSON?.error ? err.responseJSON.error : (err.responseText ? err.responseText : err.statusText);
-          if (!err.status) alertify.error("Connexion Lost!");
-          else alertify.error(`[Spotify] Server return Error ${err.status} (${error})`);
-        }
-      });
+      Request ("/api/EXT/Spotify/stop", "PUT", null, null, "Spotify", () => {
+        alertify.success(translation.RequestDone);
+      }, null);
     };
 
     document.getElementById("Spotify-Next").onclick = function () {
-      $.ajax({
-        url: "/api/EXT/Spotify/next",
-        type: "PUT",
-        dataType: "json",
-        success (response) {
-          alertify.success(translation.RequestDone);
-        },
-        error (err) {
-          let error = err.responseJSON?.error ? err.responseJSON.error : (err.responseText ? err.responseText : err.statusText);
-          if (!err.status) alertify.error("Connexion Lost!");
-          else alertify.error(`[Spotify] Server return Error ${err.status} (${error})`);
-        }
-      });
+      Request ("/api/EXT/Spotify/next", "PUT", null, null, "Spotify", () => {
+        alertify.success(translation.RequestDone);
+      }, null);
     };
 
     document.getElementById("Spotify-Previous").onclick = function () {
-      $.ajax({
-        url: "/api/EXT/Spotify/previous",
-        type: "PUT",
-        dataType: "json",
-        success (response) {
-          alertify.success(translation.RequestDone);
-        },
-        error (err) {
-          let error = err.responseJSON?.error ? err.responseJSON.error : (err.responseText ? err.responseText : err.statusText);
-          if (!err.status) alertify.error("Connexion Lost!");
-          else alertify.error(`[Spotify] Server return Error ${err.status} (${error})`);
-        }
-      });
+      Request ("/api/EXT/Spotify/previous", "PUT", null, null, "Spotify", () => {
+        alertify.success(translation.RequestDone);
+      }, null);
     };
 
     document.getElementById("Spotify-Artist").onclick = function () {
@@ -417,24 +363,14 @@ async function doTools () {
 
   document.getElementById("GoogleAssistant-Send").onclick = function () {
     $("#GoogleAssistant-Send").addClass("disabled");
-    $.ajax({
-      url: "/api/Assistant/query",
-      type: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      dataType: "json",
-      data: JSON.stringify({ query: $("#GoogleAssistant-Query").val() }),
-      success (response) {
-        $("#GoogleAssistant-Query").val("");
-        alertify.success(translation.RequestDone);
-      },
-      error (err) {
-        $("#GoogleAssistant-Query").val("");
-        let error = err.responseJSON?.error ? err.responseJSON.error : (err.responseText ? err.responseText : err.statusText);
-        if (!err.status) alertify.error("Connexion Lost!");
-        else alertify.error(`[GoogleAssistant] Server return Error ${err.status} (${error})`);
-      }
+    Request ("/api/Assistant/query", "POST", null, JSON.stringify({ query: $("#GoogleAssistant-Query").val() }), "GoogleAssistant", () => {
+      $("#GoogleAssistant-Query").val("");
+      alertify.success(translation.RequestDone);
+    }, (err) => {
+      $("#GoogleAssistant-Query").val("");
+      let error = err.responseJSON?.error ? err.responseJSON.error : (err.responseText ? err.responseText : err.statusText);
+      if (!err.status) alertify.error("Connexion Lost!");
+      else alertify.error(`[GoogleAssistant] Server return Error ${err.status} (${error})`);
     });
   };
 
@@ -453,23 +389,9 @@ async function doTools () {
     });
 
     document.getElementById("YouTube-Send").onclick = function () {
-      $.ajax({
-        url: "/api/EXT/YouTube",
-        type: "PUT",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        dataType: "json",
-        data: JSON.stringify({ query: $("#YouTube-Query").val() }),
-        success (response) {
-          alertify.success(translation.RequestDone);
-        },
-        error (err) {
-          let error = err.responseJSON?.error ? err.responseJSON.error : (err.responseText ? err.responseText : err.statusText);
-          if (!err.status) alertify.error("Connexion Lost!");
-          else alertify.error(`[YouTube] Server return Error ${err.status} (${error})`);
-        }
-      });
+      Request ("/api/EXT/YouTube", "PUT", null, JSON.stringify({ query: $("#YouTube-Query").val() }), "YouTube", () => {
+        alertify.success(translation.RequestDone);
+      }, null);
     };
   }
 
@@ -495,23 +417,9 @@ async function doTools () {
     }
     $("#Radio-Box").css("display", "block");
     document.getElementById("Radio-Send").onclick = function () {
-      $.ajax({
-        url: "/api/EXT/RadioPlayer",
-        type: "PUT",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        dataType: "json",
-        data: JSON.stringify({ radio: $("#Radio-Query").val() }),
-        success (response) {
-          alertify.success(translation.RequestDone);
-        },
-        error (err) {
-          let error = err.responseJSON?.error ? err.responseJSON.error : (err.responseText ? err.responseText : err.statusText);
-          if (!err.status) alertify.error("Connexion Lost!");
-          else alertify.error(`[RadioPlayer] Server return Error ${err.status} (${error})`);
-        }
-      });
+      Request ("/api/EXT/RadioPlayer", "PUT", null, JSON.stringify({ radio: $("#Radio-Query").val() }), "RadioPlayer", () => {
+        alertify.success(translation.RequestDone);
+      }, null);
     };
   }
 
@@ -519,23 +427,9 @@ async function doTools () {
   if (EXTStatus["EXT-FreeboxTV"].hello && version.lang === "fr") {
     $("#FreeboxTV-Box").css("display", "block");
     document.getElementById("FreeboxTV-Send").onclick = function () {
-      $.ajax({
-        url: "/api/EXT/FreeboxTV",
-        type: "PUT",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        dataType: "json",
-        data: JSON.stringify({ TV: $("#FreeboxTV-Query").val() }),
-        success (response) {
-          alertify.success(translation.RequestDone);
-        },
-        error (err) {
-          let error = err.responseJSON?.error ? err.responseJSON.error : (err.responseText ? err.responseText : err.statusText);
-          if (!err.status) alertify.error("Connexion Lost!");
-          else alertify.error(`[FreeboxTV] Server return Error ${err.status} (${error})`);
-        }
-      });
+      Request ("/api/EXT/FreeboxTV", "PUT", null, JSON.stringify({ TV: $("#FreeboxTV-Query").val() }), "FreeboxTV", () => {
+        alertify.success(translation.RequestDone);
+      }, null);
     };
   }
 
@@ -543,19 +437,9 @@ async function doTools () {
   $("#Stop-Text").text(translation.Tools_Stop_Text);
   $("#Stop-Send").text(translation.Send);
   document.getElementById("Stop-Send").onclick = function () {
-    $.post("/api/EXT/stop")
-      .done(function (back) {
-        if (back.done) {
-          alertify.success(translation.RequestDone);
-        } else {
-          alertify.error(translation.Warn_Error);
-        }
-      })
-      .fail(function (err) {
-        let error = err.responseJSON?.error ? err.responseJSON.error : (err.responseText ? err.responseText : err.statusText);
-        if (!err.status) alertify.error("Connexion Lost!");
-        else alertify.error(`[STOP] Server return Error ${err.status} (${error})`);
-      });
+    Request ("/api/EXT/stop", "POST", null, null , "STOP", () => {
+      alertify.success(translation.RequestDone);
+    }, null);
   };
 
   setInterval(() => {
