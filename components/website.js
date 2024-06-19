@@ -351,7 +351,7 @@ class website {
         })
 
         .get("/login", (req, res) => {
-          const logged = this.cookieTest(req)
+          const logged = this.cookieTest(req);
           if (logged) return res.redirect("/");
           res.clearCookie("EXT-Website");
           res.sendFile(`${this.WebsitePath}/login.html`);
@@ -1357,7 +1357,7 @@ class website {
       return true;
     } catch (err) {
       console.error("[WEBSITE] [cookieTest] Error !", err);
-      return null
+      return null;
     }
   };
 
