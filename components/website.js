@@ -400,7 +400,7 @@ class website {
           } else {
             console.warn(`[WEBSITE] [${ip}] Bad Login: Invalid username or password`);
             APIResult.description = "Invalid username or password";
-            res.status(401).json(APIResult);
+            res.status(403).json(APIResult);
           }
         })
 
