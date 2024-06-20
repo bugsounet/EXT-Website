@@ -1157,23 +1157,28 @@ class website {
       const { cookies } = req;
 
       if (!cookies || !cookies["EXT-Website"]) {
-        console.log("[WEBSITE] Missing EXT-Website cookie");
+        console.error("[WEBSITE] [AUTH] Missing EXT-Website cookie");
         return res.redirect("/login");
       }
 
       const accessToken = cookies["EXT-Website"];
-      const decodedToken = jwt.verify(accessToken, this.secret);
-      const user = decodedToken.user;
+      jwt.verify(accessToken, this.secret, (err, decoded) => {
+        if (err) {
+          console.error("[WEBSITE] [AUTH] decode Error !", err.message);
+          return res.redirect("/login");
+        }
+        const user = decoded.user;
 
-      if (!user || user !== this.website.user.username) {
-        console.log(`[WEBSITE] User ${user} not exists`);
-        return res.redirect("/login");
-      }
+        if (!user || user !== this.website.user.username) {
+          console.error(`[WEBSITE] [AUTH] User ${user} not exists`);
+          return res.redirect("/login");
+        }
 
-      req.user = user;
-      next();
+        req.user = user;
+        next();
+      });
     } catch (err) {
-      console.error("[WEBSITE] [AUTH] Error 500!", err);
+      console.error("[WEBSITE] [AUTH] Error 500!", err.message);
       return res.status(500).json({ error: "Internal error" });
     }
   }
@@ -1251,14 +1256,16 @@ class website {
       if (!cookies || !cookies["EXT-Website"]) return null;
 
       const accessToken = cookies["EXT-Website"];
-      const decodedToken = jwt.verify(accessToken, this.secret);
-      const user = decodedToken.user;
+      jwt.verify(accessToken, this.secret, (err, decoded) => {
+        if (err) return null;
 
-      if (!user || user !== this.website.user.username) return null;
+        const user = decoded.user;
+        if (!user || user !== this.website.user.username) return null;
 
-      return true;
+        return true;
+      });
     } catch (err) {
-      console.error("[WEBSITE] [cookieTest] Error !", err);
+      console.error("[WEBSITE] [cookieTest] Error !", err.message);
       return null;
     }
   };
