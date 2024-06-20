@@ -30,20 +30,17 @@ function doLogin () {
 
     let credentials = `${$("#username").val()  }:${  $("#password").val()}`;
     let encode = btoa(credentials);
-    Request ("/auth", "POST", { Authorization: `Basic ${encode}` } , null, "Login",
-      (response) => {
-        localStorage.setItem("EXT-WEBSITE", JSON.stringify(response.session));
-        $(location).attr("href", "/");
-      },
-      (err) => {
-        $("#username").val("");
-        $("#password").val("");
-        let error = err.responseJSON?.error ? err.responseJSON.error : (err.responseText ? err.responseText : err.statusText);
-        let description = err.responseJSON?.description;
-        if (!err.status) alertify.error("Connexion Lost!");
-        else if (err.status === 401) alertify.error(`[Login] ${error}: ${description}`);
-        else alertify.error(`[Login] Server return Error ${err.status} (${error})`);
-      }
-    );
+    Request ("/auth", "POST", { Authorization: `Basic ${encode}` } , null, "Login", (response) => {
+      localStorage.setItem("EXT-WEBSITE", JSON.stringify(response.session));
+      $(location).attr("href", "/");
+    }, (err) => {
+      $("#username").val("");
+      $("#password").val("");
+      let error = err.responseJSON?.error ? err.responseJSON.error : (err.responseText ? err.responseText : err.statusText);
+      let description = err.responseJSON?.description;
+      if (!err.status) alertify.error("Connexion Lost!");
+      else if (err.status === 401) alertify.error(`[Login] ${error}: ${description}`);
+      else alertify.error(`[Login] Server return Error ${err.status} (${error})`);
+    });
   });
 }
