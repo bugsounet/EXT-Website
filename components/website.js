@@ -1248,8 +1248,8 @@ class website {
         { expiresIn: "1h" }
       );
 
-      console.log(`[WEBSITE] [${ip}] Welcome ${username}, happy to serve you!`);
       if (api) {
+        console.log(`[WEBSITE] [API] [${ip}] Welcome ${username}, happy to serve you!`);
         APIResult = {
           access_token: token,
           token_type: "Bearer",
@@ -1257,6 +1257,7 @@ class website {
         };
         res.json(APIResult);
       } else {
+        console.log(`[WEBSITE] [${ip}] Welcome ${username}, happy to serve you!`);
         res.cookie("EXT-Website", token, {
           httpOnly: true,
           //secure: true,
