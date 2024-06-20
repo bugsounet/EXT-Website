@@ -17,5 +17,5 @@ function doShutdown () {
   $("#text1").text(translation.Tools_Die_Text1);
   $("#text2").text(translation.Tools_Die_Text2);
   $("#text3").text(translation.Tools_Die_Text3);
-  Request ("/api/system/shutdown", "POST", null, null, "SHUTDOWN", null, null);
+  Request ("/api/system/shutdown", "POST", { Authorization: `Bearer ${getCurrentToken()}` }, null, "SHUTDOWN", null, null);
 }

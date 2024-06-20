@@ -18,7 +18,7 @@ function doRestart () {
   $("#text1").text(translation.Tools_Restart_Text1);
   $("#text2").text(translation.Tools_Restart_Text2);
 
-  Request ("/api/system/reboot", "POST", null, null, "REBOOT", null, null);
+  Request ("/api/system/reboot", "POST", { Authorization: `Bearer ${getCurrentToken()}` }, null, "REBOOT", null, null);
 
   function handle200 () {
     window.location.href = "/";

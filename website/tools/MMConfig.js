@@ -125,7 +125,7 @@ async function EditMMConfigJSEditor () {
     $("#load").css("display", "none");
     $("#wait").css("display", "block");
 
-    Request ("/api/backups/file", "PUT", { backup: conf }, null, "loadBackup", () => {
+    Request ("/api/backups/file", "PUT", { Authorization: `Bearer ${getCurrentToken()}`, backup: conf }, null, "loadBackup", () => {
       $("#wait").css("display", "none");
       $("#done").css("display", "block");
       $("#alert").removeClass("invisible");
@@ -152,7 +152,7 @@ async function EditMMConfigJSEditor () {
     $("#wait").css("display", "block");
     let encode = btoa(data);
 
-    Request ("api/config/MM", "PUT", null, JSON.stringify({ config: encode }), "writeConfig", () => {
+    Request ("api/config/MM", "PUT", { Authorization: `Bearer ${getCurrentToken()}` }, JSON.stringify({ config: encode }), "writeConfig", () => {
       $("#wait").css("display", "none");
       $("#done").css("display", "block");
       $("#alert").removeClass("invisible");
@@ -179,7 +179,7 @@ async function EditMMConfigJSEditor () {
       load (event, file) {
         if (event.target.result) {
           let encode = btoa(event.target.result);
-          Request ("/api/backups/external", "POST", null, JSON.stringify({ config: encode }), "readExternalBackup", (back) => {
+          Request ("/api/backups/external", "POST", { Authorization: `Bearer ${getCurrentToken()}` }, JSON.stringify({ config: encode }), "readExternalBackup", (back) => {
             let decode = atob(back.config);
             let config = JSON.parse(decode);
             editor.update(config);
@@ -204,7 +204,7 @@ async function EditMMConfigJSEditor () {
       }
       var configToSave = editor.getText();
       let encode = btoa(configToSave);
-      Request ("/api/backups/external", "PUT", null, JSON.stringify({ config: encode }), "saveExternalBackup", (back) => {
+      Request ("/api/backups/external", "PUT", { Authorization: `Bearer ${getCurrentToken()}` }, JSON.stringify({ config: encode }), "saveExternalBackup", (back) => {
         alertify.success("Download is ready !");
         $.get(`${back.file}`, function (data) {
           const blob = new Blob([data], { type: "application/javascript;charset=utf-8" });

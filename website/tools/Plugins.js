@@ -131,7 +131,7 @@ function doDelete () {
     $("#messageText").text(translation.Plugins_Delete_Progress);
     $("#delete").addClass("disabled");
 
-    Request ("/api/EXT", "DELETE", { ext: EXT }, null, "doDelete", () => {
+    Request ("/api/EXT", "DELETE", { Authorization: `Bearer ${getCurrentToken()}`, ext: EXT }, null, "doDelete", () => {
       $("#messageText").text(translation.Plugins_Delete_Confirmed);
       setTimeout(() => socketDelete.close(), 500);
     }, (err) => {
@@ -180,7 +180,7 @@ function doInstall () {
   document.getElementById("install").onclick = function () {
     $("#messageText").text(translation.Plugins_Install_Progress);
     $("#install").addClass("disabled");
-    Request ("/api/EXT", "PUT", { ext: EXT }, null, "doInstall", () => {
+    Request ("/api/EXT", "PUT", { Authorization: `Bearer ${getCurrentToken()}`, ext: EXT }, null, "doInstall", () => {
       $("#messageText").text(translation.Plugins_Install_Confirmed);
       setTimeout(() => socketInstall.close(), 500);
     }, (err) => {
@@ -338,7 +338,7 @@ async function EXTConfigJSEditor () {
     $("#wait").css("display", "block");
     let encode = btoa(data);
 
-    Request ("/api/config/EXT", "PUT", { ext: EXT }, JSON.stringify({ config: encode }) , "writeConfig", () => {
+    Request ("/api/config/EXT", "PUT", { Authorization: `Bearer ${getCurrentToken()}`, ext: EXT }, JSON.stringify({ config: encode }) , "writeConfig", () => {
       $("#wait").css("display", "none");
       $("#done").css("display", "block");
       $("#alert").removeClass("invisible");
@@ -444,7 +444,7 @@ async function EXTModifyConfigJSEditor () {
     $("#wait").css("display", "block");
     let encode = btoa(data);
 
-    Request ("/api/config/EXT", "PUT", { ext: EXT }, JSON.stringify({ config: encode }) , "writeConfig", () => {
+    Request ("/api/config/EXT", "PUT", { Authorization: `Bearer ${getCurrentToken()}`, ext: EXT }, JSON.stringify({ config: encode }) , "writeConfig", () => {
       $("#wait").css("display", "none");
       $("#done").css("display", "block");
       $("#alert").removeClass("invisible");
@@ -508,7 +508,7 @@ async function EXTDeleteConfigJSEditor () {
   document.getElementById("confirm").onclick = function () {
     $("#confirm").css("display", "none");
     $("#wait").css("display", "block");
-    Request ("/api/config/EXT", "DELETE", { ext: EXT }, null , "writeConfig", () => {
+    Request ("/api/config/EXT", "DELETE", { Authorization: `Bearer ${getCurrentToken()}`, ext: EXT }, null , "writeConfig", () => {
       $("#wait").css("display", "none");
       $("#done").css("display", "block");
       $("#alert").removeClass("invisible");

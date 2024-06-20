@@ -7,31 +7,31 @@ function getCurrentToken () {
 function getHomeText () {
   return new Promise((resolve) => {
     //Request (url, type, headers, data, from, success, fail)
-    Request ("/api/translations/homeText", "GET", null, null, "homeText", (text) => resolve(text.homeText), null);
+    Request ("/api/translations/homeText", "GET", { Authorization: `Bearer ${getCurrentToken()}` }, null, "homeText", (text) => resolve(text.homeText), null);
   });
 }
 
 function getVersion () {
   return new Promise((resolve) => {
-    Request ("/api/version", "GET", null, null, "getVersion", (version) => resolve(version), null);
+    Request ("/api/version", "GET", { Authorization: `Bearer ${getCurrentToken()}` }, null, "getVersion", (version) => resolve(version), null);
   });
 }
 
 function checkSystem () {
   return new Promise((resolve) => {
-    Request ("/api/system/sysInfo", "GET", null, null, "sysInfo", (system) => resolve(system), null);
+    Request ("/api/system/sysInfo", "GET", { Authorization: `Bearer ${getCurrentToken()}` }, null, "sysInfo", (system) => resolve(system), null);
   });
 }
 
 function checkWebviewTag () {
   return new Promise((resolve) => {
-    Request ("/api/config/webview", "GET", null, null, "checkWebviewTag", (tag) => resolve(tag.webview), null);
+    Request ("/api/config/webview", "GET", { Authorization: `Bearer ${getCurrentToken()}` }, null, "checkWebviewTag", (tag) => resolve(tag.webview), null);
   });
 }
 
 function checkEXTStatus () {
   return new Promise((resolve) => {
-    Request ("/api/EXT/status", "GET", null, null, "Status", (Status) => resolve(Status), (err) => {
+    Request ("/api/EXT/status", "GET", { Authorization: `Bearer ${getCurrentToken()}` }, null, "Status", (Status) => resolve(Status), (err) => {
       let error = err.responseJSON?.error ? err.responseJSON.error : (err.responseText ? err.responseText : err.statusText);
       if (err.status === 403 || err.status === 401) $(location).attr("href", "/");
       if (!err.status) alertify.error("Connexion Lost!");
@@ -42,43 +42,43 @@ function checkEXTStatus () {
 
 function loadLoginTranslation () {
   return new Promise((resolve) => {
-    Request ("/api/translations/login", "GET", null, null, "loginTranslation", (tr) => resolve(tr), null);
+    Request ("/api/translations/login", "GET", { Authorization: `Bearer ${getCurrentToken()}` }, null, "loginTranslation", (tr) => resolve(tr), null);
   });
 }
 
 function loadTranslation () {
   return new Promise((resolve) => {
-    Request ("/api/translations/common", "GET", null, null, "loadTranslation", (tr) => resolve(tr), null);
+    Request ("/api/translations/common", "GET", { Authorization: `Bearer ${getCurrentToken()}` }, null, "loadTranslation", (tr) => resolve(tr), null);
   });
 }
 
 function loadDataAllEXT () {
   return new Promise((resolve) => {
-    Request ("/api/EXT", "GET", null, null, "loadDataAllEXT", (all) => resolve(all), null);
+    Request ("/api/EXT", "GET", { Authorization: `Bearer ${getCurrentToken()}` }, null, "loadDataAllEXT", (all) => resolve(all), null);
   });
 }
 
 function loadDataConfiguredEXT () {
   return new Promise((resolve) => {
-    Request ("/api/EXT/configured", "GET", null, null, "loadDataConfiguredEXT", (confEXT) => resolve(confEXT), null);
+    Request ("/api/EXT/configured", "GET", { Authorization: `Bearer ${getCurrentToken()}` }, null, "loadDataConfiguredEXT", (confEXT) => resolve(confEXT), null);
   });
 }
 
 function loadDataInstalledEXT () {
   return new Promise((resolve) => {
-    Request ("/api/EXT/installed", "GET", null, null, "loadDataInstalledEXT", (instEXT) => resolve(instEXT), null);
+    Request ("/api/EXT/installed", "GET", { Authorization: `Bearer ${getCurrentToken()}` }, null, "loadDataInstalledEXT", (instEXT) => resolve(instEXT), null);
   });
 }
 
 function loadDataDescriptionEXT () {
   return new Promise((resolve) => {
-    Request ("/api/EXT/descriptions", "GET", null, null, "loadDataDescriptionEXT", (desEXT) => resolve(desEXT), null);
+    Request ("/api/EXT/descriptions", "GET", { Authorization: `Bearer ${getCurrentToken()}` }, null, "loadDataDescriptionEXT", (desEXT) => resolve(desEXT), null);
   });
 }
 
 function loadMMConfig () {
   return new Promise((resolve) => {
-    Request ("api/config/MM", "GET", null, null, "loadMMConfig", (response) => {
+    Request ("api/config/MM", "GET", { Authorization: `Bearer ${getCurrentToken()}` }, null, "loadMMConfig", (response) => {
       try {
         let parse = atob(response.config);
         let config = JSON.parse(parse);
@@ -92,25 +92,25 @@ function loadMMConfig () {
 
 function getEXTVersions () {
   return new Promise((resolve) => {
-    Request ("/api/EXT/versions", "GET", null, null, "getEXTVersions", (EXTs) => resolve(EXTs), null);
+    Request ("/api/EXT/versions", "GET", { Authorization: `Bearer ${getCurrentToken()}` }, null, "getEXTVersions", (EXTs) => resolve(EXTs), null);
   });
 }
 
 function loadBackupNames () {
   return new Promise((resolve) => {
-    Request ("/api/backups", "GET", null, null, "loadBackupNames", (backups) => resolve(backups), null);
+    Request ("/api/backups", "GET", { Authorization: `Bearer ${getCurrentToken()}` }, null, "loadBackupNames", (backups) => resolve(backups), null);
   });
 }
 
 function loadRadio () {
   return new Promise((resolve) => {
-    Request ("/api/EXT/RadioPlayer", "GET", null, null, "loadRadio", (radio) => resolve(radio), null);
+    Request ("/api/EXT/RadioPlayer", "GET", { Authorization: `Bearer ${getCurrentToken()}` }, null, "loadRadio", (radio) => resolve(radio), null);
   });
 }
 
 function loadPluginConfig (plugin) {
   return new Promise((resolve) => {
-    Request ("/api/config/default", "GET", { ext: plugin } , null, "loadPluginConfig", (response) => {
+    Request ("/api/config/default", "GET", { Authorization: `Bearer ${getCurrentToken()}`, ext: plugin } , null, "loadPluginConfig", (response) => {
       try {
         let parse = atob(response.config);
         let config = JSON.parse(parse);
@@ -124,7 +124,7 @@ function loadPluginConfig (plugin) {
 
 function loadPluginTemplate (plugin) {
   return new Promise((resolve) => {
-    Request ("/api/config/schema", "GET", { ext: plugin } , null, "loadPluginTemplate", (response) => {
+    Request ("/api/config/schema", "GET", { Authorization: `Bearer ${getCurrentToken()}`, ext: plugin } , null, "loadPluginTemplate", (response) => {
       try {
         let parse = atob(response.schema);
         let schema = JSON.parse(parse);
@@ -138,7 +138,7 @@ function loadPluginTemplate (plugin) {
 
 function loadPluginCurrentConfig (plugin) {
   return new Promise((resolve) => {
-    Request ("/api/config/EXT", "GET", { ext: plugin } , null, "loadPluginConfig", (response) => {
+    Request ("/api/config/EXT", "GET", { Authorization: `Bearer ${getCurrentToken()}`, ext: plugin } , null, "loadPluginConfig", (response) => {
       try {
         let parse = atob(response.config);
         let config = JSON.parse(parse);
@@ -152,7 +152,7 @@ function loadPluginCurrentConfig (plugin) {
 
 function loadBackupConfig (file) {
   return new Promise((resolve) => {
-    Request ("/api/backups/file", "GET", { backup: file } , null, "loadPluginConfig", (response) => {
+    Request ("/api/backups/file", "GET", { Authorization: `Bearer ${getCurrentToken()}`, backup: file } , null, "loadPluginConfig", (response) => {
       try {
         let parse = atob(response.config);
         let backup = JSON.parse(parse);
@@ -167,8 +167,7 @@ function loadBackupConfig (file) {
 function Request (url, type, header, data, from, success, fail) {
   // console.log(url, type, header, data, from, success, fail)
   var headers = {
-    "Content-Type": "application/json",
-    Authorization: `Bearer ${getCurrentToken()}`
+    "Content-Type": "application/json"
   };
 
   if (header) {

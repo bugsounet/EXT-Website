@@ -17,5 +17,5 @@ function doDie () {
   $("#text1").text(translation.Tools_Die_Text1);
   $("#text2").text(translation.Tools_Die_Text2);
   $("#text3").text(translation.Tools_Die_Text3);
-  Request ("/api/system/die", "POST", null, null, "DIE", null, null);
+  Request ("/api/system/die", "POST", { Authorization: `Bearer ${getCurrentToken()}` }, null, "DIE", null, null);
 }

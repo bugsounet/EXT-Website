@@ -340,21 +340,16 @@ class website {
         .use("/xterm-addon-fit", express.static(`${this.WebsiteModulePath}/node_modules/xterm-addon-fit`))
         .use("/jquery.min.js", express.static(`${this.WebsiteModulePath}/node_modules/jquery/dist/jquery.min.js`))
 
-        .get("/", (req,res,next) => this.auth(req,res,next), (req, res) => {
-          if (req.user) res.sendFile(`${this.WebsitePath}/index.html`);
-          else res.redirect("/login");
-        })
-
-        .get("/EXT", (req,res,next) => this.auth(req,res,next), (req, res) => {
-          if (req.user) res.sendFile(`${this.WebsitePath}/EXT.html`);
-          else res.redirect("/login");
-        })
-
         .get("/login", (req, res) => {
           const logged = this.cookieTest(req);
           if (logged) return res.redirect("/");
           res.clearCookie("EXT-Website");
           res.sendFile(`${this.WebsitePath}/login.html`);
+        })
+
+        .get("/logout", (req, res) => {
+          res.clearCookie("EXT-Website");
+          res.redirect("/login");
         })
 
         .post("/auth", (req, res, next) => {
@@ -409,194 +404,165 @@ class website {
           }
         })
 
-        .get("/logout", (req, res) => {
-          res.clearCookie("EXT-Website");
-          res.redirect("/");
+        .get("/", (req,res,next) => this.auth(req,res,next), (req, res) => {
+          res.sendFile(`${this.WebsitePath}/index.html`);
+        })
+
+        .get("/EXT", (req,res,next) => this.auth(req,res,next), (req, res) => {
+          res.sendFile(`${this.WebsitePath}/EXT.html`);
         })
 
         .get("/Terminal", (req,res,next) => this.auth(req,res,next), (req, res) => {
-          if (req.user) {
-            var ip = req.headers["x-forwarded-for"] || req.connection.remoteAddress;
-            res.sendFile(`${this.WebsitePath}/terminal.html`);
+          var ip = req.headers["x-forwarded-for"] || req.connection.remoteAddress;
+          res.sendFile(`${this.WebsitePath}/terminal.html`);
 
-            io.once("connection", async (socket) => {
-              log(`[${ip}] Connected to Terminal Logs:`, req.user);
-              socket.on("disconnect", (err) => {
-                log(`[${ip}] Disconnected from Terminal Logs:`, req.user, `[${err}]`);
-              });
-              var pastLogs = await this.readAllMMLogs(this.lib.HyperWatch.logs());
-              io.emit("terminal.logs", pastLogs);
-              this.lib.HyperWatch.stream().on("stdData", (data) => {
-                if (typeof data === "string") io.to(socket.id).emit("terminal.logs", data.replace(/\r?\n/g, "\r\n"));
-              });
+          io.once("connection", async (socket) => {
+            log(`[${ip}] Connected to Terminal Logs:`, req.user);
+            socket.on("disconnect", (err) => {
+              log(`[${ip}] Disconnected from Terminal Logs:`, req.user, `[${err}]`);
             });
-          }
-          else res.status(403).sendFile(`${this.WebsitePath}/403.html`);
+            var pastLogs = await this.readAllMMLogs(this.lib.HyperWatch.logs());
+            io.emit("terminal.logs", pastLogs);
+            this.lib.HyperWatch.stream().on("stdData", (data) => {
+              if (typeof data === "string") io.to(socket.id).emit("terminal.logs", data.replace(/\r?\n/g, "\r\n"));
+            });
+          });
         })
 
         .get("/ptyProcess", (req,res,next) => this.auth(req,res,next), (req, res) => {
-          if (req.user) {
-            var ip = req.headers["x-forwarded-for"] || req.connection.remoteAddress;
-            res.sendFile(`${this.WebsitePath}/pty.html`);
-            io.once("connection", (client) => {
-              log(`[${ip}] Connected to Terminal:`, req.user);
-              client.on("disconnect", (err) => {
-                log(`[${ip}] Disconnected from Terminal:`, req.user, `[${err}]`);
-              });
-              var cols = 80;
-              var rows = 24;
-              var ptyProcess = pty.spawn("bash", [], {
-                name: "xterm-color",
-                cols: cols,
-                rows: rows,
-                cmd: process.env.HOME,
-                env: process.env
-              });
-              ptyProcess.on("data", (data) => {
-                io.to(client.id).emit("terminal.incData", data);
-              });
-              client.on("terminal.toTerm", (data) => {
-                ptyProcess.write(data);
-              });
-              client.on("terminal.size", (size) => {
-                ptyProcess.resize(size.cols, size.rows);
-              });
+          var ip = req.headers["x-forwarded-for"] || req.connection.remoteAddress;
+          res.sendFile(`${this.WebsitePath}/pty.html`);
+          io.once("connection", (client) => {
+            log(`[${ip}] Connected to Terminal:`, req.user);
+            client.on("disconnect", (err) => {
+              log(`[${ip}] Disconnected from Terminal:`, req.user, `[${err}]`);
             });
-          }
-          else res.status(403).sendFile(`${this.WebsitePath}/403.html`);
+            var cols = 80;
+            var rows = 24;
+            var ptyProcess = pty.spawn("bash", [], {
+              name: "xterm-color",
+              cols: cols,
+              rows: rows,
+              cmd: process.env.HOME,
+              env: process.env
+            });
+            ptyProcess.on("data", (data) => {
+              io.to(client.id).emit("terminal.incData", data);
+            });
+            client.on("terminal.toTerm", (data) => {
+              ptyProcess.write(data);
+            });
+            client.on("terminal.size", (size) => {
+              ptyProcess.resize(size.cols, size.rows);
+            });
+          });
         })
 
         .get("/install", (req,res,next) => this.auth(req,res,next), (req, res) => {
-          if (req.user) {
-            var ip = req.headers["x-forwarded-for"] || req.connection.remoteAddress;
-            if (req.query.ext && this.website.EXTInstalled.indexOf(req.query.ext) === -1 && this.website.EXT.indexOf(req.query.ext) > -1) {
-              res.sendFile(`${this.WebsitePath}/install.html`);
-              io.once("connection", async (socket) => {
-                log(`[${ip}] Connected to installer Terminal Logs:`, req.user);
-                socket.on("disconnect", (err) => {
-                  log(`[${ip}] Disconnected from installer Terminal Logs:`, req.user, `[${err}]`);
-                });
-                this.lib.HyperWatch.stream().on("stdData", (data) => {
-                  if (typeof data === "string") io.to(socket.id).emit("terminal.installer", data.replace(/\r?\n/g, "\r\n"));
-                });
+          var ip = req.headers["x-forwarded-for"] || req.connection.remoteAddress;
+          if (req.query.ext && this.website.EXTInstalled.indexOf(req.query.ext) === -1 && this.website.EXT.indexOf(req.query.ext) > -1) {
+            res.sendFile(`${this.WebsitePath}/install.html`);
+            io.once("connection", async (socket) => {
+              log(`[${ip}] Connected to installer Terminal Logs:`, req.user);
+              socket.on("disconnect", (err) => {
+                log(`[${ip}] Disconnected from installer Terminal Logs:`, req.user, `[${err}]`);
               });
-            }
-            else res.status(404).sendFile(`${this.WebsitePath}/404.html`);
+              this.lib.HyperWatch.stream().on("stdData", (data) => {
+                if (typeof data === "string") io.to(socket.id).emit("terminal.installer", data.replace(/\r?\n/g, "\r\n"));
+              });
+            });
           }
-          else res.status(403).sendFile(`${this.WebsitePath}/403.html`);
+          else res.redirect("/404");
         })
 
         .get("/delete", (req,res,next) => this.auth(req,res,next), (req, res) => {
-          if (req.user) {
-            var ip = req.headers["x-forwarded-for"] || req.connection.remoteAddress;
-            if (req.query.ext && this.website.EXTInstalled.indexOf(req.query.ext) > -1 && this.website.EXT.indexOf(req.query.ext) > -1) {
-              res.sendFile(`${this.WebsitePath}/delete.html`);
-              io.once("connection", async (socket) => {
-                log(`[${ip}] Connected to uninstaller Terminal Logs:`, req.user);
-                socket.on("disconnect", (err) => {
-                  log(`[${ip}] Disconnected from uninstaller Terminal Logs:`, req.user, `[${err}]`);
-                });
-                this.lib.HyperWatch.stream().on("stdData", (data) => {
-                  if (typeof data === "string") io.to(socket.id).emit("terminal.delete", data.replace(/\r?\n/g, "\r\n"));
-                });
+          var ip = req.headers["x-forwarded-for"] || req.connection.remoteAddress;
+          if (req.query.ext && this.website.EXTInstalled.indexOf(req.query.ext) > -1 && this.website.EXT.indexOf(req.query.ext) > -1) {
+            res.sendFile(`${this.WebsitePath}/delete.html`);
+            io.once("connection", async (socket) => {
+              log(`[${ip}] Connected to uninstaller Terminal Logs:`, req.user);
+              socket.on("disconnect", (err) => {
+                log(`[${ip}] Disconnected from uninstaller Terminal Logs:`, req.user, `[${err}]`);
               });
-            }
-            else res.status(404).sendFile(`${this.WebsitePath}/404.html`);
+              this.lib.HyperWatch.stream().on("stdData", (data) => {
+                if (typeof data === "string") io.to(socket.id).emit("terminal.delete", data.replace(/\r?\n/g, "\r\n"));
+              });
+            });
           }
-          else res.status(403).sendFile(`${this.WebsitePath}/403.html`);
+          else res.redirect("/404");
         })
 
         .get("/MMConfig", (req,res,next) => this.auth(req,res,next), (req, res) => {
-          if (req.user) res.sendFile(`${this.WebsitePath}/mmconfig.html`);
-          else res.status(403).sendFile(`${this.WebsitePath}/403.html`);
+          res.sendFile(`${this.WebsitePath}/mmconfig.html`);
         })
 
         .get("/EXTCreateConfig", (req,res,next) => this.auth(req,res,next), (req, res) => {
-          if (req.user) {
-            if (req.query.ext
-              && this.website.EXTInstalled.indexOf(req.query.ext) > -1 // is installed
-              && this.website.EXT.indexOf(req.query.ext) > -1 // is an EXT
-              && this.website.EXTConfigured.indexOf(req.query.ext) === -1 // is not configured
-            ) {
-              res.sendFile(`${this.WebsitePath}/EXTCreateConfig.html`);
-            }
-            else res.status(404).sendFile(`${this.WebsitePath}/404.html`);
+          if (req.query.ext
+            && this.website.EXTInstalled.indexOf(req.query.ext) > -1 // is installed
+            && this.website.EXT.indexOf(req.query.ext) > -1 // is an EXT
+            && this.website.EXTConfigured.indexOf(req.query.ext) === -1 // is not configured
+          ) {
+            res.sendFile(`${this.WebsitePath}/EXTCreateConfig.html`);
           }
-          else res.status(403).sendFile(`${this.WebsitePath}/403.html`);
+          else res.redirect("/404");
         })
 
         .get("/EXTModifyConfig", (req,res,next) => this.auth(req,res,next), (req, res) => {
-          if (req.user) {
-            if (req.query.ext
-              && this.website.EXTInstalled.indexOf(req.query.ext) > -1 // is installed
-              && this.website.EXT.indexOf(req.query.ext) > -1 // is an EXT
-              && this.website.EXTConfigured.indexOf(req.query.ext) > -1 // is configured
-            ) {
-              res.sendFile(`${this.WebsitePath}/EXTModifyConfig.html`);
-            }
-            else res.status(404).sendFile(`${this.WebsitePath}/404.html`);
+          if (req.query.ext
+            && this.website.EXTInstalled.indexOf(req.query.ext) > -1 // is installed
+            && this.website.EXT.indexOf(req.query.ext) > -1 // is an EXT
+            && this.website.EXTConfigured.indexOf(req.query.ext) > -1 // is configured
+          ) {
+            res.sendFile(`${this.WebsitePath}/EXTModifyConfig.html`);
           }
-          else res.status(403).sendFile(`${this.WebsitePath}/403.html`);
+          else res.redirect("/404");
         })
 
         .get("/EXTDeleteConfig", (req,res,next) => this.auth(req,res,next), (req, res) => {
-          if (req.user) {
-            if (req.query.ext
-              && this.website.EXTInstalled.indexOf(req.query.ext) === -1 // is not installed
-              && this.website.EXT.indexOf(req.query.ext) > -1 // is an EXT
-              && this.website.EXTConfigured.indexOf(req.query.ext) > -1 // is configured
-            ) {
-              res.sendFile(`${this.WebsitePath}/EXTDeleteConfig.html`);
-            }
-            else res.status(404).sendFile(`${this.WebsitePath}/404.html`);
+          if (req.query.ext
+            && this.website.EXTInstalled.indexOf(req.query.ext) === -1 // is not installed
+            && this.website.EXT.indexOf(req.query.ext) > -1 // is an EXT
+            && this.website.EXTConfigured.indexOf(req.query.ext) > -1 // is configured
+          ) {
+            res.sendFile(`${this.WebsitePath}/EXTDeleteConfig.html`);
           }
-          else res.status(403).sendFile(`${this.WebsitePath}/403.html`);
+          else res.redirect("/404");
         })
 
         .get("/Tools", (req,res,next) => this.auth(req,res,next), (req, res) => {
-          if (req.user) res.sendFile(`${this.WebsitePath}/tools.html`);
-          else res.status(403).sendFile(`${this.WebsitePath}/403.html`);
+          res.sendFile(`${this.WebsitePath}/tools.html`);
         })
 
         .get("/System", (req,res,next) => this.auth(req,res,next), (req, res) => {
-          if (req.user) {
-            res.sendFile(`${this.WebsitePath}/system.html`);
-          } else res.status(403).sendFile(`${this.WebsitePath}/403.html`);
+          res.sendFile(`${this.WebsitePath}/system.html`);
         })
 
         .get("/About", (req,res,next) => this.auth(req,res,next), (req, res) => {
-          if (req.user) res.sendFile(`${this.WebsitePath}/about.html`);
-          else res.status(403).sendFile(`${this.WebsitePath}/403.html`);
+          res.sendFile(`${this.WebsitePath}/about.html`);
         })
 
         .get("/3rdpartymodules", (req,res,next) => this.auth(req,res,next), (req, res) => {
-          if (req.user) res.sendFile(`${this.WebsitePath}/3rdpartymodules.html`);
-          else res.status(403).sendFile(`${this.WebsitePath}/403.html`);
+          res.sendFile(`${this.WebsitePath}/3rdpartymodules.html`);
         })
 
         .get("/Restart", (req,res,next) => this.auth(req,res,next), (req, res) => {
-          if (req.user) res.sendFile(`${this.WebsitePath}/restarting.html`);
-          else res.status(403).sendFile(`${this.WebsitePath}/403.html`);
+          res.sendFile(`${this.WebsitePath}/restarting.html`);
         })
 
         .get("/Die", (req,res,next) => this.auth(req,res,next), (req, res) => {
-          if (req.user) res.sendFile(`${this.WebsitePath}/die.html`);
-          else res.status(403).sendFile(`${this.WebsitePath}/403.html`);
+          res.sendFile(`${this.WebsitePath}/die.html`);
         })
 
         .get("/SystemRestart", (req,res,next) => this.auth(req,res,next), (req, res) => {
-          if (req.user) res.sendFile(`${this.WebsitePath}/reboot.html`);
-          else res.status(403).sendFile(`${this.WebsitePath}/403.html`);
+          res.sendFile(`${this.WebsitePath}/reboot.html`);
         })
 
         .get("/SystemDie", (req,res,next) => this.auth(req,res,next), (req, res) => {
-          if (req.user) res.sendFile(`${this.WebsitePath}/shutdown.html`);
-          else res.status(403).sendFile(`${this.WebsitePath}/403.html`);
+          res.sendFile(`${this.WebsitePath}/shutdown.html`);
         })
 
         .get("/EditMMConfig", (req,res,next) => this.auth(req,res,next), (req, res) => {
-          if (req.user) res.sendFile(`${this.WebsitePath}/EditMMConfig.html`);
-          else res.status(403).sendFile(`${this.WebsitePath}/403.html`);
+          res.sendFile(`${this.WebsitePath}/EditMMConfig.html`);
         })
 
         .get("/download/*", (req, res) => {
@@ -622,7 +588,7 @@ class website {
             customSiteTitle: "EXT-Website API",
             customfavIcon: "/assets/img/FavIcon.png"
           })
-          : (req,res,next) => res.status(401).send("Unauthorized"))
+          : (req,res,next) => res.redirect("/404"))
 
         .get("/api", (req,res) => {
           res.json({ api: "OK" });
