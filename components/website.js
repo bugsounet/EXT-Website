@@ -352,57 +352,7 @@ class website {
           res.redirect("/login");
         })
 
-        .post("/auth", (req, res, next) => {
-          var ip = req.headers["x-forwarded-for"] || req.connection.remoteAddress;
-
-          const authorization = req.headers.authorization;
-          const params = authorization?.split(" ");
-          var APIResult = {
-            error: "Invalid credentials"
-          };
-
-          if (!authorization) {
-            console.warn(`[WEBSITE] [${ip}] Bad Login: missing authorization type`);
-            APIResult.description = "Missing authorization type";
-            return res.status(401).json(APIResult);
-          };
-
-          if (params[0] !== "Basic") {
-            console.warn(`[WEBSITE] [${ip}] Bad Login: Basic authorization type only`);
-            APIResult.description = "Authorization type Basic only";
-            return res.status(401).json(APIResult);
-          }
-
-          if (!params[1]) { // must never happen
-            console.warn(`[WEBSITE] [${ip}] Bad Login: missing Basic params`);
-            APIResult.description = "Missing Basic params";
-            return res.status(401).json(APIResult);
-          }
-
-          const base64Credentials = this.decode(params[1]);
-          const [ username, password ] = base64Credentials.split(":");
-
-          if (username === this.website.user.username && password === this.website.user.password) {
-            const token = jwt.sign(
-              {
-                user: this.website.user.username
-              },
-              this.secret,
-              { expiresIn: "1h" }
-            );
-            console.log(`[WEBSITE] [${ip}] Welcome ${username}, happy to serve you!`);
-            res.cookie("EXT-Website", token, {
-              httpOnly: true,
-              secure: true,
-              maxAge: 3600000
-            });
-            res.send({ session: token });
-          } else {
-            console.warn(`[WEBSITE] [${ip}] Bad Login: Invalid username or password`);
-            APIResult.description = "Invalid username or password";
-            res.status(403).json(APIResult);
-          }
-        })
+        .post("/auth", (req, res) => this.login(req,res))
 
         .get("/", (req,res,next) => this.auth(req,res,next), (req, res) => {
           res.sendFile(`${this.WebsitePath}/index.html`);
@@ -598,56 +548,7 @@ class website {
           res.json(this.website.loginTranslation);
         })
 
-        .post("/api/login", (req, res) => {
-          var ip = req.headers["x-forwarded-for"] || req.connection.remoteAddress;
-          const authorization = req.headers.authorization;
-          const params = authorization?.split(" ");
-          var APIResult = {
-            error: "Invalid credentials"
-          };
-
-          if (!authorization) {
-            console.warn(`[WEBSITE] [API] [${ip}] Bad Login: missing authorization type`);
-            APIResult.description = "Missing authorization type";
-            return res.status(401).json(APIResult);
-          };
-
-          if (params[0] !== "Basic") {
-            console.warn(`[WEBSITE] [API] [${ip}] Bad Login: Basic authorization type only`);
-            APIResult.description = "Authorization type Basic only";
-            return res.status(401).json(APIResult);
-          }
-
-          if (!params[1]) { // must never happen
-            console.warn(`[WEBSITE] [API] [${ip}] Bad Login: missing Basic params`);
-            APIResult.description = "Missing Basic params";
-            return res.status(401).json(APIResult);
-          }
-
-          const base64Credentials = this.decode(params[1]);
-          const [ username, password ] = base64Credentials.split(":");
-
-          if (username === this.website.user.username && password === this.website.user.password) {
-            const token = jwt.sign(
-              {
-                user: this.website.user.username
-              },
-              this.secret,
-              { expiresIn: "1h" }
-            );
-            APIResult = {
-              access_token: token,
-              token_type: "Bearer",
-              expire_in: 3600
-            };
-            console.log(`[WEBSITE] [API] [${ip}] Welcome ${username}, happy to serve you!`);
-            res.json(APIResult);
-          } else {
-            console.warn(`[WEBSITE] [API] [${ip}] Bad Login: Invalid username or password`);
-            APIResult.description = "Invalid username or password";
-            res.status(401).json(APIResult);
-          }
-        })
+        .post("/api/login", (req, res) =>  this.login(req,res, true))
 
         .get("/api/*", passport.authenticate("jwt", { session: false }), (req, res) => this.GetAPI(req,res))
         .post("/api/*", passport.authenticate("jwt", { session: false }), (req, res) => this.PostAPI(req,res))
@@ -1281,6 +1182,7 @@ class website {
   /*** Tools ***/
   /*************/
 
+  // verify authenticate, if failed redirect to login page
   auth (req, res, next) {
     try {
       const { cookies } = req;
@@ -1307,6 +1209,70 @@ class website {
     }
   }
 
+  // login deals with username // password in Basic
+  login (req, res, api) {
+    var ip = req.headers["x-forwarded-for"] || req.connection.remoteAddress;
+    const authorization = req.headers.authorization;
+    const params = authorization?.split(" ");
+    var APIResult = {
+      error: "Invalid credentials"
+    };
+
+    if (!authorization) {
+      console.warn(`[WEBSITE] [${ip}] Bad Login: missing authorization type`);
+      APIResult.description = "Missing authorization type";
+      return res.status(401).json(APIResult);
+    };
+
+    if (params[0] !== "Basic") {
+      console.warn(`[WEBSITE] [${ip}] Bad Login: Basic authorization type only`);
+      APIResult.description = "Authorization type Basic only";
+      return res.status(401).json(APIResult);
+    }
+
+    if (!params[1]) { // must never happen
+      console.warn(`[WEBSITE] [${ip}] Bad Login: missing Basic params`);
+      APIResult.description = "Missing Basic params";
+      return res.status(401).json(APIResult);
+    }
+
+    const base64Credentials = this.decode(params[1]);
+    const [ username, password ] = base64Credentials.split(":");
+
+    if (username === this.website.user.username && password === this.website.user.password) {
+      const token = jwt.sign(
+        {
+          user: this.website.user.username
+        },
+        this.secret,
+        { expiresIn: "1h" }
+      );
+
+      console.log(`[WEBSITE] [${ip}] Welcome ${username}, happy to serve you!`);
+      if (api) {
+        APIResult = {
+          access_token: token,
+          token_type: "Bearer",
+          expire_in: 3600
+        };
+        res.json(APIResult);
+      } else {
+        res.cookie("EXT-Website", token, {
+          httpOnly: true,
+          //secure: true,
+          maxAge: 3600000
+        });
+        res.json({ session: token });
+      }
+    } else {
+      console.warn(`[WEBSITE] [${ip}] Bad Login: Invalid username or password`);
+      APIResult.description = "Invalid username or password";
+      if (api) res.status(401).json(APIResult);
+      else res.status(403).json(APIResult);
+    }
+  }
+
+  // decode cookie for relogin
   cookieTest = (req) => {
     try {
       var token = null;
@@ -1327,10 +1293,13 @@ class website {
     }
   };
 
+  // encode rule
   encode (input) {
     return btoa(input);
   }
 
+
+  // decode rule
   decode (input) {
     return atob(input);
   }
