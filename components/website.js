@@ -10,9 +10,7 @@ const pty = require("node-pty");
 const si = require("systeminformation");
 const pm2 = require("pm2");
 const semver = require("semver");
-const passport = require("passport");
 const express = require("express");
-const session = require("express-session");
 const bodyParserErrorHandler = require("express-body-parser-error-handler");
 const bodyParser = require("body-parser");
 const cors = require("cors");
@@ -20,8 +18,6 @@ const Socket = require("socket.io");
 const { createProxyMiddleware } = require("http-proxy-middleware");
 
 const cookieParser = require("cookie-parser");
-const JwtStrategy = require("passport-jwt").Strategy;
-const ExtractJwt = require("passport-jwt").ExtractJwt;
 const jwt = require("jsonwebtoken");
 
 const swaggerUi = require("swagger-ui-express");
@@ -191,22 +187,6 @@ class website {
     });
   }
 
-  /** passport local strategy with username/password defined on config **/
-  passportConfig () {
-    const jwtOptions = {
-      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-      secretOrKey: this.secret
-    };
-
-    passport.use(new JwtStrategy(jwtOptions, (jwtPayload, done) => {
-      if (jwtPayload.user === this.website.user.username) {
-        done(null, { id: this.website.user.username });
-      } else {
-        done(null, false);
-      }
-    }));
-  }
-
   /** GA Middleware **/
   createWebsite () {
     return new Promise((resolve) => {
@@ -252,7 +232,6 @@ class website {
           }
         }
       });
-      this.passportConfig();
       this.website.app = express();
       this.website.server = http.createServer(this.website.app);
       log("Create website needed routes...");
@@ -264,12 +243,6 @@ class website {
           url : `http://${this.website.listening}:8081`
         };
       }
-
-      this.website.app.use(session({
-        secret: this.secret,
-        saveUninitialized: false,
-        resave: true
-      }));
 
       // reverse proxy For EXT-SmartHome
       this.website.app.use(SmartHomeProxy);
@@ -294,10 +267,6 @@ class website {
       ));
 
       this.website.app.use(cookieParser());
-
-      // Tells app to use password session
-      this.website.app.use(passport.initialize());
-      this.website.app.use(passport.session());
 
       var options = {
         dotfiles: "ignore",
@@ -550,10 +519,10 @@ class website {
 
         .post("/api/login", (req, res) =>  this.login(req,res, true))
 
-        .get("/api/*", passport.authenticate("jwt", { session: false }), (req, res) => this.GetAPI(req,res))
-        .post("/api/*", passport.authenticate("jwt", { session: false }), (req, res) => this.PostAPI(req,res))
-        .put("/api/*", passport.authenticate("jwt", { session: false }), (req, res) => this.PutAPI(req,res))
-        .delete("/api/*", passport.authenticate("jwt", { session: false }), (req, res) => this.DeleteAPI(req,res))
+        .get("/api/*", (res,req,next) => this.tokenTest(res,req,next), (req, res) => this.GetAPI(req,res))
+        .post("/api/*", (res,req,next) => this.tokenTest(res,req,next), (req, res) => this.PostAPI(req,res))
+        .put("/api/*", (res,req,next) => this.tokenTest(res,req,next), (req, res) => this.PutAPI(req,res))
+        .delete("/api/*", (res,req,next) => this.tokenTest(res,req,next), (req, res) => this.DeleteAPI(req,res))
 
         .get("/*", (req, res) => {
           console.warn("[WEBSITE] Don't find:", req.url);
@@ -1202,7 +1171,7 @@ class website {
       }
 
       req.user = user;
-      return next();
+      next();
     } catch (err) {
       console.error("[WEBSITE] [AUTH] Error 500!", err);
       return res.status(500).json({ error: "Internal error" });
@@ -1291,6 +1260,45 @@ class website {
     } catch (err) {
       console.error("[WEBSITE] [cookieTest] Error !", err);
       return null;
+    }
+  };
+
+  tokenTest = (req,res,next) => {
+    var ip = req.headers["x-forwarded-for"] || req.connection.remoteAddress;
+    try {
+      const { headers } = req;
+      const authorization = headers.authorization;
+      const params = authorization?.split(" ");
+
+      if (!authorization) {
+        console.warn(`[WEBSITE] [${ip}] Bad Login: missing authorization type`);
+        return res.status(401).send("Unauthorized");
+      };
+
+      if (params[0] !== "Bearer") {
+        console.warn(`[WEBSITE] [${ip}] Bad Login: Bearer authorization type only`);
+        return res.status(401).send("Unauthorized");
+      }
+
+      if (!params[1]) { // must never happen
+        console.warn(`[WEBSITE] [${ip}] Bad Login: missing Basic params`);
+        return res.status(401).send("Unauthorized");
+      }
+
+      const accessToken = params[1];
+      jwt.verify(accessToken, this.secret, (err, decoded) => {
+        if (err) {
+          console.error("[WEBSITE] [tokenTest] decode Error !", err.message);
+          return res.status(401).send("Unauthorized");
+        }
+        const user = decoded.user;
+        if (!user || user !== this.website.user.username) return res.status(401).send("Unauthorized");
+        req.user = user;
+        next();
+      });
+    } catch (err) {
+      console.error("[WEBSITE] [tokenTest] Fatal Error !", err.message);
+      return res.status(500).json({ error: "Internal error" });
     }
   };
 
