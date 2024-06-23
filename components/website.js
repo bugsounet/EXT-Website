@@ -15,7 +15,7 @@ const bodyParserErrorHandler = require("express-body-parser-error-handler");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const Socket = require("socket.io");
-const { createProxyMiddleware } = require("http-proxy-middleware");
+const { createProxyMiddleware, fixRequestBody } = require("http-proxy-middleware");
 
 const cookieParser = require("cookie-parser");
 const jwt = require("jsonwebtoken");
@@ -83,6 +83,8 @@ class website {
       initialized: false,
       app: null,
       server: null,
+      api: null,
+      serverAPI: null,
       translation: null,
       loginTranslation: null,
       schemaTranslatation: null,
@@ -172,28 +174,62 @@ class website {
     log("Listening:", this.website.listening);
     log("APIDocs:", this.website.APIDocs);
 
+    await this.createAPI();
+    console.log("[WEBSITE] [API] API Ready!");
+    await this.serverAPI();
+
     await this.createWebsite();
     console.log("[WEBSITE] Website Ready!");
     this.server();
   }
 
+  /** Start Website Server **/
   server () {
     console.log("[WEBSITE] Loading Server...");
-    this.startServer((cb) => {
-      if (cb) {
+    this.website.server
+      .listen(8081, "0.0.0.0", () => {
+        console.log("[WEBSITE] [SERVER] Start listening on port 8081");
+        console.log(`[WEBSITE] [SERVER] Available locally at http://${this.website.listening}:8081`);
+        this.website.initialized = true;
         console.log("[WEBSITE] Server Ready!");
         this.sendSocketNotification("INITIALIZED");
-      }
-    });
+      })
+      .on("error", (err) => {
+        console.error("[WEBSITE] [SERVER] Can't start web server!");
+        console.error("[WEBSITE] [SERVER] Error:", err.message);
+        this.sendSocketNotification("SendNoti", {
+          noti: "EXT_ALERT",
+          payload: {
+            type: "error",
+            message: "Can't start web server!",
+            timer: 10000
+          }
+        });
+      });
   }
 
-  /** GA Middleware **/
+  /** log any website traffic **/
+  logRequest (req, res, next) {
+    var ip = req.headers["x-forwarded-for"] || req.connection.remoteAddress;
+    log(`[${ip}] [${req.method}] ${req.url}`);
+    next();
+  }
+
+  /** add custom Headers **/
+  customHeaders (req, res, next) {
+    let version = require("../package.json").version;
+    res.setHeader("X-Powered-By", `EXT-Website v${version}`);
+    next();
+  }
+
+  /** Website Middleware **/
   createWebsite () {
     return new Promise((resolve) => {
       const ProxyRequestLogger = (proxyServer, options) => {
         proxyServer.on("proxyReq", (proxyReq, req, res) => {
-          var ip = req.headers["x-forwarded-for"] || req.connection.remoteAddress;
-          log(`[${ip}] [${req.method}] [PROXY] /smarthome${req.url}`);
+          let ip = req.headers["x-forwarded-for"] || req.connection.remoteAddress;
+          let url = req.url.startsWith("/api") ? req.url : `/smarthome${req.url}`
+          log(`[${ip}] [PROXY] ${url}`);
         });
       };
       const SmartHomeProxy = createProxyMiddleware({
@@ -203,24 +239,9 @@ class website {
         pathRewrite: { "^/smarthome" : "" },
         plugins: [ProxyRequestLogger],
         on: {
-          onProxyReq : (proxyReq, req, res) => {
-            if (req.method === "POST" && req.body) {
-              let body = req.body;
-              let newBody = "";
-              delete req.body;
-
-              try {
-                newBody = JSON.stringify(body);
-                proxyReq.setHeader("content-length", Buffer.byteLength(newBody, "utf8"));
-                proxyReq.write(newBody);
-                proxyReq.end();
-              } catch (e) {
-                console.error("[WEBSITE] Stringify error", e);
-              }
-            }
-          },
+          onProxyReq: fixRequestBody,
           error: (err, req, res) => {
-            console.error("[WEBSITE] Proxy ERROR", err);
+            console.error("[WEBSITE] SmartHome Proxy ERROR", err);
             if (!this.website.EXTStatus["EXT-SmartHome"].hello) {
               res.redirect("/404");
             } else {
@@ -232,20 +253,31 @@ class website {
           }
         }
       });
+      const APIProxy = createProxyMiddleware({
+        target: "http://127.0.0.1:8085",
+        changeOrigin: false,
+        pathFilter: ["/api"],
+        plugins: [ProxyRequestLogger],
+        on: {
+          onProxyReq: fixRequestBody,
+          error: (err, req, res) => {
+            console.error("[WEBSITE] API Proxy ERROR", err);
+            res.writeHead(500, {
+              "Content-Type": "text/plain"
+            });
+            res.end(`${err.message}`);
+          }
+        }
+      });
       this.website.app = express();
       this.website.server = http.createServer(this.website.app);
       log("Create website needed routes...");
 
-      // add current server IP to APIDocs
-      if (this.website.APIDocs) {
-        this.APIDocs = require("../website/api/swagger.json");
-        this.APIDocs.servers[1] = {
-          url : `http://${this.website.listening}:8081`
-        };
-      }
-
-      // reverse proxy For EXT-SmartHome
+      // reverse proxy for API and EXT-SmartHome
+      this.website.app.use(APIProxy);
       this.website.app.use(SmartHomeProxy);
+
+      this.website.app.use(this.customHeaders);
 
       // For parsing post request's data/body
       this.website.app.use(bodyParser.json());
@@ -310,7 +342,7 @@ class website {
         .use("/jquery.min.js", express.static(`${this.WebsiteModulePath}/node_modules/jquery/dist/jquery.min.js`))
 
         .get("/login", (req, res) => {
-          const logged = this.cookieTest(req);
+          const logged = this.hasValidCookie(req);
           if (logged) return res.redirect("/");
           res.clearCookie("EXT-Website");
           res.sendFile(`${this.WebsitePath}/login.html`);
@@ -496,7 +528,84 @@ class website {
           res.status(404).sendFile(`${this.WebsitePath}/404.html`);
         })
 
-      /** API using **/
+        .get("/*", (req, res) => {
+          console.warn("[WEBSITE] Don't find:", req.url);
+          res.redirect("/404");
+        });
+
+      resolve();
+    });
+  }
+
+  serverAPI () {
+    console.log("[WEBSITE] [API] Loading API Server...");
+    return new Promise((resolve) => {
+      this.website.serverAPI
+        .listen(8085, "127.0.0.1", () => {
+          console.log("[WEBSITE] [API] Start listening on port 8085");
+          resolve();
+        })
+        .on("error", (err) => {
+          console.error("[WEBSITE] [API] Can't start API server!");
+          console.error("[WEBSITE] [API] Error:", err.message);
+          this.sendSocketNotification("SendNoti", {
+            noti: "EXT_ALERT",
+            payload: {
+              type: "error",
+              message: "Can't start API server!",
+              timer: 10000
+            }
+          });
+        });
+    })
+  }
+
+  logAPIRequest (req, res, next) {
+    log(`[API] [${req.method}] ${req.url}`);
+    next();
+  }
+
+  customAPIHeaders (req, res, next) {
+    let version = require("../package.json").api;
+    res.setHeader("X-Powered-By", `EXT-Website API v${version}`);
+    next();
+  }
+
+  /** API Middleware **/
+  createAPI () {
+    return new Promise((resolve) => {
+      this.website.api = express();
+      this.website.serverAPI = http.createServer(this.website.api);
+      log("[API] Create API needed routes...");
+
+      // add current server IP to APIDocs
+      if (this.website.APIDocs) {
+        this.APIDocs = require("../website/api/swagger.json");
+        this.APIDocs.servers[1] = {
+          url : `http://${this.website.listening}:8081`
+        };
+      }
+
+      this.website.api
+        .use(this.logAPIRequest)
+        .use(this.customAPIHeaders)
+        .use(bodyParser.json())
+        .use(bodyParser.urlencoded({ extended: true }))
+        .use(cors({ origin: "*" }))
+        .use(bodyParserErrorHandler(
+          {
+            onError: (err, req, res) => {
+              let ip = req.headers["x-forwarded-for"] || req.connection.remoteAddress;
+              console.error(`[WEBSITE] [API] [${ip}] [${req.method}] ${req.url}`);
+              console.error("[WEBSITE] [API] bodyparser error:", err.type);
+              log("[API] body:", err.body);
+              console.error("[WEBSITE] [API] detail:", err.message);
+            },
+            errorMessage: (err, req,res) => {
+              return `Body Parser failed to parse request (${err.type}) --> ${err.message}`;
+            }
+          })
+        )
 
         .use("/api/docs", swaggerUi.serve, this.website.APIDocs
           ? swaggerUi.setup(this.APIDocs, {
@@ -519,28 +628,21 @@ class website {
 
         .post("/api/login", (req, res) =>  this.login(req,res, true))
 
-        .get("/api/*", (res,req,next) => this.tokenTest(res,req,next), (req, res) => this.GetAPI(req,res))
-        .post("/api/*", (res,req,next) => this.tokenTest(res,req,next), (req, res) => this.PostAPI(req,res))
-        .put("/api/*", (res,req,next) => this.tokenTest(res,req,next), (req, res) => this.PutAPI(req,res))
-        .delete("/api/*", (res,req,next) => this.tokenTest(res,req,next), (req, res) => this.DeleteAPI(req,res))
+        .get("/api/*", (res,req,next) => this.hasValidToken(res,req,next), (req, res) => this.GetAPI(req,res))
+        .post("/api/*", (res,req,next) => this.hasValidToken(res,req,next), (req, res) => this.PostAPI(req,res))
+        .put("/api/*", (res,req,next) => this.hasValidToken(res,req,next), (req, res) => this.PutAPI(req,res))
+        .delete("/api/*", (res,req,next) => this.hasValidToken(res,req,next), (req, res) => this.DeleteAPI(req,res))
 
         .get("/*", (req, res) => {
-          console.warn("[WEBSITE] Don't find:", req.url);
-          res.redirect("/404");
+          console.warn("[WEBSITE] [API] Don't find:", req.url);
+          res.status(404).json({ error: "You Are Lost in Space" });
         });
 
-      resolve();
-    });
+      resolve()
+    })
   }
 
-  /** log any traffic **/
-  logRequest (req, res, next) {
-    var ip = req.headers["x-forwarded-for"] || req.connection.remoteAddress;
-    log(`[${ip}] [${req.method}] ${req.url}`);
-    next();
-  }
-
-  /** Website GET API **/
+  /** GET API **/
   async GetAPI (req, res) {
     switch (req.url) {
       case "/api/version":
@@ -603,7 +705,7 @@ class website {
         if (!req.headers["ext"]) return res.status(400).send("Bad Request");
         var index = this.website.MMConfig.modules.map((e) => { return e.module; }).indexOf(req.headers["ext"]);
         if (index > -1) {
-          log(`Request config of ${req.headers["ext"]}`);
+          log(`[API] Request config of ${req.headers["ext"]}`);
           let stringify = JSON.stringify(this.website.MMConfig.modules[index]);
           let encoded = this.encode(stringify);
           res.json({ config: encoded });
@@ -633,7 +735,7 @@ class website {
           data.encoded = this.encode(data.stringify);
           res.json({ schema: data.encoded });
         } catch (e) {
-          console.error("[WEBSITE] Schema:", e.message);
+          console.error("[WEBSITE] [API] Schema:", e.message);
           res.status(404).send("Not Found");
         }
         break;
@@ -678,13 +780,13 @@ class website {
         break;
 
       default:
-        console.warn("[WEBSITE] Don't find:", req.url);
+        console.warn("[WEBSITE] [API] Don't find:", req.url);
         res.status(404).json({ error: "You Are Lost in Space" });
         break;
     }
   }
 
-  /** Website PUT API **/
+  /** PUT API **/
   async PutAPI (req, res) {
     switch (req.url) {
       case "/api/config/MM":
@@ -694,22 +796,22 @@ class website {
           let decoded = JSON.parse(this.decode(req.body["config"]));
           resultSaveConfig = await this.saveConfig(decoded);
         } catch (e) {
-          console.log("[WEBSITE] Request error", e.message);
+          console.log("[WEBSITE] [API] Request error", e.message);
           res.status(400).send("Bad Request");
           return;
         }
-        console.log("[WEBSITE] Write config result:", resultSaveConfig);
+        console.log("[WEBSITE] [API] Write config result:", resultSaveConfig);
         if (resultSaveConfig.done) {
           res.json(resultSaveConfig);
           this.website.MMConfig = await this.readConfig();
-          console.log("[WEBSITE] Reload config");
+          console.log("[WEBSITE] [API] Reload config");
         } else if (resultSaveConfig.error) {
           res.status(500).json({ error: resultSaveConfig.error });
         }
         break;
 
       case "/api/config/EXT":
-        console.log("[WEBSITE] Receiving write EXT config...");
+        console.log("[WEBSITE] [API] Receiving write EXT config...");
         if (!req.headers["ext"] || !req.body["config"]) return res.status(400).send("Bad Request");
 
         if (this.website.EXT.indexOf(req.headers["ext"]) === -1) return res.status(404).send("Not Found");
@@ -724,16 +826,16 @@ class website {
           const NewConfig = await this.configAddOrModify(dataConfig);
           resultSaveConfig = await this.saveConfig(NewConfig);
         } catch (e) {
-          console.log("[WEBSITE] Request error", e.message);
+          console.log("[WEBSITE] [API] Request error", e.message);
           res.status(400).send("Bad Request");
           return;
         }
-        console.log("[WEBSITE] Write config result:", resultSaveConfig);
+        console.log("[WEBSITE] [API] Write config result:", resultSaveConfig);
         if (resultSaveConfig.done) {
           res.json(resultSaveConfig);
           this.website.MMConfig = await this.readConfig();
           this.website.EXTConfigured = this.searchConfigured();
-          console.log("[WEBSITE] Reload config");
+          console.log("[WEBSITE] [API] Reload config");
         } else if (resultSaveConfig.error) {
           res.status(500).json({ error: resultSaveConfig.error });
         }
@@ -741,20 +843,20 @@ class website {
 
       case "/api/config/webview":
         if (!this.website.webviewTag) {
-          console.log("[WEBSITE] Receiving set webview...");
+          console.log("[WEBSITE] [API] Receiving set webview...");
           let NewConfig = await this.setWebviewTag();
           var resultSaveConfig = await this.saveConfig(NewConfig);
-          console.log("[WEBSITE] Write webview config result:", resultSaveConfig);
+          console.log("[WEBSITE] [API] Write webview config result:", resultSaveConfig);
           if (resultSaveConfig.done) {
             res.json(resultSaveConfig);
             this.website.webviewTag = true;
             this.website.MMConfig = await this.readConfig();
-            console.log("[WEBSITE] Reload config");
+            console.log("[WEBSITE] [API] Reload config");
           } else if (resultSaveConfig.error) {
             res.status(500).json({ error: resultSaveConfig.error });
           }
         } else {
-          console.log("[WEBSITE] Already activated");
+          console.log("[WEBSITE] [API] Already activated");
           res.status(409).send("Already activated");
         }
         break;
@@ -764,28 +866,28 @@ class website {
         const pluginName = req.headers["ext"];
         if (this.website.EXTInstalled.indexOf(pluginName) === -1) {
           if (this.website.EXT.indexOf(pluginName) > -1) {
-            console.log("[WEBSITE] Request installation:",pluginName);
+            console.log("[WEBSITE] [API] Request installation:",pluginName);
             var modulePath = `${this.root_path}/modules/`;
             var Command = `cd ${modulePath} && git clone https://github.com/bugsounet/${pluginName} && cd ${pluginName} && npm install`;
 
             var child = exec(Command, { cwd: modulePath }, (error, stdout, stderr) => {
               if (error) {
-                console.error("[WEBSITE] [INSTALL] [FATAL] exec error:", error);
+                console.error("[WEBSITE] [API] [INSTALL] [FATAL] exec error:", error);
                 res.status(500).json({ error: `Error on install ${pluginName}` });
               } else {
                 this.website.EXTInstalled = this.searchInstalled();
-                console.log("[WEBSITE] [INSTALL] [DONE]", pluginName);
+                console.log("[WEBSITE] [API] [INSTALL] [DONE]", pluginName);
                 res.json({ done: "ok" });
               }
             });
             child.stdout.pipe(process.stdout);
             child.stderr.pipe(process.stdout);
           } else {
-            console.log(`[WEBSITE] [INSTALL] EXT Not Found: ${pluginName}`);
+            console.log(`[WEBSITE] [API] [INSTALL] EXT Not Found: ${pluginName}`);
             res.status(404).send("Not Found");
           }
         } else {
-          console.log(`[WEBSITE] [INSTALL] EXT Already Installed: ${pluginName}`);
+          console.log(`[WEBSITE] [API] [INSTALL] EXT Already Installed: ${pluginName}`);
           res.status(409).send("Already installed");
         }
         break;
@@ -921,11 +1023,11 @@ class website {
         if (availableBackups.indexOf(req.headers["backup"]) === -1) return res.status(404).send("Not Found");
         let file = await this.loadBackupFile(req.headers["backup"]);
         var resultSaveConfig = await this.saveConfig(file);
-        console.log("[WEBSITE] Write config result:", resultSaveConfig);
+        console.log("[WEBSITE] [API] Write config result:", resultSaveConfig);
         if (resultSaveConfig.done) {
           res.json(resultSaveConfig);
           this.website.MMConfig = await this.readConfig();
-          console.log("[WEBSITE] Reload config");
+          console.log("[WEBSITE] [API] Reload config");
         } else if (resultSaveConfig.error) {
           res.status(500).json({ error: resultSaveConfig.error });
         }
@@ -933,12 +1035,12 @@ class website {
 
       case "/api/backups/external":
         try  {
-          console.log("[WEBSITE] Receiving External backup...");
+          console.log("[WEBSITE] [API] Receiving External backup...");
           let config = req.body["config"];
           let decoded = JSON.parse(this.decode(config));
           var linkExternalBackup = await this.saveExternalConfig(decoded);
           if (linkExternalBackup.data) {
-            console.log("[WEBSITE] Generate link:", linkExternalBackup.data);
+            console.log("[WEBSITE] [API] Generate link:", linkExternalBackup.data);
             setTimeout(() => {
               this.deleteDownload(linkExternalBackup.data);
             }, 1000 * 60);
@@ -957,7 +1059,7 @@ class website {
             res.status(500);
           }
         } catch (e) {
-          console.log("[WEBSITE] Request error", e.message);
+          console.log("[WEBSITE] [API] Request error", e.message);
           res.status(400).send("Bad Request");
         }
         break;
@@ -975,12 +1077,12 @@ class website {
         res.status(202).json({ done: "ok" });
         break;
       default:
-        console.warn("[WEBSITE] Don't find:", req.url);
+        console.warn("[WEBSITE] [API] Don't find:", req.url);
         res.status(404).json({ error: "You Are Lost in Space" });
     }
   }
 
-  /** Website POST API **/
+  /** POST API **/
   async PostAPI (req, res) {
     switch (req.url) {
       case "/api/EXT/stop":
@@ -1039,7 +1141,7 @@ class website {
         let config = req.body["config"];
         try  {
           let decoded = this.decode(req.body["config"]);
-          console.log("[WEBSITE] Receiving External backup...");
+          console.log("[WEBSITE] [API] Receiving External backup...");
           var transformExternalBackup = await this.transformExternalBackup(decoded);
           if (transformExternalBackup.error) {
             res.status(500).json({ error: transformExternalBackup.error });
@@ -1049,40 +1151,39 @@ class website {
             res.json({ config: encode });
           }
         } catch (e) {
-          console.log("[WEBSITE] Request error", e.message);
+          console.log("[WEBSITE] [API] Request error", e.message);
           res.status(400).send("Bad Request");
         }
         break;
       default:
-        console.warn("[WEBSITE] Don't find:", req.url);
+        console.warn("[WEBSITE] [API] Don't find:", req.url);
         res.status(404).json({ error: "You Are Lost in Space" });
     }
   }
 
-
-  /** Website DELETE API **/
+  /** DELETE API **/
   async DeleteAPI (req, res) {
     switch (req.url) {
       case "/api/config/EXT":
-        console.log("[WEBSITE] Receiving delete EXT config...");
+        console.log("[WEBSITE] [API] Receiving delete EXT config...");
         if (!req.headers["ext"]) return res.status(400).send("Bad Request");
         const plugin = this.checkPluginInConfig(req.headers["ext"]);
         if (!plugin) return res.status(404).send("Not Found");
         const NewConfig = await this.configDelete(req.headers["ext"]);
         const resultSaveConfig = await this.saveConfig(NewConfig);
-        console.log("[WEBSITE] Write config result:", resultSaveConfig);
+        console.log("[WEBSITE] [API] Write config result:", resultSaveConfig);
         if (resultSaveConfig.done) {
           res.json(resultSaveConfig);
           this.website.MMConfig = await this.readConfig();
           this.website.EXTConfigured = this.searchConfigured();
-          console.log("[WEBSITE] Reload config");
+          console.log("[WEBSITE] [API] Reload config");
         } else if (resultSaveConfig.error) {
           res.status(500).json({ error: resultSaveConfig.error });
         }
         break;
 
       case "/api/EXT":
-        console.log("[WEBSITE] Receiving delete EXT...");
+        console.log("[WEBSITE] [API] Receiving delete EXT...");
         if (!req.headers["ext"]) return res.status(400).send("Bad Request");
         const pluginName = req.headers["ext"];
         if (this.website.EXTInstalled.indexOf(pluginName) > -1 && this.website.EXT.indexOf(pluginName) > -1) {
@@ -1091,60 +1192,33 @@ class website {
           var Command = `cd ${modulePath} && rm -rfv ${pluginName}`;
           var child = exec(Command, { cwd: modulePath }, (error, stdout, stderr) => {
             if (error) {
-              console.error("[WEBSITE] [DELETE] [FATAL] exec error:", error);
+              console.error("[WEBSITE] [API] [DELETE] [FATAL] exec error:", error);
               res.status(500).json({ error: `Error on delete ${pluginName}` });
             } else {
               this.website.EXTInstalled = this.searchInstalled();
-              console.log("[WEBSITE] [DELETE] [DONE]", pluginName);
+              console.log("[WEBSITE] [API] [DELETE] [DONE]", pluginName);
               res.json({ done: "ok" });
             }
           });
           child.stdout.pipe(process.stdout);
           child.stderr.pipe(process.stdout);
         } else {
-          console.log(`[WEBSITE] [DELETE] EXT Not Found: ${pluginName}`);
+          console.log(`[WEBSITE] [API] [DELETE] EXT Not Found: ${pluginName}`);
           res.status(404).send("Not Found");
         }
         break;
 
       case "/api/backups":
-        console.log("[WEBSITE] Receiving delete backup demand...");
+        console.log("[WEBSITE] [API] Receiving delete backup demand...");
         let deleteBackup = await this.deleteBackup();
         console.log("[WEBSITE] Delete backup result:", deleteBackup);
         res.json(deleteBackup);
         break;
 
       default:
-        console.warn("[WEBSITE] Don't find:", req.url);
+        console.warn("[WEBSITE] [API] Don't find:", req.url);
         res.status(404).json({ error: "You Are Lost in Space" });
     }
-  }
-
-  /******************/
-  /** Start Server **/
-  /******************/
-  async startServer (callback = () => {}) {
-    this.website.server
-      .listen(8081, "0.0.0.0", () => {
-        console.log("[WEBSITE] [SERVER] Start listening on port 8081");
-        console.log(`[WEBSITE] [SERVER] Available locally at http://${this.website.listening}:8081`);
-        this.website.initialized = true;
-        callback(true);
-      })
-      .on("error", (err) => {
-        console.error("[WEBSITE] [SERVER] Can't start web server!");
-        console.error("[WEBSITE] [SERVER] Error:", err.message);
-        this.sendSocketNotification("SendNoti", {
-          noti: "EXT_ALERT",
-          payload: {
-            type: "error",
-            message: "Can't start web server!",
-            timer: 10000
-          }
-        });
-        this.website.initialized = false;
-        callback(false);
-      });
   }
 
   /*************/
@@ -1248,7 +1322,7 @@ class website {
   }
 
   // decode cookie for relogin
-  cookieTest = (req) => {
+  hasValidCookie = (req) => {
     try {
       var token = null;
       const { cookies } = req;
@@ -1265,12 +1339,13 @@ class website {
         return true;
       });
     } catch (err) {
-      console.error("[WEBSITE] [cookieTest] Error !", err.message);
+      console.error("[WEBSITE] Cookie Error !", err.message);
       return null;
     }
   };
 
-  tokenTest = (req,res,next) => {
+  // decode and verify token
+  hasValidToken = (req,res,next) => {
     var ip = req.headers["x-forwarded-for"] || req.connection.remoteAddress;
     try {
       const { headers } = req;
@@ -1278,24 +1353,24 @@ class website {
       const params = authorization?.split(" ");
 
       if (!authorization) {
-        console.warn(`[WEBSITE] [${ip}] Bad Login: missing authorization type`);
+        console.warn(`[WEBSITE] [API] [${ip}] Bad Login: missing authorization type`);
         return res.status(401).send("Unauthorized");
       };
 
       if (params[0] !== "Bearer") {
-        console.warn(`[WEBSITE] [${ip}] Bad Login: Bearer authorization type only`);
+        console.warn(`[WEBSITE] [API] [${ip}] Bad Login: Bearer authorization type only`);
         return res.status(401).send("Unauthorized");
       }
 
       if (!params[1]) { // must never happen
-        console.warn(`[WEBSITE] [${ip}] Bad Login: missing Basic params`);
+        console.warn(`[WEBSITE] [API] [${ip}] Bad Login: missing Basic params`);
         return res.status(401).send("Unauthorized");
       }
 
       const accessToken = params[1];
       jwt.verify(accessToken, this.secret, (err, decoded) => {
         if (err) {
-          console.error("[WEBSITE] [tokenTest] decode Error !", err.message);
+          console.error("[WEBSITE] [API] Token decode Error !", err.message);
           return res.status(401).send("Unauthorized");
         }
         const user = decoded.user;
@@ -1304,7 +1379,7 @@ class website {
         next();
       });
     } catch (err) {
-      console.error("[WEBSITE] [tokenTest] Fatal Error !", err.message);
+      console.error("[WEBSITE] [API] Token Fatal Error !", err.message);
       return res.status(500).json({ error: "Internal error" });
     }
   };
