@@ -174,24 +174,22 @@ class website {
     log("Listening:", this.website.listening);
     log("APIDocs:", this.website.APIDocs);
 
+    console.log("[WEBSITE] [API] Loading API Server...");
     await this.createAPI();
-    console.log("[WEBSITE] [API] API Ready!");
     await this.serverAPI();
 
+    console.log("[WEBSITE] [SERVER] Loading Main Server...");
     await this.createWebsite();
-    console.log("[WEBSITE] Website Ready!");
     this.server();
   }
 
   /** Start Website Server **/
   server () {
-    console.log("[WEBSITE] Loading Server...");
     this.website.server
       .listen(8081, "0.0.0.0", () => {
         console.log("[WEBSITE] [SERVER] Start listening on port 8081");
         console.log(`[WEBSITE] [SERVER] Available locally at http://${this.website.listening}:8081`);
         this.website.initialized = true;
-        console.log("[WEBSITE] Server Ready!");
         this.sendSocketNotification("INITIALIZED");
       })
       .on("error", (err) => {
@@ -539,7 +537,6 @@ class website {
 
   /** Start API Server **/
   serverAPI () {
-    console.log("[WEBSITE] [API] Loading API Server...");
     return new Promise((resolve) => {
       this.website.serverAPI
         .listen(8085, "127.0.0.1", () => {
