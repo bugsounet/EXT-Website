@@ -1251,20 +1251,20 @@ class website {
       const { cookies } = req;
 
       if (!cookies || !cookies["EXT-Website"]) {
-        console.error("[WEBSITE] [AUTH] Missing EXT-Website cookie");
+        console.warn("[WEBSITE] [AUTH] Missing EXT-Website cookie");
         return res.redirect("/login");
       }
 
       const accessToken = cookies["EXT-Website"];
       jwt.verify(accessToken, this.secret, (err, decoded) => {
         if (err) {
-          console.error("[WEBSITE] [AUTH] decode Error !", err.message);
+          console.warn("[WEBSITE] [AUTH] decode Error !", err.message);
           return res.redirect("/login");
         }
         const user = decoded.user;
 
         if (!user || user !== this.website.user.username) {
-          console.error(`[WEBSITE] [AUTH] User ${user} not exists`);
+          console.warn(`[WEBSITE] [AUTH] User ${user} not exists`);
           return res.redirect("/login");
         }
 
