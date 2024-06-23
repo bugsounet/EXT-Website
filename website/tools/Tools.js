@@ -123,7 +123,7 @@ async function doTools () {
     $("#Screen-Box").css("display", "block");
 
     document.getElementById("Screen-Control").onclick = function () {
-      let powerControler = EXTStatus["EXT-Screen"].power ? "OFF" : "ON"
+      let powerControler = EXTStatus["EXT-Screen"].power ? "OFF" : "ON";
       Request ("/api/EXT/Screen", "PUT", { Authorization: `Bearer ${getCurrentToken()}` }, JSON.stringify( { power : powerControler } ), "Screen", () => {
         alertify.success(translation.RequestDone);
       }, null);

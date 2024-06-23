@@ -228,7 +228,7 @@ class website {
       const ProxyRequestLogger = (proxyServer, options) => {
         proxyServer.on("proxyReq", (proxyReq, req, res) => {
           let ip = req.headers["x-forwarded-for"] || req.connection.remoteAddress;
-          let url = req.url.startsWith("/api") ? req.url : `/smarthome${req.url}`
+          let url = req.url.startsWith("/api") ? req.url : `/smarthome${req.url}`;
           log(`[${ip}] [PROXY] ${url}`);
         });
       };
@@ -557,7 +557,7 @@ class website {
             }
           });
         });
-    })
+    });
   }
 
   logAPIRequest (req, res, next) {
@@ -604,8 +604,8 @@ class website {
             errorMessage: (err, req,res) => {
               return `Body Parser failed to parse request (${err.type}) --> ${err.message}`;
             }
-          })
-        )
+          }
+        ))
 
         .use("/api/docs", swaggerUi.serve, this.website.APIDocs
           ? swaggerUi.setup(this.APIDocs, {
@@ -638,8 +638,8 @@ class website {
           res.status(404).json({ error: "You Are Lost in Space" });
         });
 
-      resolve()
-    })
+      resolve();
+    });
   }
 
   /** GET API **/
