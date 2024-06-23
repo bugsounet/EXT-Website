@@ -251,6 +251,7 @@ class WebsiteTranslations {
       this.EXTDescription["EXT-Screen"] = this.translate("EXT-Screen");
       this.EXTDescription["EXT-ScreenManager"] = this.translate("EXT-ScreenManager");
       this.EXTDescription["EXT-ScreenTouch"] = this.translate("EXT-ScreenTouch");
+      this.EXTDescription["EXT-SmartHome"] = this.translate("EXT-SmartHome");
       this.EXTDescription["EXT-Spotify"] = this.translate("EXT-Spotify");
       this.EXTDescription["EXT-SpotifyCanvasLyrics"] = this.translate("EXT-SpotifyCanvasLyrics");
       this.EXTDescription["EXT-StreamDeck"] = this.translate("EXT-StreamDeck");
@@ -429,6 +430,9 @@ class WebsiteTranslations {
       this.VALTranslate["EXT-ScreenManager_Lock"] = this.translate("VAL_EXT-ScreenManager_Lock");
       this.VALTranslate["EXT-ScreenManager_On"] = this.translate("VAL_EXT-ScreenManager_On");
       this.VALTranslate["EXT-ScreenManager_Off"] = this.translate("VAL_EXT-ScreenManager_Off");
+      this.VALTranslate["EXT-SmartHome_username"] = this.translate("VAL_EXT-SmartHome_username");
+      this.VALTranslate["EXT-SmartHome_password"] = this.translate("VAL_EXT-SmartHome_password");
+      this.VALTranslate["EXT-SmartHome_CLIENTID"] = this.translate("VAL_EXT-SmartHome_CLIENTID");
       this.VALTranslate["EXT-Spotify_Interval"] = this.translate("VAL_EXT-Spotify_Interval");
       this.VALTranslate["EXT-Spotify_Idle"] = this.translate("VAL_EXT-Spotify_Idle");
       this.VALTranslate["EXT-Spotify_BottomBar"] = this.translate("VAL_EXT-Spotify_BottomBar");
@@ -462,7 +466,7 @@ class WebsiteTranslations {
       this.VALTranslate["EXT-Volume_Sync"] = this.translate("VAL_EXT-Volume_Sync");
       this.VALTranslate["EXT-Website_username"] = this.translate("VAL_EXT-Website_username");
       this.VALTranslate["EXT-Website_password"] = this.translate("VAL_EXT-Website_password");
-      this.VALTranslate["EXT-Website_CLIENTID"] = this.translate("VAL_EXT-Website_CLIENTID");
+      this.VALTranslate["EXT-Website_APIDocs"] = this.translate("VAL_EXT-Website_APIDocs");
       this.VALTranslate["EXT-Welcome_Welcome"] = this.translate("VAL_EXT-Welcome_Welcome");
       this.VALTranslate["EXT-YouTube_Fullscreen"] = this.translate("VAL_EXT-YouTube_Fullscreen");
       this.VALTranslate["EXT-YouTube_Width"] = this.translate("VAL_EXT-YouTube_Width");
