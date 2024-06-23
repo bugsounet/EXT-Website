@@ -537,6 +537,7 @@ class website {
     });
   }
 
+  /** Start API Server **/
   serverAPI () {
     console.log("[WEBSITE] [API] Loading API Server...");
     return new Promise((resolve) => {
@@ -560,11 +561,13 @@ class website {
     });
   }
 
+  /** log any API traffic **/
   logAPIRequest (req, res, next) {
     log(`[API] [${req.method}] ${req.url}`);
     next();
   }
 
+  /** add custom API Headers **/
   customAPIHeaders (req, res, next) {
     let version = require("../package.json").api;
     res.setHeader("X-Powered-By", `EXT-Website API v${version}`);
@@ -717,6 +720,7 @@ class website {
       case "/api/config/default":
         if (!req.headers["ext"]) return res.status(400).send("Bad Request");
         try {
+          log(`[API] Request default config of ${req.headers["ext"]}`);
           let data = require(`../website/config/${req.headers["ext"]}/config.js`);
           let stringify = JSON.stringify(data.default);
           let encoded = this.encode(stringify);
@@ -729,6 +733,7 @@ class website {
       case "/api/config/schema":
         if (!req.headers["ext"]) return res.status(400).send("Bad Request");
         try {
+          log(`[API] Request schema config of ${req.headers["ext"]}`);
           let data = require(`../website/config/${req.headers["ext"]}/config.js`);
           data.schema = this.makeSchemaTranslate(data.schema, this.website.schemaTranslatation);
           data.stringify = JSON.stringify(data.schema);
@@ -753,6 +758,7 @@ class website {
         if (!req.headers["backup"]) return res.status(400).send("Bad Request");
         let availableBackups = await this.loadBackupNames();
         if (availableBackups.indexOf(req.headers["backup"]) === -1) return res.status(404).send("Not Found");
+        log(`[API] Request backup config of ${req.headers["backup"]}`);
         let file = await this.loadBackupFile(req.headers["backup"]);
         let stringify = JSON.stringify(file);
         let encoded = this.encode(stringify);
@@ -791,29 +797,29 @@ class website {
     switch (req.url) {
       case "/api/config/MM":
         if (!req.body["config"]) return res.status(400).send("Bad Request");
+        log("[API] Receiving write MagicMirror config...");
         var resultSaveConfig = {};
         try  {
           let decoded = JSON.parse(this.decode(req.body["config"]));
           resultSaveConfig = await this.saveConfig(decoded);
         } catch (e) {
-          console.log("[WEBSITE] [API] Request error", e.message);
+          log("[API] Request error", e.message);
           res.status(400).send("Bad Request");
           return;
         }
-        console.log("[WEBSITE] [API] Write config result:", resultSaveConfig);
+        log("[API] Write config result:", resultSaveConfig);
         if (resultSaveConfig.done) {
           res.json(resultSaveConfig);
           this.website.MMConfig = await this.readConfig();
-          console.log("[WEBSITE] [API] Reload config");
+          log("[API] Reload config");
         } else if (resultSaveConfig.error) {
           res.status(500).json({ error: resultSaveConfig.error });
         }
         break;
 
       case "/api/config/EXT":
-        console.log("[WEBSITE] [API] Receiving write EXT config...");
         if (!req.headers["ext"] || !req.body["config"]) return res.status(400).send("Bad Request");
-
+        log("[API] Receiving write EXT config...");
         if (this.website.EXT.indexOf(req.headers["ext"]) === -1) return res.status(404).send("Not Found");
         if (this.website.EXTInstalled.indexOf(req.headers["ext"]) === -1) return res.status(409).send("Not installed");
 
@@ -826,16 +832,16 @@ class website {
           const NewConfig = await this.configAddOrModify(dataConfig);
           resultSaveConfig = await this.saveConfig(NewConfig);
         } catch (e) {
-          console.log("[WEBSITE] [API] Request error", e.message);
+          log("[API] Request error", e.message);
           res.status(400).send("Bad Request");
           return;
         }
-        console.log("[WEBSITE] [API] Write config result:", resultSaveConfig);
+        log("[API] Write config result:", resultSaveConfig);
         if (resultSaveConfig.done) {
           res.json(resultSaveConfig);
           this.website.MMConfig = await this.readConfig();
           this.website.EXTConfigured = this.searchConfigured();
-          console.log("[WEBSITE] [API] Reload config");
+          log("[API] Reload config");
         } else if (resultSaveConfig.error) {
           res.status(500).json({ error: resultSaveConfig.error });
         }
@@ -843,20 +849,20 @@ class website {
 
       case "/api/config/webview":
         if (!this.website.webviewTag) {
-          console.log("[WEBSITE] [API] Receiving set webview...");
+          log("[API] Receiving set webview...");
           let NewConfig = await this.setWebviewTag();
           var resultSaveConfig = await this.saveConfig(NewConfig);
-          console.log("[WEBSITE] [API] Write webview config result:", resultSaveConfig);
+          log("[API] Write webview config result:", resultSaveConfig);
           if (resultSaveConfig.done) {
             res.json(resultSaveConfig);
             this.website.webviewTag = true;
             this.website.MMConfig = await this.readConfig();
-            console.log("[WEBSITE] [API] Reload config");
+            log("[API] Reload config");
           } else if (resultSaveConfig.error) {
             res.status(500).json({ error: resultSaveConfig.error });
           }
         } else {
-          console.log("[WEBSITE] [API] Already activated");
+          log("[API] Already activated");
           res.status(409).send("Already activated");
         }
         break;
@@ -866,7 +872,7 @@ class website {
         const pluginName = req.headers["ext"];
         if (this.website.EXTInstalled.indexOf(pluginName) === -1) {
           if (this.website.EXT.indexOf(pluginName) > -1) {
-            console.log("[WEBSITE] [API] Request installation:",pluginName);
+            log("[API] Request installation:",pluginName);
             var modulePath = `${this.root_path}/modules/`;
             var Command = `cd ${modulePath} && git clone https://github.com/bugsounet/${pluginName} && cd ${pluginName} && npm install`;
 
@@ -876,18 +882,18 @@ class website {
                 res.status(500).json({ error: `Error on install ${pluginName}` });
               } else {
                 this.website.EXTInstalled = this.searchInstalled();
-                console.log("[WEBSITE] [API] [INSTALL] [DONE]", pluginName);
+                log("[API] [INSTALL] [DONE]", pluginName);
                 res.json({ done: "ok" });
               }
             });
             child.stdout.pipe(process.stdout);
             child.stderr.pipe(process.stdout);
           } else {
-            console.log(`[WEBSITE] [API] [INSTALL] EXT Not Found: ${pluginName}`);
+            log(`[API] [INSTALL] EXT Not Found: ${pluginName}`);
             res.status(404).send("Not Found");
           }
         } else {
-          console.log(`[WEBSITE] [API] [INSTALL] EXT Already Installed: ${pluginName}`);
+          log(`[API] [INSTALL] EXT Already Installed: ${pluginName}`);
           res.status(409).send("Already installed");
         }
         break;
@@ -896,6 +902,7 @@ class website {
         if (!this.website.EXTStatus["EXT-Volume"].hello) return res.status(404).send("Not Found");
         let speaker = req.body["volume"];
         if (typeof(speaker) !== "number" || speaker < 0 || speaker > 100 || isNaN(speaker)) return res.status(400).send("Bad Request");
+        log("[API] Request speaker volume change to", speaker);
         this.sendSocketNotification("SendNoti", { noti: "EXT_VOLUME-SPEAKER_SET", payload: speaker|| "0" });
         res.json({ done: "ok" });
         break;
@@ -904,6 +911,7 @@ class website {
         if (!this.website.EXTStatus["EXT-Volume"].hello) return res.status(404).send("Not Found");
         let recorder = req.body["volume"];
         if (typeof(recorder) !== "number" || recorder < 0 || recorder > 100) return res.status(400).send("Bad Request");
+        log("[API] Request recorder volume change to", recorder);
         this.sendSocketNotification("SendNoti", { noti: "EXT_VOLUME-RECORDER_SET", payload: recorder|| "0" });
         res.json({ done: "ok" });
         break;
@@ -913,6 +921,7 @@ class website {
         if (!req.body["radio"]) return res.status(400).send("Bad Request");
         var allRadio = Object.keys(this.website.radio);
         if (allRadio.indexOf(req.body["radio"]) === -1) return res.status(404).send("Not Found");
+        log("[API] Request radio change to", req.body["radio"]);
         this.sendSocketNotification("SendNoti", { noti: "EXT_RADIO-PLAY", payload: req.body["radio"] });
         res.json({ done: "ok" });
         break;
@@ -921,6 +930,7 @@ class website {
         if (!this.website.EXTStatus["EXT-Updates"].hello) return res.status(404).send("Not Found");
         let updates = this.filterObject(this.website.EXTStatus["EXT-Updates"].module, "canBeUpdated", true);
         if (!updates.length) return res.status(404).send("Not Found");
+        log("[API] Request send updates");
         this.sendSocketNotification("SendNoti", "EXT_UPDATES-UPDATE");
         res.json({ done: "ok" });
         break;
@@ -928,6 +938,7 @@ class website {
       case "/api/EXT/Spotify/play":
         if (!this.website.EXTStatus["EXT-Spotify"].hello) return res.status(404).send("Not Found");
         if (this.website.EXTStatus["EXT-Spotify"].play) return res.status(409).send("Already playing");
+        log("[API] Request send Spotify play");
         this.sendSocketNotification("SendNoti", "EXT_SPOTIFY-PLAY");
         res.json({ done: "ok" });
         break;
@@ -935,12 +946,14 @@ class website {
       case "/api/EXT/Spotify/pause":
         if (!this.website.EXTStatus["EXT-Spotify"].hello) return res.status(404).send("Not Found");
         if (this.website.EXTStatus["EXT-Spotify"].play) return res.status(409).send("Already pausing");
+        log("[API] Request send Spotify pause");
         this.sendSocketNotification("SendNoti", "EXT_SPOTIFY-PAUSE");
         res.json({ done: "ok" });
         break;
 
       case "/api/EXT/Spotify/toggle":
         if (!this.website.EXTStatus["EXT-Spotify"].hello) return res.status(404).send("Not Found");
+        log("[API] Request send Spotify toogle");
         this.sendSocketNotification("SendNoti", "EXT_SPOTIFY-PLAY-TOGGLE");
         res.json({ done: "ok" });
         break;
@@ -948,6 +961,7 @@ class website {
       case "/api/EXT/Spotify/stop":
         if (!this.website.EXTStatus["EXT-Spotify"].hello) return res.status(404).send("Not Found");
         if (!this.website.EXTStatus["EXT-Spotify"].play) return res.status(409).send("Not playing");
+        log("[API] Request send Spotify stop");
         this.sendSocketNotification("SendNoti", "EXT_SPOTIFY-STOP");
         res.json({ done: "ok" });
         break;
@@ -955,6 +969,7 @@ class website {
       case "/api/EXT/Spotify/next":
         if (!this.website.EXTStatus["EXT-Spotify"].hello) return res.status(404).send("Not Found");
         if (!this.website.EXTStatus["EXT-Spotify"].play) return res.status(409).send("Not playing");
+        log("[API] Request send Spotify next");
         this.sendSocketNotification("SendNoti", "EXT_SPOTIFY-NEXT");
         res.json({ done: "ok" });
         break;
@@ -962,6 +977,7 @@ class website {
       case "/api/EXT/Spotify/previous":
         if (!this.website.EXTStatus["EXT-Spotify"].hello) return res.status(404).send("Not Found");
         if (!this.website.EXTStatus["EXT-Spotify"].play) return res.status(409).send("Not playing");
+        log("[API] Request send Spotify previous");
         this.sendSocketNotification("SendNoti", "EXT_SPOTIFY-PREVIOUS");
         res.json({ done: "ok" });
         break;
@@ -977,6 +993,7 @@ class website {
           query: query,
           random: false
         };
+        log("[API] Request send Spotify search:", pl);
         this.sendSocketNotification("SendNoti", { noti: "EXT_SPOTIFY-SEARCH", payload: pl });
         res.json({ done: "ok" });
         break;
@@ -985,6 +1002,7 @@ class website {
         if (!this.website.EXTStatus["EXT-YouTube"].hello) return res.status(404).send("Not Found");
         let YTquery = req.body["query"];
         if (!YTquery || typeof(YTquery) !== "string") return res.status(400).send("Bad Request");
+        log("[API] Request send youtube search:", YTquery);
         this.sendSocketNotification("SendNoti", { noti: "EXT_YOUTUBE-SEARCH", payload: YTquery });
         res.json({ done: "ok" });
         break;
@@ -993,6 +1011,7 @@ class website {
         if (!this.website.EXTStatus["EXT-Screen"].hello) return res.status(404).send("Not Found");
         let power = req.body["power"];
         if (!power || typeof(power) !== "string") return res.status(400).send("Bad Request");
+        log("[API] Request send screen power:", power);
         if (power === "OFF") {
           if (!this.website.EXTStatus["EXT-Screen"].power) return res.status(409).send("Already OFF");
           this.sendSocketNotification("SendNoti", "EXT_SCREEN-FORCE_END");
@@ -1013,6 +1032,7 @@ class website {
         if (!TV || typeof(TV) !== "string") return res.status(400).send("Bad Request");
         var allTV = Object.keys(this.website.freeTV);
         if (allTV.indexOf(TV) === -1) return res.status(404).send("Not Found");
+        log("[API] Request send FreeboxTV channel:", TV);
         this.sendSocketNotification("SendNoti", { noti: "EXT_FREEBOXTV-PLAY", payload: TV });
         res.json({ done: "ok" });
         break;
@@ -1021,13 +1041,14 @@ class website {
         if (!req.headers["backup"]) return res.status(400).send("Bad Request");
         let availableBackups = await this.loadBackupNames();
         if (availableBackups.indexOf(req.headers["backup"]) === -1) return res.status(404).send("Not Found");
+        log("[API] Request backup:", req.headers["backup"]);
         let file = await this.loadBackupFile(req.headers["backup"]);
         var resultSaveConfig = await this.saveConfig(file);
-        console.log("[WEBSITE] [API] Write config result:", resultSaveConfig);
+        log("[API] Write config result:", resultSaveConfig);
         if (resultSaveConfig.done) {
           res.json(resultSaveConfig);
           this.website.MMConfig = await this.readConfig();
-          console.log("[WEBSITE] [API] Reload config");
+          log("[API] Reload config");
         } else if (resultSaveConfig.error) {
           res.status(500).json({ error: resultSaveConfig.error });
         }
@@ -1035,12 +1056,12 @@ class website {
 
       case "/api/backups/external":
         try  {
-          console.log("[WEBSITE] [API] Receiving External backup...");
+          console.log("[API] Receiving External backup...");
           let config = req.body["config"];
           let decoded = JSON.parse(this.decode(config));
           var linkExternalBackup = await this.saveExternalConfig(decoded);
           if (linkExternalBackup.data) {
-            console.log("[WEBSITE] [API] Generate link:", linkExternalBackup.data);
+            log("[API] Generate link:", linkExternalBackup.data);
             setTimeout(() => {
               this.deleteDownload(linkExternalBackup.data);
             }, 1000 * 60);
@@ -1059,7 +1080,7 @@ class website {
             res.status(500);
           }
         } catch (e) {
-          console.log("[WEBSITE] [API] Request error", e.message);
+          console.error("[WEBSITE] [API] Request error", e.message);
           res.status(400).send("Bad Request");
         }
         break;
@@ -1115,6 +1136,7 @@ class website {
         if (!this.website.EXTStatus["GA_Ready"]) return res.status(404).send("Not Found");
         let query = req.body["query"];
         if (typeof(query) !== "string" || query.length < 5 ) return res.status(400).send("Bad Request");
+        log("[API] Request MMM-GoogleAssistant query:", query);
         this.sendSocketNotification("SendNoti", { noti: "GA_ACTIVATE", payload: { type: "TEXT", key: query } });
         res.json({ done: "ok" });
         break;
@@ -1123,6 +1145,7 @@ class website {
         if (!this.website.EXTStatus["EXT-Alert"].hello) return res.status(404).send("Not Found");
         let alert = req.body["alert"];
         if (typeof(alert) !== "string" || alert.length < 5 ) return res.status(400).send("Bad Request");
+        log("[API] Request send Alert:", alert);
         this.sendSocketNotification("SendNoti", {
           noti: "EXT_ALERT",
           payload: {
@@ -1141,7 +1164,7 @@ class website {
         let config = req.body["config"];
         try  {
           let decoded = this.decode(req.body["config"]);
-          console.log("[WEBSITE] [API] Receiving External backup...");
+          log("[API] Receiving External backup...");
           var transformExternalBackup = await this.transformExternalBackup(decoded);
           if (transformExternalBackup.error) {
             res.status(500).json({ error: transformExternalBackup.error });
@@ -1151,7 +1174,7 @@ class website {
             res.json({ config: encode });
           }
         } catch (e) {
-          console.log("[WEBSITE] [API] Request error", e.message);
+          log("[API] Request error", e.message);
           res.status(400).send("Bad Request");
         }
         break;
@@ -1165,29 +1188,29 @@ class website {
   async DeleteAPI (req, res) {
     switch (req.url) {
       case "/api/config/EXT":
-        console.log("[WEBSITE] [API] Receiving delete EXT config...");
         if (!req.headers["ext"]) return res.status(400).send("Bad Request");
         const plugin = this.checkPluginInConfig(req.headers["ext"]);
         if (!plugin) return res.status(404).send("Not Found");
+        log("[API] Receiving delete EXT config...", req.headers["ext"]);
         const NewConfig = await this.configDelete(req.headers["ext"]);
         const resultSaveConfig = await this.saveConfig(NewConfig);
-        console.log("[WEBSITE] [API] Write config result:", resultSaveConfig);
+        log("[API] Write config result:", resultSaveConfig);
         if (resultSaveConfig.done) {
           res.json(resultSaveConfig);
           this.website.MMConfig = await this.readConfig();
           this.website.EXTConfigured = this.searchConfigured();
-          console.log("[WEBSITE] [API] Reload config");
+          log("[API] Reload config");
         } else if (resultSaveConfig.error) {
           res.status(500).json({ error: resultSaveConfig.error });
         }
         break;
 
       case "/api/EXT":
-        console.log("[WEBSITE] [API] Receiving delete EXT...");
+        log("[API] Receiving delete EXT...");
         if (!req.headers["ext"]) return res.status(400).send("Bad Request");
         const pluginName = req.headers["ext"];
         if (this.website.EXTInstalled.indexOf(pluginName) > -1 && this.website.EXT.indexOf(pluginName) > -1) {
-          console.log("[WEBSITE] Request delete:", pluginName);
+          log("[API] Request delete:", pluginName);
           var modulePath = `${this.root_path}/modules/`;
           var Command = `cd ${modulePath} && rm -rfv ${pluginName}`;
           var child = exec(Command, { cwd: modulePath }, (error, stdout, stderr) => {
@@ -1196,22 +1219,22 @@ class website {
               res.status(500).json({ error: `Error on delete ${pluginName}` });
             } else {
               this.website.EXTInstalled = this.searchInstalled();
-              console.log("[WEBSITE] [API] [DELETE] [DONE]", pluginName);
+              log("[API] [DELETE] [DONE]", pluginName);
               res.json({ done: "ok" });
             }
           });
           child.stdout.pipe(process.stdout);
           child.stderr.pipe(process.stdout);
         } else {
-          console.log(`[WEBSITE] [API] [DELETE] EXT Not Found: ${pluginName}`);
+          log(`[API] [DELETE] EXT Not Found: ${pluginName}`);
           res.status(404).send("Not Found");
         }
         break;
 
       case "/api/backups":
-        console.log("[WEBSITE] [API] Receiving delete backup demand...");
+        log("[API] Receiving delete backup demand...");
         let deleteBackup = await this.deleteBackup();
-        console.log("[WEBSITE] Delete backup result:", deleteBackup);
+        log("[API] Delete backup result:", deleteBackup);
         res.json(deleteBackup);
         break;
 
@@ -1389,7 +1412,6 @@ class website {
     return btoa(input);
   }
 
-
   // decode rule
   decode (input) {
     return atob(input);
@@ -1426,6 +1448,7 @@ class website {
           resolve(TMPConfig);
         }
       } catch (e) {
+        console.error("[WEBSITE] [DELETE] Error on reading file", e.message);
         resolve ( { error: "Error on reading file" } );
       }
     });
@@ -1463,7 +1486,7 @@ class website {
       });
       return Configured.sort();
     } catch (e) {
-      console.log(`[WEBSITE] Error! ${e}`);
+      console.error(`[WEBSITE] Error! ${e}`);
       return Configured.sort();
     }
   }
@@ -1523,9 +1546,9 @@ class website {
             resolve({ error: "Error when writing file" });
             return console.error("[WEBSITE] [WRITE] error", error);
           }
-          console.log("[WEBSITE] Saved TMP configuration!");
-          console.log("[WEBSITE] Backup saved in", backupPath);
-          console.log("[WEBSITE] Check Function in config and revive it...");
+          log("Saved TMP configuration!");
+          log("Backup saved in", backupPath);
+          log("Check Function in config and revive it...");
 
           const readFileLineByLine = (inputFile, outputFile) => {
             var FunctionSearch = new RegExp(/(.*)(`|')\[FUNCTION\](.*)(`|')/, "g");
@@ -1574,7 +1597,7 @@ class website {
       });
       destination.on("error", (error) => {
         resolve({ error: "Error when writing file" });
-        console.log("[WEBSITE] [WRITE]", error);
+        console.error("[WEBSITE] [WRITE]", error);
       });
     });
   }
@@ -1652,7 +1675,7 @@ class website {
         var tmpFile = `${this.WebsiteModulePath}/tmp/config.${this.timeStamp()}.tmp`;
         fs.writeFile(tmpFile, backup, async (err) => {
           if (err) {
-            console.log("[WEBSITE] [externalBackup]", err);
+            console.error("[WEBSITE] [externalBackup]", err);
             resolve({ error: "Error when writing external tmp backup file" });
           } else {
             const result = await this.readTMPBackupConfig(tmpFile);
@@ -1790,7 +1813,6 @@ class website {
         if (network.default) {
           resolve(network.ip);
           found = 1;
-
         }
       });
       if (!found) resolve("127.0.0.1");
@@ -1876,21 +1898,6 @@ class website {
       };
       let MMConfig = this.configMerge({}, this.website.MMConfig, options);
       resolve(MMConfig);
-    });
-  }
-
-  /** Restart or Die the Pi **/
-  SystemRestart () {
-    console.log("[WEBSITE] Restarting OS...");
-    exec("sudo reboot now", (err, stdout, stderr) => {
-      if (err) console.error("[WEBSITE] Error when restarting OS!", err);
-    });
-  }
-
-  SystemDie () {
-    console.log("[WEBSITE] Shutdown OS...");
-    exec("sudo shutdown now", (err, stdout, stderr) => {
-      if (err) console.error("[WEBSITE] Error when Shutdown OS!", err);
     });
   }
 
