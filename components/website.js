@@ -638,6 +638,7 @@ class website {
           res.status(404).json({ error: "You Are Lost in Space" });
         });
 
+      console.log(`[WEBSITE] [API] API v${require("../package.json").api}`);
       resolve();
     });
   }
@@ -1287,19 +1288,19 @@ class website {
     };
 
     if (!authorization) {
-      console.warn(`[WEBSITE] [${ip}] Bad Login: missing authorization type`);
+      console.warn(`[WEBSITE] ${api ? "[API] " : ""}[${ip}] Bad Login: missing authorization type`);
       APIResult.description = "Missing authorization type";
       return res.status(401).json(APIResult);
     };
 
     if (params[0] !== "Basic") {
-      console.warn(`[WEBSITE] [${ip}] Bad Login: Basic authorization type only`);
+      console.warn(`[WEBSITE] ${api ? "[API] " : ""}[${ip}] Bad Login: Basic authorization type only`);
       APIResult.description = "Authorization type Basic only";
       return res.status(401).json(APIResult);
     }
 
     if (!params[1]) { // must never happen
-      console.warn(`[WEBSITE] [${ip}] Bad Login: missing Basic params`);
+      console.warn(`[WEBSITE] ${api ? "[API] " : ""}[${ip}] Bad Login: missing Basic params`);
       APIResult.description = "Missing Basic params";
       return res.status(401).json(APIResult);
     }
@@ -1316,8 +1317,9 @@ class website {
         { expiresIn: "1h" }
       );
 
+      console.log(`[WEBSITE] ${api ? "[API] " : ""}[${ip}] Welcome ${username}, happy to serve you!`);
+
       if (api) {
-        console.log(`[WEBSITE] [API] [${ip}] Welcome ${username}, happy to serve you!`);
         APIResult = {
           access_token: token,
           token_type: "Bearer",
@@ -1325,7 +1327,6 @@ class website {
         };
         res.json(APIResult);
       } else {
-        console.log(`[WEBSITE] [${ip}] Welcome ${username}, happy to serve you!`);
         res.cookie("EXT-Website", token, {
           httpOnly: true,
           //secure: true,
@@ -1334,7 +1335,7 @@ class website {
         res.json({ session: token });
       }
     } else {
-      console.warn(`[WEBSITE] [${ip}] Bad Login: Invalid username or password`);
+      console.warn(`[WEBSITE] ${api ? "[API] " : ""}[${ip}] Bad Login: Invalid username or password`);
       APIResult.description = "Invalid username or password";
       if (api) res.status(401).json(APIResult);
       else res.status(403).json(APIResult);
