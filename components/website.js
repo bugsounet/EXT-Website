@@ -607,17 +607,24 @@ class website {
           }
         ))
 
-        .use("/api/docs", swaggerUi.serve, this.website.APIDocs
-          ? swaggerUi.setup(this.APIDocs, {
-            swaggerOptions: {
-              defaultModelsExpandDepth: -1
-            },
-            customCss: ".swagger-ui .topbar { display: none }",
-            customCssUrl: "/assets/css/SwaggerDark.css",
-            customSiteTitle: "EXT-Website API",
-            customfavIcon: "/assets/img/FavIcon.png"
-          })
-          : (req,res,next) => res.redirect("/404"))
+        .use("/api/docs", swaggerUi.serve, (req,res,next) => {
+          if (this.website.APIDocs) {
+            let remoteUrl = `${req.headers["x-forwarded-proto"] === "https" ? "https" : "http"}://${req.get("host")}`;
+            this.APIDocs.servers[2] = {
+              url: remoteUrl
+            };
+            swaggerUi.setup(this.APIDocs, {
+              swaggerOptions: {
+                defaultModelsExpandDepth: -1
+              },
+              customCss: ".swagger-ui .topbar { display: none }",
+              customCssUrl: "/assets/css/SwaggerDark.css",
+              customSiteTitle: "EXT-Website API",
+              customfavIcon: "/assets/img/FavIcon.png"
+            })(req,res,next);
+          }
+          //else { (req,res,next) => res.redirect("/404") }
+        })
 
         .get("/api", (req,res) => {
           res.json({ api: "OK" });
