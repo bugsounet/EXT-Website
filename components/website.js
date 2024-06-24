@@ -613,6 +613,7 @@ class website {
               defaultModelsExpandDepth: -1
             },
             customCss: ".swagger-ui .topbar { display: none }",
+            customCssUrl: '/assets/css/SwaggerDark.css',
             customSiteTitle: "EXT-Website API",
             customfavIcon: "/assets/img/FavIcon.png"
           })
