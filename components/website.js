@@ -610,9 +610,15 @@ class website {
         .use("/api/docs", swaggerUi.serve, (req,res,next) => {
           if (this.website.APIDocs) {
             let remoteUrl = `${req.headers["x-forwarded-proto"] === "https" ? "https" : "http"}://${req.get("host")}`;
-            this.APIDocs.servers[2] = {
-              url: remoteUrl
-            };
+            if (this.APIDocs.servers[1].url !== remoteUrl) {
+              this.APIDocs.servers[2] = {
+                url: remoteUrl
+              };
+            } else {
+              // delete old value
+              this.APIDocs.servers[2] = {};
+              this.APIDocs.servers.pop();
+            }
             swaggerUi.setup(this.APIDocs, {
               swaggerOptions: {
                 defaultModelsExpandDepth: -1
