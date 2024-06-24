@@ -623,7 +623,7 @@ class website {
               customfavIcon: "/assets/img/FavIcon.png"
             })(req,res,next);
           }
-          //else { (req,res,next) => res.redirect("/404") }
+          else res.redirect("/404");
         })
 
         .get("/api", (req,res) => {
