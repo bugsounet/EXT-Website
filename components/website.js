@@ -626,7 +626,9 @@ class website {
             }
             swaggerUi.setup(this.APIDocs, {
               swaggerOptions: {
-                defaultModelsExpandDepth: -1
+                defaultModelsExpandDepth: -1,
+                docExpansion: "none",
+                displayRequestDuration: true
               },
               customCss: ".swagger-ui .topbar { display: none }",
               customCssUrl: "/assets/css/SwaggerDark.css",
