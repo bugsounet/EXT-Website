@@ -263,7 +263,7 @@ function forceMobileRotate () {
 }
 
 async function doTranslateNavBar () {
-  let Docs = await getAPIDocs()
+  let Docs = await getAPIDocs();
   $("#Home").text(translation.Home);
   $("#Plugins").text(translation.Plugins);
   $("#Terminal").text(translation.Terminal);
@@ -272,7 +272,7 @@ async function doTranslateNavBar () {
   $("#About").text(translation.About);
   $("#System").text(translation.System);
   $("#Logout").text(translation.Logout);
-  if (!Docs) $("#APIDocsItem").hide()
+  if (!Docs) $("#APIDocsItem").hide();
 
   $("#accordionSidebar").removeClass("invisible");
   $("li.active").removeClass("active");
