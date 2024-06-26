@@ -333,6 +333,7 @@ class website {
         .use("/Reboot.js", express.static(`${this.WebsitePath}/tools/Reboot.js`))
         .use("/Fetch.js", express.static(`${this.WebsitePath}/tools/Fetch.js`))
         .use("/3rdParty.js", express.static(`${this.WebsitePath}/tools/3rdParty.js`))
+        .use("/APIDocs.js", express.static(`${this.WebsitePath}/tools/APIDocs.js`))
         .use("/assets", express.static(`${this.WebsitePath}/assets`, options))
         .use("/jsoneditor", express.static(`${this.WebsiteModulePath}/node_modules/jsoneditor`))
         .use("/xterm", express.static(`${this.WebsiteModulePath}/node_modules/xterm`))
@@ -494,6 +495,10 @@ class website {
           res.sendFile(`${this.WebsitePath}/3rdpartymodules.html`);
         })
 
+        .get("/APIDocs", (req,res,next) => this.auth(req,res,next), (req, res) => {
+          res.sendFile(`${this.WebsitePath}/APIDocs.html`);
+        })
+
         .get("/Restart", (req,res,next) => this.auth(req,res,next), (req, res) => {
           res.sendFile(`${this.WebsitePath}/restarting.html`);
         })
@@ -633,7 +638,7 @@ class website {
         })
 
         .get("/api", (req,res) => {
-          res.json({ api: "OK" });
+          res.json({ api: "OK", docs: this.website.APIDocs });
         })
 
         .get("/api/translations/login", (req, res) => {

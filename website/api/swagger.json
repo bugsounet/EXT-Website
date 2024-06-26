@@ -2919,10 +2919,15 @@
           "api": {
             "type": "string",
             "description": "API state"
+          },
+          "docs": {
+            "type" : "string",
+            "description" : "APi documentation enabled"
           }
         },
         "example": {
-          "api": "OK"
+          "api": "OK",
+          "docs": false
         }
       },
       "login": {

@@ -17,6 +17,12 @@ function getVersion () {
   });
 }
 
+function getAPIDocs () {
+  return new Promise((resolve) => {
+    Request ("/api", "GET", null , null, "API", (api) => resolve(api.docs), null);
+  });
+}
+
 function checkSystem () {
   return new Promise((resolve) => {
     Request ("/api/system/sysInfo", "GET", { Authorization: `Bearer ${getCurrentToken()}` }, null, "sysInfo", (system) => resolve(system), null);
@@ -256,7 +262,8 @@ function forceMobileRotate () {
   PleaseRotate.start(Options);
 }
 
-function doTranslateNavBar () {
+async function doTranslateNavBar () {
+  let Docs = await getAPIDocs()
   $("#Home").text(translation.Home);
   $("#Plugins").text(translation.Plugins);
   $("#Terminal").text(translation.Terminal);
@@ -265,6 +272,7 @@ function doTranslateNavBar () {
   $("#About").text(translation.About);
   $("#System").text(translation.System);
   $("#Logout").text(translation.Logout);
+  if (!Docs) $("#APIDocsItem").hide()
 
   $("#accordionSidebar").removeClass("invisible");
   $("li.active").removeClass("active");
@@ -278,6 +286,7 @@ function doTranslateNavBar () {
     || path === "/Tools"
     || path === "/System"
     || path === "/About"
+    || path === "/APIDocs"
   ) $(`a[href="${path}"]`).removeAttr("href");
 
   if (path === "/install"
