@@ -2,7 +2,7 @@
   "openapi": "3.0.0",
   "info": {
     "description": "Control MMM-GoogleAssistant from API",
-    "version": "1.0.0",
+    "version": "0.0.0",
     "title": "EXT-Website API"
   },
   "servers": [

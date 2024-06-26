@@ -614,6 +614,7 @@ class website {
 
         .use("/api/docs", swaggerUi.serve, (req,res,next) => {
           if (this.website.APIDocs) {
+            this.APIDocs.info.version = require("../package.json").api;
             let remoteUrl = `${req.headers["x-forwarded-proto"] === "https" ? "https" : "http"}://${req.get("host")}`;
             if (this.APIDocs.servers[1].url !== remoteUrl) {
               this.APIDocs.servers[2] = {
