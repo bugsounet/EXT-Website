@@ -7,7 +7,7 @@
   "main": "EXT-Website.js",
   "scripts": {
     "preinstall": "installer/preinstall.sh",
-    "postinstall": "installer/postinstall.sh -b -r -m",
+    "postinstall": "installer/postinstall.sh -r -m",
     "update": "installer/update.sh",
     "rebuild": "installer/rebuild.sh",
     "reset": "git reset --hard",
