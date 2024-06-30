@@ -546,6 +546,7 @@ class website {
       this.website.serverAPI
         .listen(8085, "127.0.0.1", () => {
           console.log("[WEBSITE] [API] Start listening on port 8085");
+          this.sendSocketNotification("SendNoti", "EXT_WEBSITE-API_STARTED");
           resolve();
         })
         .on("error", (err) => {
