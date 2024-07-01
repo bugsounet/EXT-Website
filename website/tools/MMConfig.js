@@ -1,6 +1,4 @@
-/* global window, getGatewayVersion, loadTranslation, $, forceMobileRotate, doTranslateNavBar, alertify, loadMMConfig, JSONEditor, loadBackupNames, loadBackupConfig, FileReaderJS, saveAs */
-
-/** EXT tools
+/** MMConfig
 * @bugsounet
 **/
 
@@ -12,14 +10,11 @@ var PleaseRotateOptions = {
 
 // define all vars
 var translation = {};
-var versionGW = {};
 
 // Load rules
 window.addEventListener("load", async (event) => {
-  versionGW = await getGatewayVersion();
   translation = await loadTranslation();
 
-  $("html").prop("lang", versionGW.lang);
   forceMobileRotate();
   switch (window.location.pathname) {
     case "/MMConfig":
@@ -129,74 +124,74 @@ async function EditMMConfigJSEditor () {
   document.getElementById("load").onclick = function () {
     $("#load").css("display", "none");
     $("#wait").css("display", "block");
-    $.post("/loadBackup", { data: conf })
-      .done(function (back) {
-        if (back.error) {
-          $("#wait").css("display", "none");
-          $("#error").css("display", "block");
-          $("#alert").removeClass("invisible");
-          $("#alert").removeClass("alert-success");
-          $("#alert").addClass("alert-danger");
-          $("#messageText").text(back.error);
-        } else {
-          $("#wait").css("display", "none");
-          $("#done").css("display", "block");
-          $("#alert").removeClass("invisible");
-          $("#messageText").text(translation.Restart);
-        }
-      })
-      .fail(function (err) {
-        alertify.error(`[loadBackup] Server return Error ${err.status} (${err.statusText})`);
-      });
+
+    Request ("/api/backups/file", "PUT", { Authorization: `Bearer ${getCurrentToken()}`, backup: conf }, null, "loadBackup", () => {
+      $("#wait").css("display", "none");
+      $("#done").css("display", "block");
+      $("#alert").removeClass("invisible");
+      $("#messageText").text(translation.Restart);
+    }, (err) => {
+      $("#wait").css("display", "none");
+      $("#error").css("display", "block");
+      $("#alert").removeClass("invisible");
+      $("#alert").removeClass("alert-success");
+      $("#alert").addClass("alert-danger");
+      let error = err.responseJSON?.error ? err.responseJSON.error : (err.responseText ? err.responseText : err.statusText);
+      if (!err.status) {
+        $("#messageText").text(err);
+        alertify.error("Connexion Lost!");
+      } else {
+        $("#messageText").text(err.statusText);
+        alertify.error(`[loadBackup] Server return Error ${err.status} (${error})`);
+      }
+    });
   };
   document.getElementById("save").onclick = function () {
     let data = editor.getText();
     $("#save").css("display", "none");
     $("#wait").css("display", "block");
-    $.post("/writeConfig", { data: data })
-      .done(function (back) {
-        if (back.error) {
-          $("#wait").css("display", "none");
-          $("#error").css("display", "block");
-          $("#alert").removeClass("invisible");
-          $("#alert").removeClass("alert-success");
-          $("#alert").addClass("alert-danger");
-          $("#messageText").text(back.error);
-        } else {
-          $("#wait").css("display", "none");
-          $("#done").css("display", "block");
-          $("#alert").removeClass("invisible");
-          $("#messageText").text(translation.Restart);
-        }
-      })
-      .fail(function (err) {
-        alertify.error(`[writeConfig] Server return Error ${err.status} (${err.statusText})`);
-      });
+    let encode = btoa(data);
+
+    Request ("api/config/MM", "PUT", { Authorization: `Bearer ${getCurrentToken()}` }, JSON.stringify({ config: encode }), "writeConfig", () => {
+      $("#wait").css("display", "none");
+      $("#done").css("display", "block");
+      $("#alert").removeClass("invisible");
+      $("#messageText").text(translation.Restart);
+    }, (err) => {
+      $("#wait").css("display", "none");
+      $("#error").css("display", "block");
+      $("#alert").removeClass("invisible");
+      $("#alert").removeClass("alert-success");
+      $("#alert").addClass("alert-danger");
+      let error = err.responseJSON?.error ? err.responseJSON.error : (err.responseText ? err.responseText : err.statusText);
+      if (!err.status) {
+        $("#messageText").text(err);
+        alertify.error("Connexion Lost!");
+      } else {
+        $("#messageText").text(err.statusText);
+        alertify.error(`[writeConfig] Server return Error ${err.status} (${error})`);
+      }
+    });
   };
   FileReaderJS.setupInput(document.getElementById("fileToLoad"), {
     readAsDefault: "Text",
     on: {
       load (event, file) {
         if (event.target.result) {
-          $.post("/readExternalBackup", { data: event.target.result })
-            .done(function (back) {
-              if (back.error) {
-                alertify.error(`[readExternalBackup]${back.error}`);
-              } else {
-                editor.update(back.data);
-                editor.refresh();
-                alertify.success("External Config Loaded !");
-              }
-            })
-            .fail(function (err) {
-              alertify.error(`[readExternalBackup] Server return Error ${err.status} (${err.statusText})`);
-            });
+          let encode = btoa(event.target.result);
+          Request ("/api/backups/external", "POST", { Authorization: `Bearer ${getCurrentToken()}` }, JSON.stringify({ config: encode }), "readExternalBackup", (back) => {
+            let decode = atob(back.config);
+            let config = JSON.parse(decode);
+            editor.update(config);
+            editor.refresh();
+            alertify.success("External Config Loaded !");
+          }, null);
         }
       }
     }
   });
   document.getElementById("externalSave").onclick = function () {
-    alertify.prompt("MMM-GoogleAssistant", "Save config file as:", "config", function (evt, value) {
+    alertify.prompt("EXT-Website", "Save config file as:", "config", function (evt, value) {
       let fileName = value;
       if (fileName.indexOf(".") === -1) {
         fileName = `${fileName}.js`;
@@ -207,22 +202,15 @@ async function EditMMConfigJSEditor () {
           fileName = `${fileName.split(".")[0]}.js`;
         }
       }
-      var configToSave = editor.get();
-      $.post("/saveExternalBackup", { data: configToSave })
-        .done(function (back) {
-          if (back.error) {
-            alertify.error(back.error);
-          } else {
-            alertify.success("Download is ready !");
-            $.get(`download/${back.data}`, function (data) {
-              const blob = new Blob([data], { type: "application/javascript;charset=utf-8" });
-              saveAs(blob, fileName);
-            });
-          }
-        })
-        .fail(function (err) {
-          alertify.error(`[readExternalBackup] Server return Error ${err.status} (${err.statusText})`);
+      var configToSave = editor.getText();
+      let encode = btoa(configToSave);
+      Request ("/api/backups/external", "PUT", { Authorization: `Bearer ${getCurrentToken()}` }, JSON.stringify({ config: encode }), "saveExternalBackup", (back) => {
+        alertify.success("Download is ready !");
+        $.get(`${back.file}`, function (data) {
+          const blob = new Blob([data], { type: "application/javascript;charset=utf-8" });
+          saveAs(blob, fileName);
         });
+      }, null);
     }, function () {
       // do nothing
     });

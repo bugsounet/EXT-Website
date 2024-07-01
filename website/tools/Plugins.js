@@ -1,8 +1,4 @@
-/* global window, getGatewayVersion, loadTranslation, $, forceMobileRotate, doTranslateNavBar, loadDataAllEXT, loadDataDescriptionEXT, loadDataInstalledEXT,
- * loadDataConfiguredEXT, alert, io, Terminal, FitAddon, alertify, jQuery, loadPluginConfig, loadPluginTemplate, JSONEditor, loadPluginCurrentConfig,
- * loadPluginTemplate, configMerge */
-
-/** EXT tools
+/** Plugins
 * @bugsounet
 **/
 
@@ -18,14 +14,13 @@ var AllEXT = [];
 var DescEXT = {};
 var InstEXT = [];
 var ConfigEXT = [];
-var versionGW = {};
+var version = {};
 
 // Load rules
 window.addEventListener("load", async (event) => {
-  versionGW = await getGatewayVersion();
+  version = await getVersion();
   translation = await loadTranslation();
 
-  $("html").prop("lang", versionGW.lang);
   forceMobileRotate();
   switch (window.location.pathname) {
     case "/EXT":
@@ -63,25 +58,27 @@ async function createEXTTable () {
   Content += `<table id="ipi-table" class="table table tablesorter"><thead class="thead-dark"><tr><th>${translation.Plugins_Table_Name}</th><th class="sorter-false">${translation.Plugins_Table_Description}</th><th class="filter-false">${translation.Plugins_Table_Actions}</th><th class="filter-false">${translation.Plugins_Table_Configuration}</th></tr></thead><tbody id="EXT">`;
 
   AllEXT.forEach((pluginsName) => {
-    // wiki page link
-    Content += `<tr><td class="text-nowrap fs-6 text-start click" data-bs-toggle="tooltip" style="cursor: pointer;" data-href="https://wiki.bugsounet.fr/${pluginsName}" title="${translation.Plugins_Table_Wiki} ${pluginsName}">${pluginsName}</td><td>${DescEXT[pluginsName]}</td>`;
+    if (DescEXT[pluginsName] !== undefined) { // don't display EXT if there is no description (maybe EXT under coding)
+      // wiki page link
+      Content += `<tr><td class="text-nowrap fs-6 text-start click" data-bs-toggle="tooltip" style="cursor: pointer;" data-href="https://wiki.bugsounet.fr/${pluginsName}" title="${translation.Plugins_Table_Wiki} ${pluginsName}">${pluginsName}</td><td>${DescEXT[pluginsName]}</td>`;
 
-    // EXT install link
-    if (InstEXT.indexOf(pluginsName) === -1) Content += `<td align="center"><a class="btn btn-primary btn-sm" role="button" data-bs-toggle="tooltip" title="${translation.Plugins_Table_Install} ${pluginsName}" href="/install?ext=${pluginsName}">${translation.Install}</a></td>`;
-    // EXT delete link
-    else Content += `<td align="center"><a class="btn btn-danger btn-sm" role="button" data-bs-toggle="tooltip" title="${translation.Plugins_Table_Delete} ${pluginsName}" href="/delete?ext=${pluginsName}">${translation.Delete}</a></td>`;
+      // EXT install link
+      if (InstEXT.indexOf(pluginsName) === -1) Content += `<td align="center"><a class="btn btn-primary btn-sm" role="button" data-bs-toggle="tooltip" title="${translation.Plugins_Table_Install} ${pluginsName}" href="/install?ext=${pluginsName}">${translation.Install}</a></td>`;
+      // EXT delete link
+      else Content += `<td align="center"><a class="btn btn-danger btn-sm" role="button" data-bs-toggle="tooltip" title="${translation.Plugins_Table_Delete} ${pluginsName}" href="/delete?ext=${pluginsName}">${translation.Delete}</a></td>`;
 
-    if (InstEXT.indexOf(pluginsName) === -1) {
-      if (ConfigEXT.indexOf(pluginsName) === -1) Content += "<td></td>";
-      // config delete link
-      else Content += `<td align="center"><a class="btn btn-danger btn-sm pulse animated infinite" data-bs-toggle="tooltip" title="${translation.Plugins_Table_DeleteConfig}" role="button" href="/EXTDeleteConfig?ext=${pluginsName}">${translation.Delete}</a></td>`;
-    } else {
-      // configure link
-      if (ConfigEXT.indexOf(pluginsName) === -1) Content += `<td align="center"><a class="btn btn-warning btn-sm pulse animated infinite" data-bs-toggle="tooltip" title="${translation.Plugins_Table_Configure}" role="button" href="/EXTCreateConfig?ext=${pluginsName}">${translation.Configure}</a></td>`;
-      // modify link
-      else Content += `<td align="center"><a class="btn btn-success btn-sm" data-bs-toggle="tooltip" title="${translation.Plugins_Table_Modify}" role="button" href="/EXTModifyConfig?ext=${pluginsName}">${translation.Modify}</a></td>`;
+      if (InstEXT.indexOf(pluginsName) === -1) {
+        if (ConfigEXT.indexOf(pluginsName) === -1) Content += "<td></td>";
+        // config delete link
+        else Content += `<td align="center"><a class="btn btn-danger btn-sm pulse animated infinite" data-bs-toggle="tooltip" title="${translation.Plugins_Table_DeleteConfig}" role="button" href="/EXTDeleteConfig?ext=${pluginsName}">${translation.Delete}</a></td>`;
+      } else {
+        // configure link
+        if (ConfigEXT.indexOf(pluginsName) === -1) Content += `<td align="center"><a class="btn btn-warning btn-sm pulse animated infinite" data-bs-toggle="tooltip" title="${translation.Plugins_Table_Configure}" role="button" href="/EXTCreateConfig?ext=${pluginsName}">${translation.Configure}</a></td>`;
+        // modify link
+        else Content += `<td align="center"><a class="btn btn-success btn-sm" data-bs-toggle="tooltip" title="${translation.Plugins_Table_Modify}" role="button" href="/EXTModifyConfig?ext=${pluginsName}">${translation.Modify}</a></td>`;
+      }
+      Content += "</tr>";
     }
-    Content += "</tr>";
   });
 
   Content += "</tbody></table></div></div></div></div>";
@@ -112,7 +109,7 @@ function doDelete () {
   fitAddonDelete.fit();
 
   socketDelete.on("connect", () => {
-    termDelete.write(`\x1B[1;3;31mMMM-GoogleAssistant v${versionGW.v} (${versionGW.rev}.${versionGW.lang})\x1B[0m \r\n\n`);
+    termDelete.write(`\x1B[1;3;31mEXT-Website v${version.version} (${version.rev}.${version.lang})\x1B[0m \r\n\n`);
   });
 
   socketDelete.on("disconnect", () => {
@@ -135,16 +132,15 @@ function doDelete () {
   document.getElementById("delete").onclick = function () {
     $("#messageText").text(translation.Plugins_Delete_Progress);
     $("#delete").addClass("disabled");
-    return new Promise((resolve) => {
-      $.getJSON(`/EXTDelete?EXT=${EXT}`, (res) => {
-        if (!res.error) $("#messageText").text(translation.Plugins_Delete_Confirmed);
-        else $("#messageText").text(translation.Warn_Error);
-        resolve();
-        setTimeout(() => socketDelete.close(), 500);
-      })
-        .fail(function (err) {
-          alertify.error(`[doDelete] Server return Error ${err.status} (${err.statusText})`);
-        });
+
+    Request ("/api/EXT", "DELETE", { Authorization: `Bearer ${getCurrentToken()}`, ext: EXT }, null, "doDelete", () => {
+      $("#messageText").text(translation.Plugins_Delete_Confirmed);
+      setTimeout(() => socketDelete.close(), 500);
+    }, (err) => {
+      $("#messageText").text(translation.Warn_Error);
+      let error = err.responseJSON?.error ? err.responseJSON.error : (err.responseText ? err.responseText : err.statusText);
+      if (!err.status) alertify.error("Connexion Lost!");
+      else alertify.error(`[doDelete] Server return Error ${err.status} (${error})`);
     });
   };
 }
@@ -163,7 +159,7 @@ function doInstall () {
   fitAddonInstall.fit();
 
   socketInstall.on("connect", () => {
-    termInstall.write(`\x1B[1;3;31mMMM-GoogleAssistant v${versionGW.v} (${versionGW.rev}.${versionGW.lang})\x1B[0m \r\n\n`);
+    termInstall.write(`\x1B[1;3;31mEXT-Website v${version.version} (${version.rev}.${version.lang})\x1B[0m \r\n\n`);
   });
 
   socketInstall.io.on("error", (data) => {
@@ -186,16 +182,14 @@ function doInstall () {
   document.getElementById("install").onclick = function () {
     $("#messageText").text(translation.Plugins_Install_Progress);
     $("#install").addClass("disabled");
-    return new Promise((resolve) => {
-      $.getJSON(`/EXTInstall?EXT=${EXT}`, (res) => {
-        if (!res.error) $("#messageText").text(translation.Plugins_Install_Confirmed);
-        else $("#messageText").text(translation.Warn_Error);
-        resolve();
-        setTimeout(() => socketInstall.close(), 500);
-      })
-        .fail(function (err) {
-          alertify.error(`[doInstall] Server return Error ${err.status} (${err.statusText})`);
-        });
+    Request ("/api/EXT", "PUT", { Authorization: `Bearer ${getCurrentToken()}`, ext: EXT }, null, "doInstall", () => {
+      $("#messageText").text(translation.Plugins_Install_Confirmed);
+      setTimeout(() => socketInstall.close(), 500);
+    }, (err) => {
+      $("#messageText").text(translation.Warn_Error);
+      let error = err.responseJSON?.error ? err.responseJSON.error : (err.responseText ? err.responseText : err.statusText);
+      if (!err.status) alertify.error("Connexion Lost!");
+      else alertify.error(`[doInstall] Server return Error ${err.status} (${error})`);
     });
   };
 }
@@ -344,25 +338,24 @@ async function EXTConfigJSEditor () {
     let data = editor.getText();
     $("#save").css("display", "none");
     $("#wait").css("display", "block");
-    $.post("/writeEXT", { data: data })
-      .done(function (back) {
-        if (back.error) {
-          $("#wait").css("display", "none");
-          $("#error").css("display", "block");
-          $("#alert").removeClass("invisible");
-          $("#alert").removeClass("alert-success");
-          $("#alert").addClass("alert-danger");
-          $("#messageText").text(back.error);
-        } else {
-          $("#wait").css("display", "none");
-          $("#done").css("display", "block");
-          $("#alert").removeClass("invisible");
-          $("#messageText").text(translation.Restart);
-        }
-      })
-      .fail(function (err) {
-        alertify.error(`[writeEXT] Server return Error ${err.status} (${err.statusText})`);
-      });
+    let encode = btoa(data);
+
+    Request ("/api/config/EXT", "PUT", { Authorization: `Bearer ${getCurrentToken()}`, ext: EXT }, JSON.stringify({ config: encode }) , "writeConfig", () => {
+      $("#wait").css("display", "none");
+      $("#done").css("display", "block");
+      $("#alert").removeClass("invisible");
+      $("#messageText").text(translation.Restart);
+    }, (err) => {
+      $("#wait").css("display", "none");
+      $("#error").css("display", "block");
+      $("#alert").removeClass("invisible");
+      $("#alert").removeClass("alert-success");
+      $("#alert").addClass("alert-danger");
+      $("#messageText").text(err.statusText);
+      let error = err.responseJSON?.error ? err.responseJSON.error : (err.responseText ? err.responseText : err.statusText);
+      if (!err.status) alertify.error("Connexion Lost!");
+      else alertify.error(`[writeConfig] Server return Error ${err.status} (${error})`);
+    });
   };
 }
 
@@ -451,25 +444,24 @@ async function EXTModifyConfigJSEditor () {
     let data = editor.getText();
     $("#save").css("display", "none");
     $("#wait").css("display", "block");
-    $.post("/writeEXT", { data: data })
-      .done(function (back) {
-        if (back.error) {
-          $("#wait").css("display", "none");
-          $("#error").css("display", "block");
-          $("#alert").removeClass("invisible");
-          $("#alert").removeClass("alert-success");
-          $("#alert").addClass("alert-danger");
-          $("#messageText").text(back.error);
-        } else {
-          $("#wait").css("display", "none");
-          $("#done").css("display", "block");
-          $("#alert").removeClass("invisible");
-          $("#messageText").text(translation.Restart);
-        }
-      })
-      .fail(function (err) {
-        alertify.error(`[writeEXT] Server return Error ${err.status} (${err.statusText})`);
-      });
+    let encode = btoa(data);
+
+    Request ("/api/config/EXT", "PUT", { Authorization: `Bearer ${getCurrentToken()}`, ext: EXT }, JSON.stringify({ config: encode }) , "writeConfig", () => {
+      $("#wait").css("display", "none");
+      $("#done").css("display", "block");
+      $("#alert").removeClass("invisible");
+      $("#messageText").text(translation.Restart);
+    }, (err) => {
+      $("#wait").css("display", "none");
+      $("#error").css("display", "block");
+      $("#alert").removeClass("invisible");
+      $("#alert").removeClass("alert-success");
+      $("#alert").addClass("alert-danger");
+      $("#messageText").text(err.statusText);
+      let error = err.responseJSON?.error ? err.responseJSON.error : (err.responseText ? err.responseText : err.statusText);
+      if (!err.status) alertify.error("Connexion Lost!");
+      else alertify.error(`[writeConfig] Server return Error ${err.status} (${error})`);
+    });
   };
   document.getElementById("loadDefault").onclick = async function () {
     editor.set(defaultConfig);
@@ -518,24 +510,23 @@ async function EXTDeleteConfigJSEditor () {
   document.getElementById("confirm").onclick = function () {
     $("#confirm").css("display", "none");
     $("#wait").css("display", "block");
-    $.post("/deleteEXT", { data: EXT })
-      .done(function (back) {
-        if (back.error) {
-          $("#wait").css("display", "none");
-          $("#error").css("display", "block");
-          $("#alert").removeClass("invisible");
-          $("#alert").removeClass("alert-success");
-          $("#alert").addClass("alert-danger");
-          $("#messageText").text(back.error);
-        } else {
-          $("#wait").css("display", "none");
-          $("#done").css("display", "block");
-          $("#alert").removeClass("invisible");
-          $("#messageText").text(translation.Plugins_DeleteConfig_Confirmed);
-        }
-      })
-      .fail(function (err) {
-        alertify.error(`[deleteEXT] Server return Error ${err.status} (${err.statusText})`);
-      });
+    Request ("/api/config/EXT", "DELETE", { Authorization: `Bearer ${getCurrentToken()}`, ext: EXT }, null , "writeConfig", () => {
+      $("#wait").css("display", "none");
+      $("#done").css("display", "block");
+      $("#alert").removeClass("invisible");
+      $("#messageText").text(translation.Plugins_DeleteConfig_Confirmed);
+    }, (err) => {
+      $("#wait").css("display", "none");
+      $("#error").css("display", "block");
+      $("#alert").removeClass("invisible");
+      $("#alert").removeClass("alert-success");
+      $("#alert").addClass("alert-danger");
+      $("#messageText").text(err.statusText);
+      let error = err.responseJSON?.error ? err.responseJSON.error : (err.responseText ? err.responseText : err.statusText);
+      if (!err.status) alertify.error("Connexion Lost!");
+      else {
+        alertify.error(`[writeConfig] Server return Error ${err.status} (${error})`);
+      }
+    });
   };
 }

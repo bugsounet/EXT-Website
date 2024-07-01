@@ -1,20 +1,15 @@
-/* global window, getGatewayVersion, loadTranslation, $ */
-
-/** EXT tools
+/** Restart
 * @bugsounet
 **/
 
 // define all vars
 var translation = {};
-var versionGW = {};
-var locationGW = window.location.origin;
+var websiteLocation = window.location.origin;
 
 // Load rules
 window.addEventListener("load", async (event) => {
-  versionGW = await getGatewayVersion();
   translation = await loadTranslation();
 
-  $("html").prop("lang", versionGW.lang);
   doRestart();
 });
 
@@ -23,12 +18,14 @@ function doRestart () {
   $("#text1").text(translation.Tools_Restart_Text1);
   $("#text2").text(translation.Tools_Restart_Text2);
 
+  Request ("/api/system/restart", "POST", { Authorization: `Bearer ${getCurrentToken()}` }, null, "RESTART", null, null);
+
   function handle200 () {
     window.location.href = "/";
   }
 
   function checkPage (callback) {
-    fetch(locationGW)
+    fetch(websiteLocation)
       .then((response) => {
         if (response.status === 200) return callback();
       })

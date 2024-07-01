@@ -1,6 +1,4 @@
-/* global forceMobileRotate, alertify, window, getGatewayVersion, loadTranslation, $, doTranslateNavBar, checkWebviewTag, checkEXTStatus, loadBackupNames, loadDataInstalledEXT, loadRadio */
-
-/** EXT tools
+/** Tools
 * @bugsounet
 **/
 
@@ -12,17 +10,16 @@ var PleaseRotateOptions = {
 // define all vars
 var translation = {};
 var InstEXT = [];
-var versionGW = {};
+var version = {};
 var webviewTag = false;
 var EXTStatus = {};
 var ErrEXTStatus = 0;
 
 // Load rules
 window.addEventListener("load", async (event) => {
-  versionGW = await getGatewayVersion();
+  version = await getVersion();
   translation = await loadTranslation();
 
-  $("html").prop("lang", versionGW.lang);
   forceMobileRotate();
   doTools();
 
@@ -59,22 +56,17 @@ async function doTools () {
     $("#backup-Box").css("display", "block");
 
     document.getElementById("backup-Delete").onclick = function () {
-      $.post("/deleteBackup")
-        .done(function (back) {
-          if (back.error) {
-            $("#backup-Delete").css("display", "none");
-            $("#backup-Error").css("display", "inline-block");
-            alertify.error(back.error);
-          } else {
-            $("#backup-Delete").css("display", "none");
-            $("#backup-Done").css("display", "inline-block");
-            alertify.success(translation.Tools_Backup_Deleted);
-            back.error;
-          }
-        })
-        .fail(function (err) {
-          alertify.error(`[Delete] Server return Error ${err.status} (${err.statusText})`);
-        });
+      Request ("/api/backups", "DELETE", { Authorization: `Bearer ${getCurrentToken()}` }, null, "backup-Delete", () => {
+        $("#backup-Delete").css("display", "none");
+        $("#backup-Done").css("display", "inline-block");
+        alertify.success(translation.Tools_Backup_Deleted);
+      }, (err) => {
+        $("#backup-Delete").css("display", "none");
+        $("#backup-Error").css("display", "inline-block");
+        let error = err.responseJSON?.error ? err.responseJSON.error : (err.responseText ? err.responseText : err.statusText);
+        if (!err.status) alertify.error("Connexion Lost!");
+        else alertify.error(`[backup-Delete] Server return Error ${err.status} (${error})`);
+      });
     };
 
     document.getElementById("backup-Done").onclick = function () {
@@ -100,21 +92,17 @@ async function doTools () {
     if (displayNeeded) $("#webview-Box").css("display", "block");
 
     document.getElementById("webviewbtn-Apply").onclick = function () {
-      $.post("/setWebviewTag")
-        .done(function (back) {
-          if (back.error) {
-            $("#webviewbtn-Apply").css("display", "none");
-            $("#webviewbtn-Error").css("display", "inline-block");
-            alertify.success(back.error);
-          } else {
-            $("#webviewbtn-Apply").css("display", "none");
-            $("#webviewbtn-Done").css("display", "inline-block");
-            alertify.success(translation.Restart);
-          }
-        })
-        .fail(function (err) {
-          alertify.error(`[WebviewTag] Server return Error ${err.status} (${err.statusText})`);
-        });
+      Request ("/api/config/webview", "PUT", { Authorization: `Bearer ${getCurrentToken()}` }, null, "WebviewTag", () => {
+        $("#webviewbtn-Apply").css("display", "none");
+        $("#webviewbtn-Done").css("display", "inline-block");
+        alertify.success(translation.Restart);
+      }, (err) => {
+        $("#webviewbtn-Apply").css("display", "none");
+        $("#webviewbtn-Error").css("display", "inline-block");
+        let error = err.responseJSON?.error ? err.responseJSON.error : (err.responseText ? err.responseText : err.statusText);
+        if (!err.status) alertify.error("Connexion Lost!");
+        else alertify.error(`[WebviewTag] Server return Error ${err.status} (${error})`);
+      });
     };
 
     document.getElementById("webviewbtn-Done").onclick = function () {
@@ -135,31 +123,10 @@ async function doTools () {
     $("#Screen-Box").css("display", "block");
 
     document.getElementById("Screen-Control").onclick = function () {
-      if (EXTStatus["EXT-Screen"].power) {
-        $.post("/EXT-Screen", { data: "OFF" })
-          .done(function (back) {
-            if (back.error) {
-              alertify.error(translation.Warn_Error);
-            } else {
-              alertify.success(translation.RequestDone);
-            }
-          })
-          .fail(function (err) {
-            alertify.error(`[Screen] Server return Error ${err.status} (${err.statusText})`);
-          });
-      } else {
-        $.post("/EXT-Screen", { data: "ON" })
-          .done(function (back) {
-            if (back === "error") {
-              alertify.error(translation.Warn_Error);
-            } else {
-              alertify.success(translation.RequestDone);
-            }
-          })
-          .fail(function (err) {
-            alertify.error(`[Screen] Server return Error ${err.status} (${err.statusText})`);
-          });
-      }
+      let powerControler = EXTStatus["EXT-Screen"].power ? "OFF" : "ON";
+      Request ("/api/EXT/Screen", "PUT", { Authorization: `Bearer ${getCurrentToken()}` }, JSON.stringify( { power : powerControler } ), "Screen", () => {
+        alertify.success(translation.RequestDone);
+      }, null);
     };
   }
 
@@ -179,18 +146,9 @@ async function doTools () {
 
     document.getElementById("Alert-Send").onclick = function () {
       $("#Alert-Send").addClass("disabled");
-      $.post("/EXT-AlertQuery", { data: $("#Alert-Query").val() })
-        .done(function (back) {
-          $("#Alert-Query").val("");
-          if (back === "error") {
-            alertify.error(translation.Warn_Error);
-          } else {
-            alertify.success(translation.RequestDone);
-          }
-        })
-        .fail(function (err) {
-          alertify.error(`[Alert] Server return Error ${err.status} (${err.statusText})`);
-        });
+      Request ("/api/EXT/Alert", "POST", { Authorization: `Bearer ${getCurrentToken()}` }, JSON.stringify( { alert: $("#Alert-Query").val() } ), "Alert", () => {
+        alertify.success(translation.RequestDone);
+      }, null);
     };
   }
 
@@ -206,17 +164,9 @@ async function doTools () {
     }, 1000);
 
     document.getElementById("Volume-Send").onclick = function () {
-      $.post("/EXT-VolumeSendSpeaker", { data: $("#Volume-Query").val() })
-        .done(function (back) {
-          if (back === "error") {
-            alertify.error(translation.Warn_Error);
-          } else {
-            alertify.success(translation.RequestDone);
-          }
-        })
-        .fail(function (err) {
-          alertify.error(`[Volume] Server return Error ${err.status} (${err.statusText})`);
-        });
+      Request ("/api/EXT/Volume/speaker", "PUT", { Authorization: `Bearer ${getCurrentToken()}` }, JSON.stringify({ volume: Number($("#Volume-Query").val()) }), "Volume", () => {
+        alertify.success(translation.RequestDone);
+      }, null);
     };
   }
 
@@ -232,17 +182,9 @@ async function doTools () {
     }, 1000);
 
     document.getElementById("Volume-Send-Record").onclick = function () {
-      $.post("/EXT-VolumeSendRecorder", { data: $("#Volume-Query-Record").val() })
-        .done(function (back) {
-          if (back === "error") {
-            alertify.error(translation.Warn_Error);
-          } else {
-            alertify.success(translation.RequestDone);
-          }
-        })
-        .fail(function (err) {
-          alertify.error(`[Volume] Server return Error ${err.status} (${err.statusText})`);
-        });
+      Request ("/api/EXT/Volume/recorder", "PUT", { Authorization: `Bearer ${getCurrentToken()}` }, JSON.stringify({ volume: Number($("#Volume-Query-Record").val()) }), "Volume", () => {
+        alertify.success(translation.RequestDone);
+      }, null);
     };
   }
 
@@ -271,17 +213,9 @@ async function doTools () {
     }, 1000);
     document.getElementById("Update-Confirm").onclick = function () {
       $("#Update-Confirm").addClass("disabled");
-      $.post("/EXT-Updates")
-        .done(function (back) {
-          if (back === "error") {
-            alertify.error(translation.Warn_Error);
-          } else {
-            alertify.success(translation.RequestDone);
-          }
-        })
-        .fail(function (err) {
-          alertify.error(`[Updates] Server return Error ${err.status} (${err.statusText})`);
-        });
+      Request ("/api/EXT/Updates", "PUT", { Authorization: `Bearer ${getCurrentToken()}` }, null, "Updates", () => {
+        alertify.success(translation.RequestDone);
+      }, null);
     };
   }
 
@@ -289,7 +223,7 @@ async function doTools () {
   if (EXTStatus["EXT-Spotify"].hello) {
     var type = null;
     setInterval(() => {
-      if (EXTStatus["EXT-Spotify"].connected || (EXTStatus["EXT-Spotify"].remote && EXTStatus["EXT-Spotify"].play)) {
+      if (EXTStatus["EXT-Spotify"].connected || EXTStatus["EXT-Spotify"].play) {
         $("#Spotify-Play").css("display", "none");
         $("#Spotify-Stop").css("display", "block");
       } else {
@@ -317,39 +251,33 @@ async function doTools () {
 
     document.getElementById("Spotify-Send").onclick = function () {
       $("#Spotify-Send").addClass("disabled");
-      $.post("/EXT-SpotifyQuery", {
-        data: {
-          query: $("#Spotify-Query").val(),
-          type: type
-        }
-      })
-        .done(function (back) {
-          $("#Spotify-Query").val("");
-          if (back === "error") {
-            alertify.error(translation.Warn_Error);
-          } else {
-            alertify.success(translation.RequestDone);
-          }
-        })
-        .fail(function (err) {
-          alertify.error(`[Spotify] Server return Error ${err.status} (${err.statusText})`);
-        });
+      Request ("/api/EXT/Spotify", "PUT", { Authorization: `Bearer ${getCurrentToken()}` }, JSON.stringify({ query: $("#Spotify-Query").val(), type: type }), "Spotify", () => {
+        alertify.success(translation.RequestDone);
+      }, null);
     };
 
     document.getElementById("Spotify-Play").onclick = function () {
-      $.post("/EXT-SpotifyPlay");
+      Request ("/api/EXT/Spotify/play", "PUT", { Authorization: `Bearer ${getCurrentToken()}` }, null, "Spotify", () => {
+        alertify.success(translation.RequestDone);
+      }, null);
     };
 
     document.getElementById("Spotify-Stop").onclick = function () {
-      $.post("/EXT-SpotifyStop");
+      Request ("/api/EXT/Spotify/stop", "PUT", { Authorization: `Bearer ${getCurrentToken()}` }, null, "Spotify", () => {
+        alertify.success(translation.RequestDone);
+      }, null);
     };
 
     document.getElementById("Spotify-Next").onclick = function () {
-      $.post("/EXT-SpotifyNext");
+      Request ("/api/EXT/Spotify/next", "PUT", { Authorization: `Bearer ${getCurrentToken()}` }, null, "Spotify", () => {
+        alertify.success(translation.RequestDone);
+      }, null);
     };
 
     document.getElementById("Spotify-Previous").onclick = function () {
-      $.post("/EXT-SpotifyPrevious");
+      Request ("/api/EXT/Spotify/previous", "PUT", { Authorization: `Bearer ${getCurrentToken()}` }, null, "Spotify", () => {
+        alertify.success(translation.RequestDone);
+      }, null);
     };
 
     document.getElementById("Spotify-Artist").onclick = function () {
@@ -436,18 +364,15 @@ async function doTools () {
 
   document.getElementById("GoogleAssistant-Send").onclick = function () {
     $("#GoogleAssistant-Send").addClass("disabled");
-    $.post("/EXT-GAQuery", { data: $("#GoogleAssistant-Query").val() })
-      .done(function (back) {
-        $("#GoogleAssistant-Query").val("");
-        if (back === "error") {
-          alertify.error(translation.Warn_Error);
-        } else {
-          alertify.success(translation.RequestDone);
-        }
-      })
-      .fail(function (err) {
-        alertify.error(`[GoogleAssistant] Server return Error ${err.status} (${err.statusText})`);
-      });
+    Request ("/api/Assistant/query", "POST", { Authorization: `Bearer ${getCurrentToken()}` }, JSON.stringify({ query: $("#GoogleAssistant-Query").val() }), "GoogleAssistant", () => {
+      $("#GoogleAssistant-Query").val("");
+      alertify.success(translation.RequestDone);
+    }, (err) => {
+      $("#GoogleAssistant-Query").val("");
+      let error = err.responseJSON?.error ? err.responseJSON.error : (err.responseText ? err.responseText : err.statusText);
+      if (!err.status) alertify.error("Connexion Lost!");
+      else alertify.error(`[GoogleAssistant] Server return Error ${err.status} (${error})`);
+    });
   };
 
   // YouTube Query
@@ -465,18 +390,9 @@ async function doTools () {
     });
 
     document.getElementById("YouTube-Send").onclick = function () {
-      $.post("/EXT-YouTubeQuery", { data: $("#YouTube-Query").val() })
-        .done(function (back) {
-          $("#YouTube-Query").val("");
-          if (back === "error") {
-            alertify.error(translation.Warn_Error);
-          } else {
-            alertify.success(translation.RequestDone);
-          }
-        })
-        .fail(function (err) {
-          alertify.error(`[YouTube] Server return Error ${err.status} (${err.statusText})`);
-        });
+      Request ("/api/EXT/YouTube", "PUT", { Authorization: `Bearer ${getCurrentToken()}` }, JSON.stringify({ query: $("#YouTube-Query").val() }), "YouTube", () => {
+        alertify.success(translation.RequestDone);
+      }, null);
     };
   }
 
@@ -502,35 +418,19 @@ async function doTools () {
     }
     $("#Radio-Box").css("display", "block");
     document.getElementById("Radio-Send").onclick = function () {
-      $.post("/EXT-RadioQuery", { data: $("#Radio-Query").val() })
-        .done(function (back) {
-          if (back === "error") {
-            alertify.error(translation.Warn_Error);
-          } else {
-            alertify.success(translation.RequestDone);
-          }
-        })
-        .fail(function (err) {
-          alertify.error(`[RadioPlayer] Server return Error ${err.status} (${err.statusText})`);
-        });
+      Request ("/api/EXT/RadioPlayer", "PUT", { Authorization: `Bearer ${getCurrentToken()}` }, JSON.stringify({ radio: $("#Radio-Query").val() }), "RadioPlayer", () => {
+        alertify.success(translation.RequestDone);
+      }, null);
     };
   }
 
   // FreeboxTV query
-  if (EXTStatus["EXT-FreeboxTV"].hello && versionGW.lang === "fr") {
+  if (EXTStatus["EXT-FreeboxTV"].hello && version.lang === "fr") {
     $("#FreeboxTV-Box").css("display", "block");
     document.getElementById("FreeboxTV-Send").onclick = function () {
-      $.post("/EXT-FreeboxTVQuery", { data: $("#FreeboxTV-Query").val() })
-        .done(function (back) {
-          if (back === "error") {
-            alertify.error(translation.Warn_Error);
-          } else {
-            alertify.success(translation.RequestDone);
-          }
-        })
-        .fail(function (err) {
-          alertify.error(`[FreeboxTV] Server return Error ${err.status} (${err.statusText})`);
-        });
+      Request ("/api/EXT/FreeboxTV", "PUT", { Authorization: `Bearer ${getCurrentToken()}` }, JSON.stringify({ TV: $("#FreeboxTV-Query").val() }), "FreeboxTV", () => {
+        alertify.success(translation.RequestDone);
+      }, null);
     };
   }
 
@@ -538,17 +438,9 @@ async function doTools () {
   $("#Stop-Text").text(translation.Tools_Stop_Text);
   $("#Stop-Send").text(translation.Send);
   document.getElementById("Stop-Send").onclick = function () {
-    $.post("/EXT-StopQuery")
-      .done(function (back) {
-        if (back === "error") {
-          alertify.error(translation.Warn_Error);
-        } else {
-          alertify.success(translation.RequestDone);
-        }
-      })
-      .fail(function (err) {
-        alertify.error(`[STOP] Server return Error ${err.status} (${err.statusText})`);
-      });
+    Request ("/api/EXT/stop", "POST", { Authorization: `Bearer ${getCurrentToken()}` }, null , "STOP", () => {
+      alertify.success(translation.RequestDone);
+    }, null);
   };
 
   setInterval(() => {

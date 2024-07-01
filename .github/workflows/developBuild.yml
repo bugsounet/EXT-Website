@@ -1,12 +1,18 @@
-name: "MagicMirror² (develop) and EXT-Website build Testing"
+name: "MagicMirror² (develop) build Testing"
 
 on: [pull_request]
 
 jobs:
   build:
-    name: Test install EXT-Website
+    name: Test install
     runs-on: ubuntu-latest
     steps:
+      - name: "Use Node.js v20.x (latest)"
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20.x"
+          check-latest: true
+
       - name: Checkout MagicMirror² (develop)
         uses: actions/checkout@v4
         with:

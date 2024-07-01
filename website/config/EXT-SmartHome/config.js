@@ -1,22 +1,23 @@
 var defaultConfig = {
-  module: "EXT-Website",
+  module: "EXT-SmartHome",
   disabled: false,
   config: {
     debug: false,
     username: "admin",
-    password: "admin"
+    password: "admin",
+    CLIENT_ID: null
   }
 };
 
 var schema = {
-  title: "EXT-Website",
+  title: "EXT-SmartHome",
   description: "{PluginDescription}",
   type: "object",
   properties: {
     module: {
       type: "string",
       title: "{PluginName}",
-      default: "EXT-Website"
+      default: "EXT-SmartHome"
     },
     disabled: {
       type: "boolean",
@@ -34,18 +35,18 @@ var schema = {
         },
         username: {
           type: "string",
-          title: "{EXT-Website_username}",
+          title: "{EXT-SmartHome_username}",
           default: "admin"
         },
         password: {
           type: "string",
-          title: "{EXT-Website_password}",
+          title: "{EXT-SmartHome_password}",
           default: "admin"
         },
-        useAPIDocs: {
-          type: "boolean",
-          title: "{EXT-Website_APIDocs}",
-          default: false
+        CLIENT_ID: {
+          type: ["string", "null"],
+          title: "{EXT-SmartHome_CLIENTID}",
+          default: null
         }
       },
       required: ["username","password"]

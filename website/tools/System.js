@@ -1,6 +1,4 @@
-/* global forceMobileRotate, window, getGatewayVersion, loadTranslation, $, doTranslateNavBar, checkSystem, getActiveVersion */
-
-/** EXT System
+/** System
 * @bugsounet
 **/
 
@@ -12,45 +10,38 @@ var PleaseRotateOptions = {
 
 // define all vars
 var translation = {};
-var versionGW = {};
 var System = {};
 var SystemInterval = null;
 var SystemFirstScan = true;
-var activeVersion = [];
+var EXTVersions = [];
 var system = {};
 
 // Load rules
 window.addEventListener("load", async (event) => {
-  versionGW = await getGatewayVersion();
   translation = await loadTranslation();
 
-  $("html").prop("lang", versionGW.lang);
   forceMobileRotate();
   doSystem(() => { doStatic(); });
   doTranslateNavBar();
+  SystemInterval = setInterval(() => {
+    doSystem();
+  }, 15000);
 });
 
 async function doSystem (cb = null) {
-  clearInterval(SystemInterval);
-  SystemInterval = null;
-
   system = await checkSystem();
-  activeVersion = await getActiveVersion();
+  EXTVersions = await getEXTVersions();
 
   progressOrText(system);
   window.addEventListener("resize", function () {
     progressOrText(system);
   });
 
-  SystemInterval = setInterval(() => {
-    doSystem();
-  }, 15000);
-
   //CPU
   $("#SPEED").text(system.CPU.speed);
   $("#GOVERNOR").text(system.CPU.governor);
 
-  $("#TempText").text(`${versionGW.imperial ? system.CPU.temp.F : system.CPU.temp.C}°`);
+  $("#TempText").text(`${system.CPU.temp.imperial ? system.CPU.temp.F : system.CPU.temp.C}°`);
 
   if (system.CPU.temp.C <= 50) {
     $("#TempDisplay").removeClass("bg-google-yellow");
@@ -161,10 +152,10 @@ async function doSystem (cb = null) {
     $("#LoadText").addClass("text-google-red");
   }
 
-  if (Object.entries(activeVersion).length) {
+  if (Object.entries(EXTVersions).length) {
     $("#CurrentlyRunning").text(translation.System_CurrentlyRunning);
     $("#Plugins-Table").removeClass("visually-hidden");
-    Object.entries(activeVersion).forEach(([key, value]) => {
+    Object.entries(EXTVersions).forEach(([key, value]) => {
       if (!$(`#Plugins-${key}`).html()) {
         var plugin = document.createElement("tr");
         plugin.id = `Plugins-${key}`;
@@ -257,12 +248,12 @@ async function doSystem (cb = null) {
   $("#MMUptimeRecord").text(system.UPTIME.recordMMDHM);
 
   if (SystemFirstScan) {
-    this.makeProgress(system.CPU.temp.C, "#TempDisplay", "#TempValue", `${versionGW.imperial ? system.CPU.temp.F : system.CPU.temp.C}°`);
+    this.makeProgress(system.CPU.temp.C, "#TempDisplay", "#TempValue", `${system.CPU.temp.imperial ? system.CPU.temp.F : system.CPU.temp.C}°`);
     this.makeProgress(system.MEMORY.percent, "#MemoryDisplay", "#MemoryPercent", system.MEMORY.used);
     this.makeProgress(system.MEMORY.swapPercent, "#SwapDisplay", "#SwapPercent", system.MEMORY.swapUsed);
     this.makeProgress(system.CPU.usage, "#LoadDisplay", "#LoadValue", `${system.CPU.usage}%`);
   } else {
-    this.makeRefresh(system.CPU.temp.C, "#TempDisplay", "#TempValue", `${versionGW.imperial ? system.CPU.temp.F : system.CPU.temp.C}°`);
+    this.makeRefresh(system.CPU.temp.C, "#TempDisplay", "#TempValue", `${system.CPU.temp.imperial ? system.CPU.temp.F : system.CPU.temp.C}°`);
     this.makeRefresh(system.MEMORY.percent, "#MemoryDisplay", "#MemoryPercent", system.MEMORY.used);
     this.makeRefresh(system.MEMORY.swapPercent, "#SwapDisplay", "#SwapPercent", system.MEMORY.swapUsed);
     this.makeRefresh(system.CPU.usage, "#LoadDisplay", "#LoadValue", `${system.CPU.usage}%`);
@@ -550,7 +541,7 @@ function doStatic () {
   $("#NamePlugin").text(translation.System_NamePlugin);
   $("#VersionPlugin").text(translation.System_VersionPlugin);
   $("#RevPlugin").text(translation.System_RevPlugin);
-  if (Object.entries(activeVersion).length) $("#CurrentlyRunning").text(translation.System_CurrentlyRunning);
+  if (Object.entries(EXTVersions).length) $("#CurrentlyRunning").text(translation.System_CurrentlyRunning);
   else $("#CurrentlyRunning").text(translation.System_NoPlugins);
   if (system.GPU) {
     $("#GPU").removeClass("animated");

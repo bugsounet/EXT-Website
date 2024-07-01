@@ -13,13 +13,14 @@
     <link rel="stylesheet" href="assets/fonts/fontawesome-all.min.css">
     <link rel="stylesheet" href="assets/fonts/font-awesome.min.css">
     <link rel="stylesheet" href="assets/fonts/fontawesome5-overrides.min.css">
-    <link rel="stylesheet" href="assets/css/animate.min.css">
     <link rel="stylesheet" href="/jsoneditor/dist/jsoneditor.min.css">
     <link rel="stylesheet" href="assets/css/alertify-bootstrap.min.css">
     <link rel="stylesheet" href="assets/css/alertify.min.css">
+    <link rel="stylesheet" href="assets/css/Animated-Type-Heading.css">
     <link rel="stylesheet" href="assets/css/Article-Clean.css">
     <link rel="stylesheet" href="assets/css/bugsounet.css">
-    <link rel="stylesheet" href="assets/css/jseditor-dark.css">
+    <link rel="stylesheet" href="assets/css/Datatable.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.3/css/theme.bootstrap_4.min.css">
     <link rel="stylesheet" href="assets/css/Navbar.css">
     <link rel="stylesheet" href="assets/css/tools.css">
 </head>
@@ -52,33 +53,29 @@
                         </div>
                     </div>
                 </nav>
-                <div class="container-fluid">
-                    <div class="d-flex flex-row justify-content-lg-center align-items-lg-center">
-                        <h3 data-bss-disabled-mobile="true" class="bounce animated mb-4 text-google-white" id="title">Loading</h3>
-                        <h3 data-bss-disabled-mobile="true" class="bounce animated mb-4">&nbsp;</h3>
-                        <h3 data-bss-disabled-mobile="true" class="bounce animated mb-4 text-google-white" id="EXTName">...</h3>
-                    </div>
-                    <div id="jsoneditor" style="height: 65vh;"></div>
-                    <div class="btn-group invisible" role="group" id="buttonGrp" style="padding: 10px 0px;"><button class="btn btn-success bg-google-green" id="confirm" type="button" style="padding: 6px 12px;border-radius: 5.6px;">Confirm</button><button class="btn btn-warning rubberBand animated bg-google-yellow" id="wait" type="button" style="margin: 0px;border-radius: 5.6px;">Please wait...</button><a class="btn btn-success tada animated bg-google-green" role="button" id="done" style="margin: 0px;border-radius: 5.6px;" href="/Tools">Done</a><a class="btn btn-danger flash animated bg-google-red" role="button" id="error" style="margin: 0px;border-radius: 5.6px;" href="/Terminal">Error</a></div>
+                <div style="width: auto;height: 90vh;margin-left: auto;margin-right: auto;">
+                    <div class="ratio ratio-16x9 ratio-del" style="margin-top: -20px;height: 90vh;"><iframe src="/api/docs"></iframe></div>
                 </div>
             </div>
-            <footer class="sticky-footer bg-google-grey-21">
-                <div class="container my-auto">
-                    <div class="text-center my-auto copyright"><span>Copyright © bugsounet.fr 2024</span></div>
-                </div>
-            </footer>
-        </div><a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
+        </div>
     </div>
     <script src="assets/bootstrap/js/bootstrap.min.js"></script>
     <script src="assets/js/bs-init.js"></script>
+    <script src="/APIDocs.js"></script>
     <script src="/Fetch.js" crossorigin="anonymous"></script>
     <script src="/jquery.min.js"></script>
-    <script src="/jsoneditor/dist/jsoneditor.min.js"></script>
-    <script src="/Plugins.js" crossorigin="anonymous"></script>
     <script src="assets/js/alertify.min.js"></script>
+    <script src="assets/js/Animated-Type-Heading.js"></script>
     <script src="assets/js/aos.min.js"></script>
+    <script src="https://cdn.datatables.net/v/bs4/dt-1.12.1/datatables.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.3/js/jquery.tablesorter.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.3/js/widgets/widget-filter.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.3/js/widgets/widget-storage.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0/js/bootstrap.bundle.min.js"></script>
     <script src="assets/js/pleaserotate.min.js"></script>
     <script src="assets/js/theme.js"></script>
+    <script src="assets/js/tools.js"></script>
 </body>
 
 </html>

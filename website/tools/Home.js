@@ -1,6 +1,4 @@
-/* global window, getGatewayVersion, loadTranslation, getHomeText, $, forceMobileRotate, doTranslateNavBar */
-
-/** EXT tools
+/** Home
 * @bugsounet
 **/
 
@@ -12,31 +10,29 @@ var PleaseRotateOptions = {
 
 // define all vars
 var translation = {};
-var versionGW = {};
+var version = {};
 var homeText = {};
 
 // Load rules
 window.addEventListener("load", async (event) => {
-  versionGW = await getGatewayVersion();
+  version = await getVersion();
   translation = await loadTranslation();
   homeText = await getHomeText();
 
-  $("html").prop("lang", versionGW.lang);
   forceMobileRotate();
   doIndex();
   doTranslateNavBar();
-  // @todo Add ID in src
-  $("#HomeText").html(homeText.text);
+  $("#HomeText").html(homeText);
 });
 
 function doIndex () {
   $(document).prop("title", translation.Home);
   $("#welcome").text(translation.Home_Welcome);
-  if (versionGW.needUpdate) {
+  if (version.needUpdate) {
     $("#alert").removeClass("invisible");
     $("#alert").removeClass("alert-success");
     $("#alert").addClass("alert-warning");
-    $("#messageText").text(`${translation.Update} v${versionGW.last}`);
+    $("#messageText").text(`${translation.Update} v${version.last}`);
   }
 }
 

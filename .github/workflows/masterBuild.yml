@@ -1,12 +1,21 @@
-name: "MagicMirror² (master) and EXT-Website build Testing"
+name: "MagicMirror² (master) build Testing"
 
 on: [pull_request]
 
 jobs:
   build:
-    name: Test install EXT-Website
+    name: Test install
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [20.x, 21.x, 22.x]
     steps:
+      - name: "Use Node.js ${{ matrix.node-version }}"
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          check-latest: true
+
       - name: Checkout MagicMirror²
         uses: actions/checkout@v4
         with:

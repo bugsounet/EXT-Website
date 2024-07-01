@@ -1,6 +1,4 @@
-/* global window, getGatewayVersion, $, forceMobileRotate, doTranslateNavBar, loadTranslation */
-
-/** EXT About
+/** About
 * @bugsounet
 **/
 
@@ -12,14 +10,13 @@ var PleaseRotateOptions = {
 
 // define all vars
 var translation = {};
-var versionGW = {};
+var version = {};
 
 // Load rules
 window.addEventListener("load", async (event) => {
-  versionGW = await getGatewayVersion();
+  version = await getVersion();
   translation = await loadTranslation();
 
-  $("html").prop("lang", versionGW.lang);
   forceMobileRotate();
   GatewaySetting();
 
@@ -30,9 +27,10 @@ function GatewaySetting () {
   //translate parts
   $(document).prop("title", translation.About);
   $("#about_title").text(translation.About_Title);
-  $("#version").text(versionGW.v);
-  $("#rev").text(versionGW.rev);
-  $("#language").text(versionGW.lang);
+  $("#version").text(version.version);
+  $("#api").text(version.api);
+  $("#rev").text(version.rev);
+  $("#language").text(version.lang);
 
   $("#byHeader").text(translation.About_Info_by);
   $("#SupportHeader").text(translation.About_Info_Support);

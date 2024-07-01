@@ -8,7 +8,8 @@ Module.register("EXT-Website", {
   defaults: {
     debug: false,
     username: "admin",
-    password: "admin"
+    password: "admin",
+    useAPIDocs: false
   },
 
   start () {

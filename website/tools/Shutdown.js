@@ -1,24 +1,21 @@
-/* global window, getGatewayVersion, $, loadTranslation */
-/** EXT tools
+/** Shutdown
 * @bugsounet
 **/
 
 // define all vars
 var translation = {};
-var versionGW = {};
 
 // Load rules
 window.addEventListener("load", async (event) => {
-  versionGW = await getGatewayVersion();
   translation = await loadTranslation();
 
-  $("html").prop("lang", versionGW.lang);
-  doDie();
+  doShutdown();
 });
 
-function doDie () {
+function doShutdown () {
   $(document).prop("title", translation.Tools);
   $("#text1").text(translation.Tools_Die_Text1);
   $("#text2").text(translation.Tools_Die_Text2);
   $("#text3").text(translation.Tools_Die_Text3);
+  Request ("/api/system/shutdown", "POST", { Authorization: `Bearer ${getCurrentToken()}` }, null, "SHUTDOWN", null, null);
 }

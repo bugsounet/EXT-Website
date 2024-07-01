@@ -200,9 +200,9 @@ var schema = {
           type: "number",
           title: "{EXT-Screen_Mode}",
           default: 1,
-          enum: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+          enum: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
           minimum: 0,
-          maximum: 9
+          maximum: 10
         },
         xrandrForceRotation: {
           type: "string",

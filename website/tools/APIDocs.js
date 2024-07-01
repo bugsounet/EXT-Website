@@ -1,4 +1,4 @@
-/** 3rd Party Module
+/** API Docs
 * @bugsounet
 **/
 
@@ -15,7 +15,7 @@ var translation = {};
 window.addEventListener("load", async (event) => {
   translation = await loadTranslation();
 
-  $(document).prop("title", "MagicMirror² 3rd Party Modules");
+  $(document).prop("title", "API Docs");
 
   doTranslateNavBar();
 });
