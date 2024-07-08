@@ -34,7 +34,7 @@
     "cookie-parser": "^1.4.6",
     "esbuild": "^0.23.0",
     "express-body-parser-error-handler": "^1.0.7",
-    "glob": "^10.4.2",
+    "glob": "^10.4.3",
     "http-proxy-middleware": "^3.0.0",
     "jquery": "^3.7.1",
     "jsoneditor": "^10.1.0",
