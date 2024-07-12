@@ -22,6 +22,9 @@ const jwt = require("jsonwebtoken");
 
 const swaggerUi = require("swagger-ui-express");
 
+const { rateLimit } = require("express-rate-limit");
+const { slowDown } = require("express-slow-down");
+
 var log = (...args) => { /* do nothing */ };
 
 const mainBranch = {
@@ -112,6 +115,47 @@ class website {
     this.WebsitePath = `${this.root_path}/modules/EXT-Website/website`;
     this.APIDOCS = {};
     this.secret = this.encode(`EXT-Website v:${require("../package.json").version} rev:${require("../package.json").rev} API:v${require("../package.json").api}`);
+    this.rateLimiter = rateLimit({
+      windowMs: 15 * 60 * 1000,
+      max: 5,
+      skip: () => !this.config.useLimiter,
+      validate: {
+        xForwardedForHeader: false,
+        trustProxy: false
+      }
+    });
+
+    this.API_rateLimiter = rateLimit({
+      windowMs: 15 * 60 * 1000,
+      max: 5,
+      skip: () => !this.config.useLimiter,
+      validate: {
+        xForwardedForHeader: false,
+        trustProxy: false
+      }
+    });
+
+    this.speedLimiter = slowDown({
+      windowMs: 15 * 60 * 1000,
+      delayAfter: 2,
+      maxDelayMs: 5000,
+      skip: () => !this.config.useLimiter,
+      validate: {
+        xForwardedForHeader: false,
+        trustProxy: false
+      }
+    });
+
+    this.API_speedLimiter = slowDown({
+      windowMs: 15 * 60 * 1000,
+      delayAfter: 2,
+      maxDelayMs: 5000,
+      skip: () => !this.config.useLimiter,
+      validate: {
+        xForwardedForHeader: false,
+        trustProxy: false
+      }
+    });
   }
 
   async init (data) {
@@ -268,6 +312,7 @@ class website {
           }
         }
       });
+
       this.website.app = express();
       this.website.server = http.createServer(this.website.app);
       log("Create website needed routes...");
@@ -341,7 +386,7 @@ class website {
         .use("/xterm-addon-fit", express.static(`${this.WebsiteModulePath}/node_modules/xterm-addon-fit`))
         .use("/jquery.min.js", express.static(`${this.WebsiteModulePath}/node_modules/jquery/dist/jquery.min.js`))
 
-        .get("/login", (req, res) => {
+        .get("/login", this.speedLimiter, this.rateLimiter, (req, res) => {
           const logged = this.hasValidCookie(req);
           if (logged) return res.redirect("/");
           res.clearCookie("EXT-Website");
@@ -353,7 +398,7 @@ class website {
           res.redirect("/login");
         })
 
-        .post("/auth", (req, res) => this.login(req,res))
+        .post("/auth", this.speedLimiter, this.rateLimiter, (req, res) => this.login(req,res))
 
         .get("/", (req,res,next) => this.auth(req,res,next), (req, res) => {
           res.sendFile(`${this.WebsitePath}/index.html`);
@@ -532,7 +577,7 @@ class website {
           res.status(404).sendFile(`${this.WebsitePath}/404.html`);
         })
 
-        .get("/*", (req, res) => {
+        .get("/*", this.speedLimiter, this.rateLimiter, (req, res) => {
           console.warn("[WEBSITE] Don't find:", req.url);
           res.redirect("/404");
         });
@@ -642,22 +687,22 @@ class website {
           else res.redirect("/404");
         })
 
-        .get("/api", (req,res) => {
+        .get("/api", this.API_speedLimiter, this.API_rateLimiter, (req,res) => {
           res.json({ api: "OK", docs: this.website.APIDocs });
         })
 
-        .get("/api/translations/login", (req, res) => {
+        .get("/api/translations/login", this.API_speedLimiter, this.API_rateLimiter, (req, res) => {
           res.json(this.website.loginTranslation);
         })
 
-        .post("/api/login", (req, res) =>  this.login(req,res, true))
+        .post("/api/login", this.API_speedLimiter, this.API_rateLimiter, (req, res) =>  this.login(req,res, true))
 
-        .get("/api/*", (res,req,next) => this.hasValidToken(res,req,next), (req, res) => this.GetAPI(req,res))
-        .post("/api/*", (res,req,next) => this.hasValidToken(res,req,next), (req, res) => this.PostAPI(req,res))
-        .put("/api/*", (res,req,next) => this.hasValidToken(res,req,next), (req, res) => this.PutAPI(req,res))
-        .delete("/api/*", (res,req,next) => this.hasValidToken(res,req,next), (req, res) => this.DeleteAPI(req,res))
+        .get("/api/*", this.API_speedLimiter, this.API_rateLimiter, (res,req,next) => this.hasValidToken(res,req,next), (req, res) => this.GetAPI(req,res))
+        .post("/api/*", this.API_speedLimiter, this.API_rateLimiter, (res,req,next) => this.hasValidToken(res,req,next), (req, res) => this.PostAPI(req,res))
+        .put("/api/*", this.API_speedLimiter, this.API_rateLimiter, (res,req,next) => this.hasValidToken(res,req,next), (req, res) => this.PutAPI(req,res))
+        .delete("/api/*", this.API_speedLimiter, this.API_rateLimiter, (res,req,next) => this.hasValidToken(res,req,next), (req, res) => this.DeleteAPI(req,res))
 
-        .get("/*", (req, res) => {
+        .get("/*", this.API_rateLimiter, this.API_speedLimiter, (req, res) => {
           console.warn("[WEBSITE] [API] Don't find:", req.url);
           res.status(404).json({ error: "You Are Lost in Space" });
         });
@@ -1344,6 +1389,8 @@ class website {
       console.log(`[WEBSITE] ${api ? "[API] " : ""}[${ip}] Welcome ${username}, happy to serve you!`);
 
       if (api) {
+        this.API_rateLimiter.resetKey(req.ip);
+        this.API_speedLimiter.resetKey(req.ip);
         APIResult = {
           access_token: token,
           token_type: "Bearer",
@@ -1351,6 +1398,8 @@ class website {
         };
         res.json(APIResult);
       } else {
+        this.rateLimiter.resetKey(req.ip);
+        this.speedLimiter.resetKey(req.ip);
         res.cookie("EXT-Website", token, {
           httpOnly: true,
           //secure: true,
@@ -1380,6 +1429,9 @@ class website {
 
         const user = decoded.user;
         if (!user || user !== this.website.user.username) return null;
+
+        this.rateLimiter.resetKey(req.ip);
+        this.speedLimiter.resetKey(req.ip);
 
         return true;
       });
@@ -1421,6 +1473,8 @@ class website {
         const user = decoded.user;
         if (!user || user !== this.website.user.username) return res.status(401).send("Unauthorized");
         req.user = user;
+        this.API_rateLimiter.resetKey(req.ip);
+        this.API_speedLimiter.resetKey(req.ip);
         next();
       });
     } catch (err) {
