@@ -9,7 +9,8 @@ Module.register("EXT-Website", {
     debug: false,
     username: "admin",
     password: "admin",
-    useAPIDocs: false
+    useAPIDocs: false,
+    useLimiter: true
   },
 
   start () {
