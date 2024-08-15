@@ -60,7 +60,8 @@ module.exports = NodeHelper.create({
       let WebsiteHelperConfig = {
         config: {
           username: this.config.username,
-          password: this.config.password
+          password: this.config.password,
+          useLimiter: this.config.useLimiter
         },
         debug: this.config.debug,
         lib: this.lib
