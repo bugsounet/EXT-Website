@@ -78,6 +78,8 @@ async function createEXTTable () {
         else Content += `<td align="center"><a class="btn btn-success btn-sm" data-bs-toggle="tooltip" title="${translation.Plugins_Table_Modify}" role="button" href="/EXTModifyConfig?ext=${pluginsName}">${translation.Modify}</a></td>`;
       }
       Content += "</tr>";
+    } else {
+      console.warn("Not displayed:", pluginsName);
     }
   });
 
