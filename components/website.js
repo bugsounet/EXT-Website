@@ -45,7 +45,6 @@ const mainBranch = {
   "EXT-RadioPlayer": "master",
   "EXT-Screen": "master",
   "EXT-Spotify": "master",
-  "EXT-SpotifyCanvasLyrics": "main",
   "EXT-StreamDeck": "main",
   "EXT-SmartHome": "main",
   "EXT-TelegramBot": "master",

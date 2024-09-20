@@ -205,7 +205,6 @@
   "EXT-RadioPlayer": "Radiosender auf dem MagicMirror² abspielen.",
   "EXT-Screen": "Nach einer konfigurierten Zeit ohne Benutzerinteraktion schaltet sich der Bildschirm aus und blendet alle Module für den Sparmodus aus.",
   "EXT-Spotify": "Dieses Plugin zeigt die aktuelle Spotify-Wiedergabe eines Gerätes an.",
-  "EXT-SpotifyCanvasLyrics": "Erstelle einen Server für die Anzeige von Lyrics und Canvas von Spotify.",
   "EXT-StreamDeck" : "Den Zauberspiegel mit einem StreamDeck von elgato© steuern.",
   "EXT-TelegramBot": "Den Zauberspiegel mit Telegram steuern.",
   "EXT-Updates": "Automatisches Aktualisieren (auch manuell), wenn ein Update erkannt wird.",

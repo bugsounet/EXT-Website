@@ -211,7 +211,6 @@
   "EXT-Screen": "Après un temps configuré sans aucune interaction de l'utilisateur, l'écran s'éteindra et masquera tous les modules pour le mode économie.",
   "EXT-SmartHome": "Permet de contrôler MMM-GoogleAssistant depuis l'application GoogleHome.",
   "EXT-Spotify": "Ce plugin affiche la lecture spotify actuelle de tous les appareils.",
-  "EXT-SpotifyCanvasLyrics": "Créez un serveur pour afficher les paroles et les canvas de Spotify",
   "EXT-StreamDeck" : "Contrôle votre mirroir avec un StreamDeck par elgato©",
   "EXT-TelegramBot": "Permet de contrôler à distance les plugins dans Telegram.",
   "EXT-Touch": "Permet d'activer MMM-GoogleAssistant avec un écran tatile en appuyant uniquement sur l'icône Google.",
