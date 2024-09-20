@@ -44,6 +44,7 @@ const mainBranch = {
   "EXT-Pir": "master",
   "EXT-RadioPlayer": "master",
   "EXT-Screen": "master",
+  "EXT-Spotify": "master",
   "EXT-SpotifyCanvasLyrics": "main",
   "EXT-StreamDeck": "main",
   "EXT-SmartHome": "main",
@@ -51,7 +52,7 @@ const mainBranch = {
   "EXT-Updates": "master",
   "EXT-VLCServer": "main",
   "EXT-Volume": "master",
-  "EXT-Website": "dev",
+  "EXT-Website": "main",
   "EXT-Welcome": "master",
   "EXT-YouTube": "master",
   "EXT-YouTubeCast": "master"
