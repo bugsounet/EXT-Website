@@ -1198,8 +1198,8 @@ class website {
         res.json({ done: "ok" });
         break;
 
-      case "/api/EXT/Alert":
-        if (!this.website.EXTStatus["EXT-Alert"].hello) return res.status(404).send("Not Found");
+      case "/api/Assistant/Alert":
+        if (!this.website.EXTStatus["GA_Ready"]) return res.status(404).send("Not Found");
         let alert = req.body["alert"];
         if (typeof(alert) !== "string" || alert.length < 5 ) return res.status(400).send("Bad Request");
         log("[API] Request send Alert:", alert);

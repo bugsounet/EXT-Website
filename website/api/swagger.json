@@ -1172,73 +1172,6 @@
         }
       }
     },
-    "/api/EXT/Alert": {
-      "post": {
-        "tags": [
-          "EXT"
-        ],
-        "summary": "Send Alert on the screen",
-        "security": [
-          {
-            "Bearer": []
-          }
-        ],
-        "description": "Send Alert on MagicMirror² screen.<li>Required: `EXT-Alert` plugin.<li>Required: `Bearer` token in header.<li>Required: `alert` param with message content in body (JSON Format).",
-        "requestBody": {
-          "description" : "Send Alert on MagicMirror²",
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/SendAlert"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Command sended successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/EXT200"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Missing query param",
-            "content": {
-              "text/html": {
-                "schema": {
-                  "$ref": "#/components/schemas/Config400Error"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Missing valid authentication token",
-            "content": {
-              "text/html": {
-                "schema": {
-                  "$ref": "#/components/schemas/401Error"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "EXT-Alert not found",
-            "content": {
-              "text/html": {
-                "schema": {
-                  "$ref": "#/components/schemas/Config404Error"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/api/EXT/Spotify": {
       "put": {
         "tags": [
@@ -2887,6 +2820,73 @@
           },
           "404": {
             "description": " MMM-GoogleAssistant is not Ready",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "$ref": "#/components/schemas/Config404Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Assistant/Alert": {
+      "post": {
+        "tags": [
+          "Assistant"
+        ],
+        "summary": "Send Alert on the screen",
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "description": "Send Alert on MagicMirror² screen.<li>Required: `Bearer` token in header.<li>Required: `alert` param with message content in body (JSON Format).",
+        "requestBody": {
+          "description" : "Send Alert on MagicMirror²",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SendAlert"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Command sended successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EXT200"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing query param",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "$ref": "#/components/schemas/Config400Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing valid authentication token",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "$ref": "#/components/schemas/401Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "EXT-Alert not found",
             "content": {
               "text/html": {
                 "schema": {
