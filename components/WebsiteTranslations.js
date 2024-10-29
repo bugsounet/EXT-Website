@@ -240,7 +240,6 @@ class WebsiteTranslations {
       this.EXTDescription["EXT-Screen"] = this.translate("EXT-Screen");
       this.EXTDescription["EXT-SmartHome"] = this.translate("EXT-SmartHome");
       this.EXTDescription["EXT-Spotify"] = this.translate("EXT-Spotify");
-      this.EXTDescription["EXT-SpotifyCanvasLyrics"] = this.translate("EXT-SpotifyCanvasLyrics");
       this.EXTDescription["EXT-StreamDeck"] = this.translate("EXT-StreamDeck");
       this.EXTDescription["EXT-TelegramBot"] = this.translate("EXT-TelegramBot");
       this.EXTDescription["EXT-Touch"] = this.translate("EXT-Touch");
