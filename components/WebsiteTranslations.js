@@ -226,7 +226,6 @@ class WebsiteTranslations {
   /** load descriptions **/
   Load_EXT_Description () {
     return new Promise((resolve) => {
-      this.EXTDescription["EXT-Alert"] = this.translate("EXT-Alert");
       this.EXTDescription["EXT-Background"] = this.translate("EXT-Background");
       this.EXTDescription["EXT-Browser"] = this.translate("EXT-Browser");
       this.EXTDescription["EXT-Detector"] = this.translate("EXT-Detector");
@@ -274,8 +273,6 @@ class WebsiteTranslations {
       this.VALTranslate.PluginConfigDeepMerge = this.translate("VAL_PluginConfigDeepMerge");
       this.VALTranslate.PluginConfiguration = this.translate("VAL_PluginConfiguration");
       this.VALTranslate.PluginDebug = this.translate("VAL_PluginDebug");
-      this.VALTranslate["EXT-Alert_ignore"] = this.translate("VAL_EXT-Alert_ignore");
-      this.VALTranslate["EXT-Alert_style"] = this.translate("VAL_EXT-Alert_style");
       this.VALTranslate["EXT-Background_Model"] = this.translate("VAL_EXT-Background_Model");
       this.VALTranslate["EXT-Background_Image"] = this.translate("VAL_EXT-Background_Image");
       this.VALTranslate["EXT-Browser_Delay"] = this.translate("VAL_EXT-Browser_Delay");

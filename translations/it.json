@@ -126,7 +126,6 @@
   "GW_RequestDone": "Richiesta Inviata con successo",
   "GW_Listen": "Ascolta",
 
-  "EXT-Alert": "Mostra Informazioni, Errori o warning sullo schermo.",
   "EXT-Background": "Cambia lo sfondo di default del Google Assistant.",
   "EXT-Browser": "Mostra una pagina Internet a schermo pieno.",
   "EXT-Detector": "Modulo ascolto Multi-keyword per MMM-GoogleAssistant",
@@ -155,7 +154,6 @@
   "VAL_PluginDebug": "Abilita modalità debug",
   "VAL_PluginPosition": "Posizione Plugin",
   "VAL_PluginConfigDeepMerge": "Completa la configurazione con il default se non specificata.",
-  "VAL_EXT-Alert_ignore": "Lista Plugin ignora notifiche",
   "VAL_EXT-Background_Model": "Scelta Modello",
   "VAL_EXT-Background_Image": "Scelta Immagine personalizzata",
   "VAL_EXT-Browser_Delay": "Ritardo Chiusura Browser. 0 per disabilitare . Default 60 secondi",

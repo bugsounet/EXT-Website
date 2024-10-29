@@ -29,7 +29,6 @@ var log = (...args) => { /* do nothing */ };
 
 const mainBranch = {
   "MMM-GoogleAssistant": "prod",
-  "EXT-Alert": "master",
   "EXT-Background": "master",
   "EXT-Browser": "master",
   "EXT-Detector": "main",
