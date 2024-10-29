@@ -231,13 +231,11 @@ class WebsiteTranslations {
       this.EXTDescription["EXT-Detector"] = this.translate("EXT-Detector");
       this.EXTDescription["EXT-FreeboxTV"] = this.translate("EXT-FreeboxTV");
       this.EXTDescription["EXT-GooglePhotos"] = this.translate("EXT-GooglePhotos");
-      this.EXTDescription["EXT-Governor"] = this.translate("EXT-Governor");
       this.EXTDescription["EXT-Keyboard"] = this.translate("EXT-Keyboard");
       this.EXTDescription["EXT-Librespot"] = this.translate("EXT-Librespot");
       this.EXTDescription["EXT-MusicPlayer"] = this.translate("EXT-MusicPlayer");
       this.EXTDescription["EXT-Pages"] = this.translate("EXT-Pages");
       this.EXTDescription["EXT-Photos"] = this.translate("EXT-Photos");
-      this.EXTDescription["EXT-Pir"] = this.translate("EXT-Pir");
       this.EXTDescription["EXT-RadioPlayer"] = this.translate("EXT-RadioPlayer");
       this.EXTDescription["EXT-Screen"] = this.translate("EXT-Screen");
       this.EXTDescription["EXT-SmartHome"] = this.translate("EXT-SmartHome");
@@ -299,8 +297,6 @@ class WebsiteTranslations {
       this.VALTranslate["EXT-GooglePhotos_Height"] = this.translate("VAL_EXT-GooglePhotos_Height");
       this.VALTranslate["EXT-GooglePhotos_Width"] = this.translate("VAL_EXT-GooglePhotos_Width");
       this.VALTranslate["EXT-GooglePhotos_uploadAlbum"] = this.translate("VAL_EXT-GooglePhotos_uploadAlbum");
-      this.VALTranslate["EXT-Governor_Sleep"] = this.translate("VAL_EXT-Governor_Sleep");
-      this.VALTranslate["EXT-Governor_Work"] = this.translate("VAL_EXT-Governor_Work");
       this.VALTranslate["EXT-Keyboard_keyFinder"] = this.translate("VAL_EXT-Keyboard_keyFinder");
       this.VALTranslate["EXT-Keyboard_keys"] = this.translate("VAL_EXT-Keyboard_keys");
       this.VALTranslate["EXT-Keyboard_keycode"] = this.translate("VAL_EXT-Keyboard_keycode");
@@ -332,8 +328,6 @@ class WebsiteTranslations {
       this.VALTranslate["EXT-Pages_loading"] = this.translate("VAL_EXT-Pages_loading");
       this.VALTranslate["EXT-Photos_Delay"] = this.translate("VAL_EXT-Photos_Delay");
       this.VALTranslate["EXT-Photos_Loop"] = this.translate("VAL_EXT-Photos_Loop");
-      this.VALTranslate["EXT-Pir_GPIO"] = this.translate("VAL_EXT-Pir_GPIO");
-      this.VALTranslate["EXT-Pir_Reverse"] = this.translate("VAL_EXT-Pir_Reverse");
       this.VALTranslate["EXT-RadioPlayer_Min"] = this.translate("VAL_EXT-RadioPlayer_Min");
       this.VALTranslate["EXT-RadioPlayer_Max"] = this.translate("VAL_EXT-RadioPlayer_Max");
       this.VALTranslate["EXT-Screen_Body"] = this.translate("VAL_EXT-Screen_Body");
