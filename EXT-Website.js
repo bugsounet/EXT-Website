@@ -98,7 +98,7 @@ Module.register("EXT-Website", {
     this.Translations = new WebsiteTranslations(Tools);
     let init = await this.Translations.init();
     if (!init) {
-      this.sendNotification("EXT_ALERT", {
+      this.sendNotification("GA_ALERT", {
         message: "Translations Error",
         type: "error",
         timer: 5000

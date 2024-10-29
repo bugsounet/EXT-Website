@@ -231,7 +231,7 @@ class website {
         console.error("[WEBSITE] [SERVER] Can't start web server!");
         console.error("[WEBSITE] [SERVER] Error:", err.message);
         this.sendSocketNotification("SendNoti", {
-          noti: "EXT_ALERT",
+          noti: "GA_ALERT",
           payload: {
             type: "error",
             message: "Can't start web server!",
@@ -589,7 +589,7 @@ class website {
           console.error("[WEBSITE] [API] Can't start API server!");
           console.error("[WEBSITE] [API] Error:", err.message);
           this.sendSocketNotification("SendNoti", {
-            noti: "EXT_ALERT",
+            noti: "GA_ALERT",
             payload: {
               type: "error",
               message: "Can't start API server!",
@@ -1204,7 +1204,7 @@ class website {
         if (typeof(alert) !== "string" || alert.length < 5 ) return res.status(400).send("Bad Request");
         log("[API] Request send Alert:", alert);
         this.sendSocketNotification("SendNoti", {
-          noti: "EXT_ALERT",
+          noti: "GA_ALERT",
           payload: {
             type: "information",
             message: alert,
