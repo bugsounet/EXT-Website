@@ -136,8 +136,6 @@
   "EXT-Photos": "Mostra Foto trovate a pieno schermo",
   "EXT-RadioPlayer": "Ascolta la radio sul MagicMirror².",
   "EXT-Screen": "Spegni lo specchio dopo un periodo configurabile di inattività.",
-  "EXT-ScreenManager": "Accendi o spegni lo specchio in base a un orario.",
-  "EXT-ScreenTouch": "Accendi o spegni lo schermo via touchscreen.",
   "EXT-Spotify": "Mostra i brani in ascolto su Spotify.",
   "EXT-Updates": "Aggiornamento automatico moduli.",
   "EXT-Volume": "Controlla il volume dell Specchio.",
