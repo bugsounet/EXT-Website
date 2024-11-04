@@ -303,8 +303,6 @@ class WebsiteTranslations {
       this.VALTranslate["EXT-Keyboard_payload"] = this.translate("VAL_EXT-Keyboard_payload");
       this.VALTranslate["EXT-Keyboard_command"] = this.translate("VAL_EXT-Keyboard_command");
       this.VALTranslate["EXT-Keyboard_sound"] = this.translate("VAL_EXT-Keyboard_sound");
-      this.VALTranslate["EXT-Librespot_Email"] = this.translate("VAL_EXT-Librespot_Email");
-      this.VALTranslate["EXT-Librespot_Password"] = this.translate("VAL_EXT-Librespot_Password");
       this.VALTranslate["EXT-Librespot_Name"] = this.translate("VAL_EXT-Librespot_Name");
       this.VALTranslate["EXT-Librespot_Min"] = this.translate("VAL_EXT-Librespot_Min");
       this.VALTranslate["EXT-Librespot_Max"] = this.translate("VAL_EXT-Librespot_Max");

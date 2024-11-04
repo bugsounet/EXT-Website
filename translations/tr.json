@@ -249,8 +249,6 @@
   "VAL_EXT-Keyboard_payload": "Yükü bildirimle ilişkilendirme",
   "VAL_EXT-Keyboard_command": "Bu kabuk komutunu gönder",
   "VAL_EXT-Keyboard_sound": "Bu sesi çal (yalnızca mp3)",
-  "VAL_EXT-Librespot_Email": "Spotify e-postanız",
-  "VAL_EXT-Librespot_Password": "Spotify şifreniz",
   "VAL_EXT-Librespot_Name": "BU Spotify cihaz adını tanımlayın",
   "VAL_EXT-Librespot_Min": "Asistan konuşurken ayarlanacak ses seviyesi (% olarak)",
   "VAL_EXT-Librespot_Max": "Spotify oynatılırken maksimum ses seviyesi (% olarak)",

@@ -261,8 +261,6 @@
   "VAL_EXT-Keyboard_payload": "Associate payload with notification",
   "VAL_EXT-Keyboard_command": "Send this shell command",
   "VAL_EXT-Keyboard_sound": "Play this sound (mp3 only)",
-  "VAL_EXT-Librespot_Email": "Your spotify email",
-  "VAL_EXT-Librespot_Password": "Your spotify password",
   "VAL_EXT-Librespot_Name": "Define THIS spotify device name",
   "VAL_EXT-Librespot_Min": "Volume to set when assistant speaking (in %)",
   "VAL_EXT-Librespot_Max": "Max volume when spotify playing (in %)",

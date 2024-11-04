@@ -3,8 +3,6 @@ var defaultConfig = {
   disabled: false,
   config: {
     debug: false,
-    email: "",
-    password: "",
     deviceName: "MagicMirror",
     minVolume: 50,
     maxVolume: 100
@@ -34,17 +32,6 @@ var schema = {
           type: "boolean",
           title: "{PluginDebug}",
           default: false
-        },
-        email: {
-          type: "string",
-          title: "{EXT-Librespot_Email}",
-          format: "email",
-          default: null
-        },
-        password: {
-          type: "string",
-          title: "{EXT-Librespot_Password}",
-          default: null
         },
         deviceName: {
           type: "string",
