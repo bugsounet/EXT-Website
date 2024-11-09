@@ -29,39 +29,26 @@ var log = (...args) => { /* do nothing */ };
 
 const mainBranch = {
   "MMM-GoogleAssistant": "prod",
-  "EXT-Alert": "master",
   "EXT-Background": "master",
-  "EXT-Bring": "main",
   "EXT-Browser": "master",
   "EXT-Detector": "main",
   "EXT-FreeboxTV": "main",
   "EXT-GooglePhotos": "master",
-  "EXT-Governor": "master",
-  "EXT-Internet": "master",
   "EXT-Keyboard": "main",
   "EXT-Librespot": "master",
   "EXT-MusicPlayer": "master",
-  "EXT-Motion": "main",
   "EXT-Pages": "master",
   "EXT-Photos": "master",
-  "EXT-Pir": "master",
   "EXT-RadioPlayer": "master",
-  "EXT-RemoteControler": "main",
   "EXT-Screen": "master",
-  "EXT-Selfies": "master",
-  "EXT-SelfiesFlash": "main",
-  "EXT-SelfiesSender": "main",
-  "EXT-SelfiesViewer": "main",
   "EXT-Spotify": "master",
-  "EXT-SpotifyCanvasLyrics": "main",
   "EXT-StreamDeck": "main",
   "EXT-SmartHome": "main",
-  "EXT-SysInfo" : "main",
   "EXT-TelegramBot": "master",
   "EXT-Updates": "master",
   "EXT-VLCServer": "main",
   "EXT-Volume": "master",
-  "EXT-Website": "dev",
+  "EXT-Website": "main",
   "EXT-Welcome": "master",
   "EXT-YouTube": "master",
   "EXT-YouTubeCast": "master"
@@ -241,7 +228,7 @@ class website {
         console.error("[WEBSITE] [SERVER] Can't start web server!");
         console.error("[WEBSITE] [SERVER] Error:", err.message);
         this.sendSocketNotification("SendNoti", {
-          noti: "EXT_ALERT",
+          noti: "GA_ALERT",
           payload: {
             type: "error",
             message: "Can't start web server!",
@@ -599,7 +586,7 @@ class website {
           console.error("[WEBSITE] [API] Can't start API server!");
           console.error("[WEBSITE] [API] Error:", err.message);
           this.sendSocketNotification("SendNoti", {
-            noti: "EXT_ALERT",
+            noti: "GA_ALERT",
             payload: {
               type: "error",
               message: "Can't start API server!",
@@ -1208,13 +1195,13 @@ class website {
         res.json({ done: "ok" });
         break;
 
-      case "/api/EXT/Alert":
-        if (!this.website.EXTStatus["EXT-Alert"].hello) return res.status(404).send("Not Found");
+      case "/api/Assistant/Alert":
+        if (!this.website.EXTStatus["GA_Ready"]) return res.status(404).send("Not Found");
         let alert = req.body["alert"];
         if (typeof(alert) !== "string" || alert.length < 5 ) return res.status(400).send("Bad Request");
         log("[API] Request send Alert:", alert);
         this.sendSocketNotification("SendNoti", {
-          noti: "EXT_ALERT",
+          noti: "GA_ALERT",
           payload: {
             type: "information",
             message: alert,
