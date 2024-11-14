@@ -1177,12 +1177,12 @@ class website {
         break;
 
       case "/api/system/reboot":
-        setTimeout(() => this.sendSocketNotification("SendNoti", "EXT-GATEWAY-Reboot"), 1000);
+        setTimeout(() => this.sendSocketNotification("SendNoti", "EXT_GATEWAY-Reboot"), 1000);
         res.json({ done: "ok" });
         break;
 
       case "/api/system/shutdown":
-        setTimeout(() => this.sendSocketNotification("SendNoti", "EXT-GATEWAY-Shutdown"), 3000);
+        setTimeout(() => this.sendSocketNotification("SendNoti", "EXT_GATEWAY-Shutdown"), 3000);
         res.json({ done: "ok" });
         break;
 
