@@ -39,7 +39,7 @@
     "glob": "^11.0.0",
     "http-proxy-middleware": "^3.0.3",
     "jquery": "^3.7.1",
-    "jsoneditor": "^10.1.0",
+    "jsoneditor": "^10.1.1",
     "jsonwebtoken": "^9.0.2",
     "nan": "^2.22.0",
     "node-pty": "^1.0.0",
