@@ -2,7 +2,10 @@
 * @bugsounet
 **/
 
+/* global $, alertify, getCurrentToken, getVersion, loadRadio, loadTranslation, loadDataInstalledEXT, doTranslateNavBar, checkWebviewTag, checkEXTStatus, loadBackupNames, loadDataInstalledEXT, forceMobileRotate */
+
 // rotate rules
+/* eslint-disable-next-line */
 var PleaseRotateOptions = {
   startOnPageLoad: false
 };
@@ -13,10 +16,9 @@ var InstEXT = [];
 var version = {};
 var webviewTag = false;
 var EXTStatus = {};
-var ErrEXTStatus = 0;
 
 // Load rules
-window.addEventListener("load", async (event) => {
+window.addEventListener("load", async () => {
   version = await getVersion();
   translation = await loadTranslation();
 
@@ -56,7 +58,7 @@ async function doTools () {
     $("#backup-Box").css("display", "block");
 
     document.getElementById("backup-Delete").onclick = function () {
-      Request ("/api/backups", "DELETE", { Authorization: `Bearer ${getCurrentToken()}` }, null, "backup-Delete", () => {
+      Request("/api/backups", "DELETE", { Authorization: `Bearer ${getCurrentToken()}` }, null, "backup-Delete", () => {
         $("#backup-Delete").css("display", "none");
         $("#backup-Done").css("display", "inline-block");
         alertify.success(translation.Tools_Backup_Deleted);
@@ -92,7 +94,7 @@ async function doTools () {
     if (displayNeeded) $("#webview-Box").css("display", "block");
 
     document.getElementById("webviewbtn-Apply").onclick = function () {
-      Request ("/api/config/webview", "PUT", { Authorization: `Bearer ${getCurrentToken()}` }, null, "WebviewTag", () => {
+      Request("/api/config/webview", "PUT", { Authorization: `Bearer ${getCurrentToken()}` }, null, "WebviewTag", () => {
         $("#webviewbtn-Apply").css("display", "none");
         $("#webviewbtn-Done").css("display", "inline-block");
         alertify.success(translation.Restart);
@@ -124,7 +126,7 @@ async function doTools () {
 
     document.getElementById("Screen-Control").onclick = function () {
       let powerControler = EXTStatus["EXT-Screen"].power ? "OFF" : "ON";
-      Request ("/api/EXT/Screen", "PUT", { Authorization: `Bearer ${getCurrentToken()}` }, JSON.stringify( { power : powerControler } ), "Screen", () => {
+      Request("/api/EXT/Screen", "PUT", { Authorization: `Bearer ${getCurrentToken()}` }, JSON.stringify({ power: powerControler }), "Screen", () => {
         alertify.success(translation.RequestDone);
       }, null);
     };
@@ -145,7 +147,7 @@ async function doTools () {
 
   document.getElementById("Alert-Send").onclick = function () {
     $("#Alert-Send").addClass("disabled");
-    Request ("/api/Assistant/Alert", "POST", { Authorization: `Bearer ${getCurrentToken()}` }, JSON.stringify( { alert: $("#Alert-Query").val() } ), "Alert", () => {
+    Request("/api/Assistant/Alert", "POST", { Authorization: `Bearer ${getCurrentToken()}` }, JSON.stringify({ alert: $("#Alert-Query").val() }), "Alert", () => {
       alertify.success(translation.RequestDone);
     }, null);
   };
@@ -162,7 +164,7 @@ async function doTools () {
     }, 1000);
 
     document.getElementById("Volume-Send").onclick = function () {
-      Request ("/api/EXT/Volume/speaker", "PUT", { Authorization: `Bearer ${getCurrentToken()}` }, JSON.stringify({ volume: Number($("#Volume-Query").val()) }), "Volume", () => {
+      Request("/api/EXT/Volume/speaker", "PUT", { Authorization: `Bearer ${getCurrentToken()}` }, JSON.stringify({ volume: Number($("#Volume-Query").val()) }), "Volume", () => {
         alertify.success(translation.RequestDone);
       }, null);
     };
@@ -180,7 +182,7 @@ async function doTools () {
     }, 1000);
 
     document.getElementById("Volume-Send-Record").onclick = function () {
-      Request ("/api/EXT/Volume/recorder", "PUT", { Authorization: `Bearer ${getCurrentToken()}` }, JSON.stringify({ volume: Number($("#Volume-Query-Record").val()) }), "Volume", () => {
+      Request("/api/EXT/Volume/recorder", "PUT", { Authorization: `Bearer ${getCurrentToken()}` }, JSON.stringify({ volume: Number($("#Volume-Query-Record").val()) }), "Volume", () => {
         alertify.success(translation.RequestDone);
       }, null);
     };
@@ -200,7 +202,7 @@ async function doTools () {
       if (!Object.keys(updateModules).length) return $("#Update-Box").css("display", "none");
       if (Object.keys(updateModules).length) {
         $("#Update-Box").css("display", "block");
-        for (const [key, value] of Object.entries(updateModules)) {
+        for (const [key] of Object.entries(updateModules)) {
           if ($(`#${key}`).length === 0) $("#Update-Modules-Box").append(`<br><span id='${key}'>${key}</span>`);
           if (key.startsWith("EXT-") || key === "MMM-GoogleAssistant") ++needUpdate;
         }
@@ -211,7 +213,7 @@ async function doTools () {
     }, 1000);
     document.getElementById("Update-Confirm").onclick = function () {
       $("#Update-Confirm").addClass("disabled");
-      Request ("/api/EXT/Updates", "PUT", { Authorization: `Bearer ${getCurrentToken()}` }, null, "Updates", () => {
+      Request("/api/EXT/Updates", "PUT", { Authorization: `Bearer ${getCurrentToken()}` }, null, "Updates", () => {
         alertify.success(translation.RequestDone);
       }, null);
     };
@@ -249,31 +251,31 @@ async function doTools () {
 
     document.getElementById("Spotify-Send").onclick = function () {
       $("#Spotify-Send").addClass("disabled");
-      Request ("/api/EXT/Spotify", "PUT", { Authorization: `Bearer ${getCurrentToken()}` }, JSON.stringify({ query: $("#Spotify-Query").val(), type: type }), "Spotify", () => {
+      Request("/api/EXT/Spotify", "PUT", { Authorization: `Bearer ${getCurrentToken()}` }, JSON.stringify({ query: $("#Spotify-Query").val(), type: type }), "Spotify", () => {
         alertify.success(translation.RequestDone);
       }, null);
     };
 
     document.getElementById("Spotify-Play").onclick = function () {
-      Request ("/api/EXT/Spotify/play", "PUT", { Authorization: `Bearer ${getCurrentToken()}` }, null, "Spotify", () => {
+      Request("/api/EXT/Spotify/play", "PUT", { Authorization: `Bearer ${getCurrentToken()}` }, null, "Spotify", () => {
         alertify.success(translation.RequestDone);
       }, null);
     };
 
     document.getElementById("Spotify-Stop").onclick = function () {
-      Request ("/api/EXT/Spotify/stop", "PUT", { Authorization: `Bearer ${getCurrentToken()}` }, null, "Spotify", () => {
+      Request("/api/EXT/Spotify/stop", "PUT", { Authorization: `Bearer ${getCurrentToken()}` }, null, "Spotify", () => {
         alertify.success(translation.RequestDone);
       }, null);
     };
 
     document.getElementById("Spotify-Next").onclick = function () {
-      Request ("/api/EXT/Spotify/next", "PUT", { Authorization: `Bearer ${getCurrentToken()}` }, null, "Spotify", () => {
+      Request("/api/EXT/Spotify/next", "PUT", { Authorization: `Bearer ${getCurrentToken()}` }, null, "Spotify", () => {
         alertify.success(translation.RequestDone);
       }, null);
     };
 
     document.getElementById("Spotify-Previous").onclick = function () {
-      Request ("/api/EXT/Spotify/previous", "PUT", { Authorization: `Bearer ${getCurrentToken()}` }, null, "Spotify", () => {
+      Request("/api/EXT/Spotify/previous", "PUT", { Authorization: `Bearer ${getCurrentToken()}` }, null, "Spotify", () => {
         alertify.success(translation.RequestDone);
       }, null);
     };
@@ -362,7 +364,7 @@ async function doTools () {
 
   document.getElementById("GoogleAssistant-Send").onclick = function () {
     $("#GoogleAssistant-Send").addClass("disabled");
-    Request ("/api/Assistant/query", "POST", { Authorization: `Bearer ${getCurrentToken()}` }, JSON.stringify({ query: $("#GoogleAssistant-Query").val() }), "GoogleAssistant", () => {
+    Request("/api/Assistant/query", "POST", { Authorization: `Bearer ${getCurrentToken()}` }, JSON.stringify({ query: $("#GoogleAssistant-Query").val() }), "GoogleAssistant", () => {
       $("#GoogleAssistant-Query").val("");
       alertify.success(translation.RequestDone);
     }, (err) => {
@@ -388,7 +390,7 @@ async function doTools () {
     });
 
     document.getElementById("YouTube-Send").onclick = function () {
-      Request ("/api/EXT/YouTube", "PUT", { Authorization: `Bearer ${getCurrentToken()}` }, JSON.stringify({ query: $("#YouTube-Query").val() }), "YouTube", () => {
+      Request("/api/EXT/YouTube", "PUT", { Authorization: `Bearer ${getCurrentToken()}` }, JSON.stringify({ query: $("#YouTube-Query").val() }), "YouTube", () => {
         alertify.success(translation.RequestDone);
       }, null);
     };
@@ -416,7 +418,7 @@ async function doTools () {
     }
     $("#Radio-Box").css("display", "block");
     document.getElementById("Radio-Send").onclick = function () {
-      Request ("/api/EXT/RadioPlayer", "PUT", { Authorization: `Bearer ${getCurrentToken()}` }, JSON.stringify({ radio: $("#Radio-Query").val() }), "RadioPlayer", () => {
+      Request("/api/EXT/RadioPlayer", "PUT", { Authorization: `Bearer ${getCurrentToken()}` }, JSON.stringify({ radio: $("#Radio-Query").val() }), "RadioPlayer", () => {
         alertify.success(translation.RequestDone);
       }, null);
     };
@@ -426,7 +428,7 @@ async function doTools () {
   if (EXTStatus["EXT-FreeboxTV"].hello && version.lang === "fr") {
     $("#FreeboxTV-Box").css("display", "block");
     document.getElementById("FreeboxTV-Send").onclick = function () {
-      Request ("/api/EXT/FreeboxTV", "PUT", { Authorization: `Bearer ${getCurrentToken()}` }, JSON.stringify({ TV: $("#FreeboxTV-Query").val() }), "FreeboxTV", () => {
+      Request("/api/EXT/FreeboxTV", "PUT", { Authorization: `Bearer ${getCurrentToken()}` }, JSON.stringify({ TV: $("#FreeboxTV-Query").val() }), "FreeboxTV", () => {
         alertify.success(translation.RequestDone);
       }, null);
     };
@@ -436,7 +438,7 @@ async function doTools () {
   $("#Stop-Text").text(translation.Tools_Stop_Text);
   $("#Stop-Send").text(translation.Send);
   document.getElementById("Stop-Send").onclick = function () {
-    Request ("/api/EXT/stop", "POST", { Authorization: `Bearer ${getCurrentToken()}` }, null , "STOP", () => {
+    Request("/api/EXT/stop", "POST", { Authorization: `Bearer ${getCurrentToken()}` }, null, "STOP", () => {
       alertify.success(translation.RequestDone);
     }, null);
   };
