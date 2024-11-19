@@ -1,3 +1,6 @@
+/* global removeAnimateCSS, addAnimateCSS */
+/* eslint-disable max-lines-per-function */
+/* eslint-disable-next-line */
 class sysInfoPage {
   constructor (Tools) {
     this.translate = (...args) => Tools.translate(...args);

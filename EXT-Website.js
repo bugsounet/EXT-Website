@@ -3,6 +3,8 @@
 * bugsounet ©05/24
 ******************/
 
+/* global WebsiteTranslations, sysInfoPage */
+
 Module.register("EXT-Website", {
   requiresVersion: "2.27.0",
   defaults: {
@@ -129,7 +131,6 @@ Module.register("EXT-Website", {
   cmd_sysinfo (command, handler) {
     if (handler.args) {
       var args = handler.args.toLowerCase().split(" ");
-      var params = handler.args.split(" ");
       if (args[0] === "show") {
         this.sysInfo.show();
         handler.reply("TEXT", "ok.");

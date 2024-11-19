@@ -2,8 +2,10 @@
 * @bugsounet
 **/
 
-// rotate rules
+/* global $, loadTranslation, forceMobileRotate, doTranslateNavBar, loadMMConfig, JSONEditor, loadBackupNames, loadBackupConfig, getCurrentToken, alertify, FileReaderJS, saveAs */
 
+// rotate rules
+/* eslint-disable-next-line */
 var PleaseRotateOptions = {
   startOnPageLoad: false
 };
@@ -12,7 +14,7 @@ var PleaseRotateOptions = {
 var translation = {};
 
 // Load rules
-window.addEventListener("load", async (event) => {
+window.addEventListener("load", async () => {
   translation = await loadTranslation();
 
   forceMobileRotate();
@@ -47,7 +49,7 @@ async function viewJSEditor () {
       }
     }
   };
-  const editor = new JSONEditor(container, options, modules);
+  new JSONEditor(container, options, modules);
 }
 
 async function EditMMConfigJSEditor () {
@@ -119,13 +121,12 @@ async function EditMMConfigJSEditor () {
     }));
   });
   const container = document.getElementById("jsoneditor");
-  const message = document.getElementById("messageText");
   const editor = new JSONEditor(container, options, config);
   document.getElementById("load").onclick = function () {
     $("#load").css("display", "none");
     $("#wait").css("display", "block");
 
-    Request ("/api/backups/file", "PUT", { Authorization: `Bearer ${getCurrentToken()}`, backup: conf }, null, "loadBackup", () => {
+    Request("/api/backups/file", "PUT", { Authorization: `Bearer ${getCurrentToken()}`, backup: conf }, null, "loadBackup", () => {
       $("#wait").css("display", "none");
       $("#done").css("display", "block");
       $("#alert").removeClass("invisible");
@@ -152,7 +153,7 @@ async function EditMMConfigJSEditor () {
     $("#wait").css("display", "block");
     let encode = btoa(data);
 
-    Request ("api/config/MM", "PUT", { Authorization: `Bearer ${getCurrentToken()}` }, JSON.stringify({ config: encode }), "writeConfig", () => {
+    Request("api/config/MM", "PUT", { Authorization: `Bearer ${getCurrentToken()}` }, JSON.stringify({ config: encode }), "writeConfig", () => {
       $("#wait").css("display", "none");
       $("#done").css("display", "block");
       $("#alert").removeClass("invisible");
@@ -176,10 +177,10 @@ async function EditMMConfigJSEditor () {
   FileReaderJS.setupInput(document.getElementById("fileToLoad"), {
     readAsDefault: "Text",
     on: {
-      load (event, file) {
+      load (event) {
         if (event.target.result) {
           let encode = btoa(event.target.result);
-          Request ("/api/backups/external", "POST", { Authorization: `Bearer ${getCurrentToken()}` }, JSON.stringify({ config: encode }), "readExternalBackup", (back) => {
+          Request("/api/backups/external", "POST", { Authorization: `Bearer ${getCurrentToken()}` }, JSON.stringify({ config: encode }), "readExternalBackup", (back) => {
             let decode = atob(back.config);
             let config = JSON.parse(decode);
             editor.update(config);
@@ -204,7 +205,7 @@ async function EditMMConfigJSEditor () {
       }
       var configToSave = editor.getText();
       let encode = btoa(configToSave);
-      Request ("/api/backups/external", "PUT", { Authorization: `Bearer ${getCurrentToken()}` }, JSON.stringify({ config: encode }), "saveExternalBackup", (back) => {
+      Request("/api/backups/external", "PUT", { Authorization: `Bearer ${getCurrentToken()}` }, JSON.stringify({ config: encode }), "saveExternalBackup", (back) => {
         alertify.success("Download is ready !");
         $.get(`${back.file}`, function (data) {
           const blob = new Blob([data], { type: "application/javascript;charset=utf-8" });

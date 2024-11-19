@@ -2,28 +2,28 @@
 * @bugsounet
 **/
 
-// rotate rules
+/* global $, loadTranslation, forceMobileRotate, doTranslateNavBar, checkSystem, getEXTVersions */
 
+// rotate rules
+/* eslint-disable-next-line */
 var PleaseRotateOptions = {
   startOnPageLoad: false
 };
 
 // define all vars
 var translation = {};
-var System = {};
-var SystemInterval = null;
 var SystemFirstScan = true;
 var EXTVersions = [];
 var system = {};
 
 // Load rules
-window.addEventListener("load", async (event) => {
+window.addEventListener("load", async () => {
   translation = await loadTranslation();
 
   forceMobileRotate();
   doSystem(() => { doStatic(); });
   doTranslateNavBar();
-  SystemInterval = setInterval(() => {
+  setInterval(() => {
     doSystem();
   }, 15000);
 });
@@ -191,8 +191,8 @@ async function doSystem (cb = null) {
   system.STORAGE.forEach((partition, id) => {
     for (let [name, values] of Object.entries(partition)) {
       if ($(`#Storage-Part${id}`).html()) {
-        this.checkPartColor(id, values.use);
-        this.makeRefresh(values.use, `#StorageDisplay${id}`, `#StorageUsed${id}`, `${values.use}%`);
+        checkPartColor(id, values.use);
+        makeRefresh(values.use, `#StorageDisplay${id}`, `#StorageUsed${id}`, `${values.use}%`);
         continue;
       }
       var tr = document.createElement("tr");
@@ -221,7 +221,7 @@ async function doSystem (cb = null) {
       var progress = document.createElement("div");
       progress.id = `StorageDisplay${id}`;
       progress.className = "progress-bar progress-bar-striped progress-bar-animated bg-google-green";
-      this.checkPartColor(id, values.use);
+      checkPartColor(id, values.use);
       container.appendChild(progress);
       var usedValue = document.createElement("span");
       usedValue.id = `StorageUsed${id}`;
@@ -237,8 +237,8 @@ async function doSystem (cb = null) {
       tr.appendChild(percent);
       tr.appendChild(size);
       $("#Storage").append(tr);
-      this.checkPartColor(id, values.use);
-      this.makeProgress(values.use, `#StorageDisplay${id}`, `#StorageUsed${id}`, `${values.use}%`);
+      checkPartColor(id, values.use);
+      makeProgress(values.use, `#StorageDisplay${id}`, `#StorageUsed${id}`, `${values.use}%`);
     }
   });
 
@@ -248,15 +248,15 @@ async function doSystem (cb = null) {
   $("#MMUptimeRecord").text(system.UPTIME.recordMMDHM);
 
   if (SystemFirstScan) {
-    this.makeProgress(system.CPU.temp.C, "#TempDisplay", "#TempValue", `${system.CPU.temp.imperial ? system.CPU.temp.F : system.CPU.temp.C}°`);
-    this.makeProgress(system.MEMORY.percent, "#MemoryDisplay", "#MemoryPercent", system.MEMORY.used);
-    this.makeProgress(system.MEMORY.swapPercent, "#SwapDisplay", "#SwapPercent", system.MEMORY.swapUsed);
-    this.makeProgress(system.CPU.usage, "#LoadDisplay", "#LoadValue", `${system.CPU.usage}%`);
+    makeProgress(system.CPU.temp.C, "#TempDisplay", "#TempValue", `${system.CPU.temp.imperial ? system.CPU.temp.F : system.CPU.temp.C}°`);
+    makeProgress(system.MEMORY.percent, "#MemoryDisplay", "#MemoryPercent", system.MEMORY.used);
+    makeProgress(system.MEMORY.swapPercent, "#SwapDisplay", "#SwapPercent", system.MEMORY.swapUsed);
+    makeProgress(system.CPU.usage, "#LoadDisplay", "#LoadValue", `${system.CPU.usage}%`);
   } else {
-    this.makeRefresh(system.CPU.temp.C, "#TempDisplay", "#TempValue", `${system.CPU.temp.imperial ? system.CPU.temp.F : system.CPU.temp.C}°`);
-    this.makeRefresh(system.MEMORY.percent, "#MemoryDisplay", "#MemoryPercent", system.MEMORY.used);
-    this.makeRefresh(system.MEMORY.swapPercent, "#SwapDisplay", "#SwapPercent", system.MEMORY.swapUsed);
-    this.makeRefresh(system.CPU.usage, "#LoadDisplay", "#LoadValue", `${system.CPU.usage}%`);
+    makeRefresh(system.CPU.temp.C, "#TempDisplay", "#TempValue", `${system.CPU.temp.imperial ? system.CPU.temp.F : system.CPU.temp.C}°`);
+    makeRefresh(system.MEMORY.percent, "#MemoryDisplay", "#MemoryPercent", system.MEMORY.used);
+    makeRefresh(system.MEMORY.swapPercent, "#SwapDisplay", "#SwapPercent", system.MEMORY.swapUsed);
+    makeRefresh(system.CPU.usage, "#LoadDisplay", "#LoadValue", `${system.CPU.usage}%`);
   }
   SystemFirstScan = false;
 
@@ -393,7 +393,7 @@ function makeProgress (Value, Progress, Text, Display, i = 0) {
     percent = percent + 1;
     $(Progress).css("width", `${percent}%`);
     setTimeout(() => {
-      this.makeProgress(Value, Progress, Text, Display, percent);
+      makeProgress(Value, Progress, Text, Display, percent);
     }, 10);
   } else {
     $(Progress).css("width", `${Value}%`);

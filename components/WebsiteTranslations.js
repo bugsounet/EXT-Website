@@ -2,6 +2,7 @@
 /** WebSite Translations *
 /*********************/
 
+/* eslint-disable-next-line */
 class WebsiteTranslations {
   constructor (Tools) {
     this.translate = (...args) => Tools.translate(...args);

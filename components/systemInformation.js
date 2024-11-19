@@ -6,7 +6,7 @@ const si = require("systeminformation");
 // see to add fetch from website ?
 
 class systemInfo {
-  constructor (translate,units) {
+  constructor (translate, units) {
     this.translate = translate;
     this.System = {
       VERSION: {
@@ -92,7 +92,7 @@ class systemInfo {
 
   async initData () {
     this.System["VERSION"].NODECORE = await new Promise((res) => {
-      exec("node -v", (err, stdout, stderr) => {
+      exec("node -v", (err, stdout) => {
         if (err) res("unknow");
         else {
           let version = stdout.trim();
@@ -302,7 +302,7 @@ class systemInfo {
     return new Promise((resolve) => {
       var uptimeFilePath = path.resolve(__dirname, "../website/tools/.uptimed");
       if (fs.existsSync(uptimeFilePath)) {
-        var readFile = fs.readFile(uptimeFilePath, "utf8", (error, data) => {
+        fs.readFile(uptimeFilePath, "utf8", (error, data) => {
           if (error) {
             console.error("[WEBSITE] [SYSTEMINFO] readFile uptimed error!", error);
             return resolve();
@@ -325,7 +325,7 @@ class systemInfo {
           system: 1,
           MM: 1
         };
-        var recordFile = fs.writeFile(uptimeFilePath, JSON.stringify(uptime), (error) => {
+        fs.writeFile(uptimeFilePath, JSON.stringify(uptime), (error) => {
           if (error) console.error("[WEBSITE] [SYSTEMINFO] recordFile creation error!", error);
           else console.log("[WEBSITE] [SYSTEMINFO] Create Uptimed");
           resolve();
@@ -364,7 +364,7 @@ class systemInfo {
   }
 
   parse_wirelessStatus_interface (callback) {
-    return (error, stdout, stderr) => {
+    return (error, stdout) => {
       if (error) callback(error);
       else callback(error, this.parse_wirelessStatus_block(stdout.trim()));
     };
