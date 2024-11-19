@@ -1,7 +1,7 @@
 {
   "name": "EXT-Website",
-  "version": "1.3.1",
-  "rev": "241114",
+  "version": "1.3.2",
+  "rev": "241119",
   "api": "1.1.0",
   "description": "GA EXT-Website Module",
   "main": "EXT-Website.js",
