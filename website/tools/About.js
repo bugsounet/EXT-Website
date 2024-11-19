@@ -2,8 +2,10 @@
 * @bugsounet
 **/
 
-// rotate rules
+/* global $, getVersion, loadTranslation, forceMobileRotate, doTranslateNavBar */
 
+// rotate rules
+/* eslint-disable-next-line */
 var PleaseRotateOptions = {
   startOnPageLoad: false
 };
@@ -13,7 +15,7 @@ var translation = {};
 var version = {};
 
 // Load rules
-window.addEventListener("load", async (event) => {
+window.addEventListener("load", async () => {
   version = await getVersion();
   translation = await loadTranslation();
 

@@ -2,11 +2,13 @@
 * @bugsounet
 **/
 
+/* global $, loadLoginTranslation, alertify */
+
 // define all vars
 var translation = {};
 
 // Load rules
-window.addEventListener("load", async (event) => {
+window.addEventListener("load", async () => {
   translation = await loadLoginTranslation();
   doLogin();
 });
@@ -28,9 +30,9 @@ function doLogin () {
     event.preventDefault();
     alertify.set("notifier", "position", "top-center");
 
-    let credentials = `${$("#username").val()  }:${  $("#password").val()}`;
+    let credentials = `${$("#username").val()}:${$("#password").val()}`;
     let encode = btoa(credentials);
-    Request ("/auth", "POST", { Authorization: `Basic ${encode}` } , null, "Login", (response) => {
+    Request("/auth", "POST", { Authorization: `Basic ${encode}` }, null, "Login", (response) => {
       localStorage.setItem("EXT-WEBSITE", JSON.stringify(response.session));
       $(location).attr("href", "/");
     }, (err) => {

@@ -2,8 +2,13 @@
 * @bugsounet
 **/
 
-// rotate rules
+/* global $, getVersion, forceMobileRotate, doTranslateNavBar, loadDataAllEXT, loadTranslation, loadDataDescriptionEXT, loadDataInstalledEXT,
+  loadDataConfiguredEXT, io, Terminal, FitAddon, getCurrentToken, alertify, jQuery, loadPluginConfig, loadPluginTemplate, JSONEditor,
+  loadPluginCurrentConfig, loadPluginTemplate
+ */
 
+// rotate rules
+/* eslint-disable-next-line */
 var PleaseRotateOptions = {
   startOnPageLoad: false
 };
@@ -17,7 +22,7 @@ var ConfigEXT = [];
 var version = {};
 
 // Load rules
-window.addEventListener("load", async (event) => {
+window.addEventListener("load", async () => {
   version = await getVersion();
   translation = await loadTranslation();
 
@@ -135,7 +140,7 @@ function doDelete () {
     $("#messageText").text(translation.Plugins_Delete_Progress);
     $("#delete").addClass("disabled");
 
-    Request ("/api/EXT", "DELETE", { Authorization: `Bearer ${getCurrentToken()}`, ext: EXT }, null, "doDelete", () => {
+    Request("/api/EXT", "DELETE", { Authorization: `Bearer ${getCurrentToken()}`, ext: EXT }, null, "doDelete", () => {
       $("#messageText").text(translation.Plugins_Delete_Confirmed);
       setTimeout(() => socketDelete.close(), 500);
     }, (err) => {
@@ -184,7 +189,7 @@ function doInstall () {
   document.getElementById("install").onclick = function () {
     $("#messageText").text(translation.Plugins_Install_Progress);
     $("#install").addClass("disabled");
-    Request ("/api/EXT", "PUT", { Authorization: `Bearer ${getCurrentToken()}`, ext: EXT }, null, "doInstall", () => {
+    Request("/api/EXT", "PUT", { Authorization: `Bearer ${getCurrentToken()}`, ext: EXT }, null, "doInstall", () => {
       $("#messageText").text(translation.Plugins_Install_Confirmed);
       setTimeout(() => socketInstall.close(), 500);
     }, (err) => {
@@ -342,7 +347,7 @@ async function EXTConfigJSEditor () {
     $("#wait").css("display", "block");
     let encode = btoa(data);
 
-    Request ("/api/config/EXT", "PUT", { Authorization: `Bearer ${getCurrentToken()}`, ext: EXT }, JSON.stringify({ config: encode }) , "writeConfig", () => {
+    Request("/api/config/EXT", "PUT", { Authorization: `Bearer ${getCurrentToken()}`, ext: EXT }, JSON.stringify({ config: encode }), "writeConfig", () => {
       $("#wait").css("display", "none");
       $("#done").css("display", "block");
       $("#alert").removeClass("invisible");
@@ -448,7 +453,7 @@ async function EXTModifyConfigJSEditor () {
     $("#wait").css("display", "block");
     let encode = btoa(data);
 
-    Request ("/api/config/EXT", "PUT", { Authorization: `Bearer ${getCurrentToken()}`, ext: EXT }, JSON.stringify({ config: encode }) , "writeConfig", () => {
+    Request("/api/config/EXT", "PUT", { Authorization: `Bearer ${getCurrentToken()}`, ext: EXT }, JSON.stringify({ config: encode }), "writeConfig", () => {
       $("#wait").css("display", "none");
       $("#done").css("display", "block");
       $("#alert").removeClass("invisible");
@@ -508,11 +513,11 @@ async function EXTDeleteConfigJSEditor () {
       }
     }
   };
-  const editor = new JSONEditor(container, options, plugin);
+  new JSONEditor(container, options, plugin);
   document.getElementById("confirm").onclick = function () {
     $("#confirm").css("display", "none");
     $("#wait").css("display", "block");
-    Request ("/api/config/EXT", "DELETE", { Authorization: `Bearer ${getCurrentToken()}`, ext: EXT }, null , "writeConfig", () => {
+    Request("/api/config/EXT", "DELETE", { Authorization: `Bearer ${getCurrentToken()}`, ext: EXT }, null, "writeConfig", () => {
       $("#wait").css("display", "none");
       $("#done").css("display", "block");
       $("#alert").removeClass("invisible");

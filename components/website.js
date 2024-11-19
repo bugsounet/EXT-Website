@@ -2,13 +2,12 @@
 
 const fs = require("node:fs");
 const util = require("node:util");
-const { exec, spawn } = require("node:child_process");
+const { exec } = require("node:child_process");
 const readline = require("readline");
 const Stream = require("stream");
 const http = require("node:http");
 const pty = require("node-pty");
 const si = require("systeminformation");
-const pm2 = require("pm2");
 const semver = require("semver");
 const express = require("express");
 const bodyParserErrorHandler = require("express-body-parser-error-handler");
@@ -25,7 +24,7 @@ const swaggerUi = require("swagger-ui-express");
 const { rateLimit } = require("express-rate-limit");
 const { slowDown } = require("express-slow-down");
 
-var log = (...args) => { /* do nothing */ };
+var log = () => { /* do nothing */ };
 
 const mainBranch = {
   "MMM-GoogleAssistant": "prod",
@@ -255,8 +254,8 @@ class website {
   /** Website Middleware **/
   createWebsite () {
     return new Promise((resolve) => {
-      const ProxyRequestLogger = (proxyServer, options) => {
-        proxyServer.on("proxyReq", (proxyReq, req, res) => {
+      const ProxyRequestLogger = (proxyServer) => {
+        proxyServer.on("proxyReq", (proxyReq, req) => {
           let ip = req.headers["x-forwarded-for"] || req.connection.remoteAddress;
           let url = req.url.startsWith("/api") ? req.url : `/smarthome${req.url}`;
           log(`[${ip}] [PROXY] ${url}`);
@@ -266,7 +265,7 @@ class website {
         target: "http://127.0.0.1:8083",
         changeOrigin: false,
         pathFilter: ["/smarthome"],
-        pathRewrite: { "^/smarthome" : "" },
+        pathRewrite: { "^/smarthome": "" },
         plugins: [ProxyRequestLogger],
         on: {
           onProxyReq: fixRequestBody,
@@ -316,14 +315,14 @@ class website {
 
       this.website.app.use(bodyParserErrorHandler(
         {
-          onError: (err, req, res) => {
+          onError: (err, req) => {
             let ip = req.headers["x-forwarded-for"] || req.connection.remoteAddress;
             console.error(`[WEBSITE] [${ip}] [${req.method}] ${req.url}`);
             console.error("[WEBSITE] bodyparser error:", err.type);
             log("body:", err.body);
             console.error("[WEBSITE] detail:", err.message);
           },
-          errorMessage: (err, req,res) => {
+          errorMessage: (err) => {
             return `Body Parser failed to parse request (${err.type}) --> ${err.message}`;
           }
         }
@@ -385,17 +384,17 @@ class website {
           res.redirect("/login");
         })
 
-        .post("/auth", this.speedLimiter, this.rateLimiter, (req, res) => this.login(req,res))
+        .post("/auth", this.speedLimiter, this.rateLimiter, (req, res) => this.login(req, res))
 
-        .get("/", (req,res,next) => this.auth(req,res,next), (req, res) => {
+        .get("/", (req, res, next) => this.auth(req, res, next), (req, res) => {
           res.sendFile(`${this.WebsitePath}/index.html`);
         })
 
-        .get("/EXT", (req,res,next) => this.auth(req,res,next), (req, res) => {
+        .get("/EXT", (req, res, next) => this.auth(req, res, next), (req, res) => {
           res.sendFile(`${this.WebsitePath}/EXT.html`);
         })
 
-        .get("/Terminal", (req,res,next) => this.auth(req,res,next), (req, res) => {
+        .get("/Terminal", (req, res, next) => this.auth(req, res, next), (req, res) => {
           var ip = req.headers["x-forwarded-for"] || req.connection.remoteAddress;
           res.sendFile(`${this.WebsitePath}/terminal.html`);
 
@@ -412,7 +411,7 @@ class website {
           });
         })
 
-        .get("/ptyProcess", (req,res,next) => this.auth(req,res,next), (req, res) => {
+        .get("/ptyProcess", (req, res, next) => this.auth(req, res, next), (req, res) => {
           var ip = req.headers["x-forwarded-for"] || req.connection.remoteAddress;
           res.sendFile(`${this.WebsitePath}/pty.html`);
           io.once("connection", (client) => {
@@ -441,7 +440,7 @@ class website {
           });
         })
 
-        .get("/install", (req,res,next) => this.auth(req,res,next), (req, res) => {
+        .get("/install", (req, res, next) => this.auth(req, res, next), (req, res) => {
           var ip = req.headers["x-forwarded-for"] || req.connection.remoteAddress;
           if (req.query.ext && this.website.EXTInstalled.indexOf(req.query.ext) === -1 && this.website.EXT.indexOf(req.query.ext) > -1) {
             res.sendFile(`${this.WebsitePath}/install.html`);
@@ -458,7 +457,7 @@ class website {
           else res.redirect("/404");
         })
 
-        .get("/delete", (req,res,next) => this.auth(req,res,next), (req, res) => {
+        .get("/delete", (req, res, next) => this.auth(req, res, next), (req, res) => {
           var ip = req.headers["x-forwarded-for"] || req.connection.remoteAddress;
           if (req.query.ext && this.website.EXTInstalled.indexOf(req.query.ext) > -1 && this.website.EXT.indexOf(req.query.ext) > -1) {
             res.sendFile(`${this.WebsitePath}/delete.html`);
@@ -475,11 +474,11 @@ class website {
           else res.redirect("/404");
         })
 
-        .get("/MMConfig", (req,res,next) => this.auth(req,res,next), (req, res) => {
+        .get("/MMConfig", (req, res, next) => this.auth(req, res, next), (req, res) => {
           res.sendFile(`${this.WebsitePath}/mmconfig.html`);
         })
 
-        .get("/EXTCreateConfig", (req,res,next) => this.auth(req,res,next), (req, res) => {
+        .get("/EXTCreateConfig", (req, res, next) => this.auth(req, res, next), (req, res) => {
           if (req.query.ext
             && this.website.EXTInstalled.indexOf(req.query.ext) > -1 // is installed
             && this.website.EXT.indexOf(req.query.ext) > -1 // is an EXT
@@ -490,7 +489,7 @@ class website {
           else res.redirect("/404");
         })
 
-        .get("/EXTModifyConfig", (req,res,next) => this.auth(req,res,next), (req, res) => {
+        .get("/EXTModifyConfig", (req, res, next) => this.auth(req, res, next), (req, res) => {
           if (req.query.ext
             && this.website.EXTInstalled.indexOf(req.query.ext) > -1 // is installed
             && this.website.EXT.indexOf(req.query.ext) > -1 // is an EXT
@@ -501,7 +500,7 @@ class website {
           else res.redirect("/404");
         })
 
-        .get("/EXTDeleteConfig", (req,res,next) => this.auth(req,res,next), (req, res) => {
+        .get("/EXTDeleteConfig", (req, res, next) => this.auth(req, res, next), (req, res) => {
           if (req.query.ext
             && this.website.EXTInstalled.indexOf(req.query.ext) === -1 // is not installed
             && this.website.EXT.indexOf(req.query.ext) > -1 // is an EXT
@@ -512,43 +511,43 @@ class website {
           else res.redirect("/404");
         })
 
-        .get("/Tools", (req,res,next) => this.auth(req,res,next), (req, res) => {
+        .get("/Tools", (req, res, next) => this.auth(req, res, next), (req, res) => {
           res.sendFile(`${this.WebsitePath}/tools.html`);
         })
 
-        .get("/System", (req,res,next) => this.auth(req,res,next), (req, res) => {
+        .get("/System", (req, res, next) => this.auth(req, res, next), (req, res) => {
           res.sendFile(`${this.WebsitePath}/system.html`);
         })
 
-        .get("/About", (req,res,next) => this.auth(req,res,next), (req, res) => {
+        .get("/About", (req, res, next) => this.auth(req, res, next), (req, res) => {
           res.sendFile(`${this.WebsitePath}/about.html`);
         })
 
-        .get("/3rdpartymodules", (req,res,next) => this.auth(req,res,next), (req, res) => {
+        .get("/3rdpartymodules", (req, res, next) => this.auth(req, res, next), (req, res) => {
           res.sendFile(`${this.WebsitePath}/3rdpartymodules.html`);
         })
 
-        .get("/APIDocs", (req,res,next) => this.auth(req,res,next), (req, res) => {
+        .get("/APIDocs", (req, res, next) => this.auth(req, res, next), (req, res) => {
           res.sendFile(`${this.WebsitePath}/APIDocs.html`);
         })
 
-        .get("/Restart", (req,res,next) => this.auth(req,res,next), (req, res) => {
+        .get("/Restart", (req, res, next) => this.auth(req, res, next), (req, res) => {
           res.sendFile(`${this.WebsitePath}/restarting.html`);
         })
 
-        .get("/Die", (req,res,next) => this.auth(req,res,next), (req, res) => {
+        .get("/Die", (req, res, next) => this.auth(req, res, next), (req, res) => {
           res.sendFile(`${this.WebsitePath}/die.html`);
         })
 
-        .get("/SystemRestart", (req,res,next) => this.auth(req,res,next), (req, res) => {
+        .get("/SystemRestart", (req, res, next) => this.auth(req, res, next), (req, res) => {
           res.sendFile(`${this.WebsitePath}/reboot.html`);
         })
 
-        .get("/SystemDie", (req,res,next) => this.auth(req,res,next), (req, res) => {
+        .get("/SystemDie", (req, res, next) => this.auth(req, res, next), (req, res) => {
           res.sendFile(`${this.WebsitePath}/shutdown.html`);
         })
 
-        .get("/EditMMConfig", (req,res,next) => this.auth(req,res,next), (req, res) => {
+        .get("/EditMMConfig", (req, res, next) => this.auth(req, res, next), (req, res) => {
           res.sendFile(`${this.WebsitePath}/EditMMConfig.html`);
         })
 
@@ -621,7 +620,7 @@ class website {
       if (this.website.APIDocs) {
         this.APIDocs = require("../website/api/swagger.json");
         this.APIDocs.servers[1] = {
-          url : `http://${this.website.listening}:8081`
+          url: `http://${this.website.listening}:8081`
         };
       }
 
@@ -633,20 +632,20 @@ class website {
         .use(cors({ origin: "*" }))
         .use(bodyParserErrorHandler(
           {
-            onError: (err, req, res) => {
+            onError: (err, req) => {
               let ip = req.headers["x-forwarded-for"] || req.connection.remoteAddress;
               console.error(`[WEBSITE] [API] [${ip}] [${req.method}] ${req.url}`);
               console.error("[WEBSITE] [API] bodyparser error:", err.type);
               log("[API] body:", err.body);
               console.error("[WEBSITE] [API] detail:", err.message);
             },
-            errorMessage: (err, req,res) => {
+            errorMessage: (err) => {
               return `Body Parser failed to parse request (${err.type}) --> ${err.message}`;
             }
           }
         ))
 
-        .use("/api/docs", swaggerUi.serve, (req,res,next) => {
+        .use("/api/docs", swaggerUi.serve, (req, res, next) => {
           if (this.website.APIDocs) {
             this.APIDocs.info.version = require("../package.json").api;
             let remoteUrl = `${req.headers["x-forwarded-proto"] === "https" ? "https" : "http"}://${req.get("host")}`;
@@ -669,12 +668,12 @@ class website {
               customCssUrl: "/assets/css/SwaggerDark.css",
               customSiteTitle: "EXT-Website API",
               customfavIcon: "/assets/img/FavIcon.png"
-            })(req,res,next);
+            })(req, res, next);
           }
           else res.redirect("/404");
         })
 
-        .get("/api", this.API_speedLimiter, this.API_rateLimiter, (req,res) => {
+        .get("/api", this.API_speedLimiter, this.API_rateLimiter, (req, res) => {
           res.json({ api: "OK", docs: this.website.APIDocs });
         })
 
@@ -682,12 +681,12 @@ class website {
           res.json(this.website.loginTranslation);
         })
 
-        .post("/api/login", this.API_speedLimiter, this.API_rateLimiter, (req, res) =>  this.login(req,res, true))
+        .post("/api/login", this.API_speedLimiter, this.API_rateLimiter, (req, res) => this.login(req, res, true))
 
-        .get("/api/*", this.API_speedLimiter, this.API_rateLimiter, (res,req,next) => this.hasValidToken(res,req,next), (req, res) => this.GetAPI(req,res))
-        .post("/api/*", this.API_speedLimiter, this.API_rateLimiter, (res,req,next) => this.hasValidToken(res,req,next), (req, res) => this.PostAPI(req,res))
-        .put("/api/*", this.API_speedLimiter, this.API_rateLimiter, (res,req,next) => this.hasValidToken(res,req,next), (req, res) => this.PutAPI(req,res))
-        .delete("/api/*", this.API_speedLimiter, this.API_rateLimiter, (res,req,next) => this.hasValidToken(res,req,next), (req, res) => this.DeleteAPI(req,res))
+        .get("/api/*", this.API_speedLimiter, this.API_rateLimiter, (res, req, next) => this.hasValidToken(res, req, next), (req, res) => this.GetAPI(req, res))
+        .post("/api/*", this.API_speedLimiter, this.API_rateLimiter, (res, req, next) => this.hasValidToken(res, req, next), (req, res) => this.PostAPI(req, res))
+        .put("/api/*", this.API_speedLimiter, this.API_rateLimiter, (res, req, next) => this.hasValidToken(res, req, next), (req, res) => this.PutAPI(req, res))
+        .delete("/api/*", this.API_speedLimiter, this.API_rateLimiter, (res, req, next) => this.hasValidToken(res, req, next), (req, res) => this.DeleteAPI(req, res))
 
         .get("/*", this.API_rateLimiter, this.API_speedLimiter, (req, res) => {
           console.warn("[WEBSITE] [API] Don't find:", req.url);
@@ -703,7 +702,7 @@ class website {
   async GetAPI (req, res) {
     switch (req.url) {
       case "/api/version":
-        let version = await this.searchVersion();
+        var version = await this.searchVersion();
         if (version.error) {
           res.status(206).json(version);
         } else {
@@ -779,7 +778,7 @@ class website {
           let stringify = JSON.stringify(data.default);
           let encoded = this.encode(stringify);
           res.json({ config: encoded });
-        } catch (e) {
+        } catch {
           res.status(404).send("Not Found");
         }
         break;
@@ -804,18 +803,18 @@ class website {
         break;
 
       case "/api/backups":
-        let names = await this.loadBackupNames();
+        var names = await this.loadBackupNames();
         res.json(names);
         break;
 
       case "/api/backups/file":
         if (!req.headers["backup"]) return res.status(400).send("Bad Request");
-        let availableBackups = await this.loadBackupNames();
+        var availableBackups = await this.loadBackupNames();
         if (availableBackups.indexOf(req.headers["backup"]) === -1) return res.status(404).send("Not Found");
         log(`[API] Request backup config of ${req.headers["backup"]}`);
-        let file = await this.loadBackupFile(req.headers["backup"]);
-        let stringify = JSON.stringify(file);
-        let encoded = this.encode(stringify);
+        var file = await this.loadBackupFile(req.headers["backup"]);
+        var stringify = JSON.stringify(file);
+        var encoded = this.encode(stringify);
         res.json({ config: encoded });
         break;
 
@@ -827,7 +826,7 @@ class website {
 
       case "/api/EXT/Updates":
         if (!this.website.EXTStatus["EXT-Updates"].hello) return res.status(404).send("Not Found");
-        let updates = this.filterObject(this.website.EXTStatus["EXT-Updates"].module, "canBeUpdated", true);
+        var updates = this.filterObject(this.website.EXTStatus["EXT-Updates"].module, "canBeUpdated", true);
         if (!updates.length) return res.status(404).send("Not Found");
         res.json(updates);
         break;
@@ -848,12 +847,12 @@ class website {
 
   /** PUT API **/
   async PutAPI (req, res) {
+    var resultSaveConfig = {};
     switch (req.url) {
       case "/api/config/MM":
         if (!req.body["config"]) return res.status(400).send("Bad Request");
         log("[API] Receiving write MagicMirror config...");
-        var resultSaveConfig = {};
-        try  {
+        try {
           let decoded = JSON.parse(this.decode(req.body["config"]));
           resultSaveConfig = await this.saveConfig(decoded);
         } catch (e) {
@@ -877,8 +876,7 @@ class website {
         if (this.website.EXT.indexOf(req.headers["ext"]) === -1) return res.status(404).send("Not Found");
         if (this.website.EXTInstalled.indexOf(req.headers["ext"]) === -1) return res.status(409).send("Not installed");
 
-        var resultSaveConfig = {};
-        try  {
+        try {
           const dataConfig = JSON.parse(this.decode(req.body["config"]));
           if (dataConfig.module !== req.headers["ext"]) {
             return res.status(400).send("Bad Request");
@@ -904,8 +902,8 @@ class website {
       case "/api/config/webview":
         if (!this.website.webviewTag) {
           log("[API] Receiving set webview...");
-          let NewConfig = await this.setWebviewTag();
-          var resultSaveConfig = await this.saveConfig(NewConfig);
+          var NewConfig = await this.setWebviewTag();
+          resultSaveConfig = await this.saveConfig(NewConfig);
           log("[API] Write webview config result:", resultSaveConfig);
           if (resultSaveConfig.done) {
             res.json(resultSaveConfig);
@@ -923,14 +921,14 @@ class website {
 
       case "/api/EXT":
         if (!req.headers["ext"]) return res.status(400).send("Bad Request");
-        const pluginName = req.headers["ext"];
+        var pluginName = req.headers["ext"];
         if (this.website.EXTInstalled.indexOf(pluginName) === -1) {
           if (this.website.EXT.indexOf(pluginName) > -1) {
-            log("[API] Request installation:",pluginName);
+            log("[API] Request installation:", pluginName);
             var modulePath = `${this.root_path}/modules/`;
             var Command = `cd ${modulePath} && git clone https://github.com/bugsounet/${pluginName} && cd ${pluginName} && npm install`;
 
-            var child = exec(Command, { cwd: modulePath }, (error, stdout, stderr) => {
+            var child = exec(Command, { cwd: modulePath }, (error) => {
               if (error) {
                 console.error("[WEBSITE] [API] [INSTALL] [FATAL] exec error:", error);
                 res.status(500).json({ error: `Error on install ${pluginName}` });
@@ -954,19 +952,19 @@ class website {
 
       case "/api/EXT/Volume/speaker":
         if (!this.website.EXTStatus["EXT-Volume"].hello) return res.status(404).send("Not Found");
-        let speaker = req.body["volume"];
-        if (typeof(speaker) !== "number" || speaker < 0 || speaker > 100 || isNaN(speaker)) return res.status(400).send("Bad Request");
+        var speaker = req.body["volume"];
+        if (typeof (speaker) !== "number" || speaker < 0 || speaker > 100 || isNaN(speaker)) return res.status(400).send("Bad Request");
         log("[API] Request speaker volume change to", speaker);
-        this.sendSocketNotification("SendNoti", { noti: "EXT_VOLUME-SPEAKER_SET", payload: speaker|| "0" });
+        this.sendSocketNotification("SendNoti", { noti: "EXT_VOLUME-SPEAKER_SET", payload: speaker || "0" });
         res.json({ done: "ok" });
         break;
 
       case "/api/EXT/Volume/recorder":
         if (!this.website.EXTStatus["EXT-Volume"].hello) return res.status(404).send("Not Found");
-        let recorder = req.body["volume"];
-        if (typeof(recorder) !== "number" || recorder < 0 || recorder > 100) return res.status(400).send("Bad Request");
+        var recorder = req.body["volume"];
+        if (typeof (recorder) !== "number" || recorder < 0 || recorder > 100) return res.status(400).send("Bad Request");
         log("[API] Request recorder volume change to", recorder);
-        this.sendSocketNotification("SendNoti", { noti: "EXT_VOLUME-RECORDER_SET", payload: recorder|| "0" });
+        this.sendSocketNotification("SendNoti", { noti: "EXT_VOLUME-RECORDER_SET", payload: recorder || "0" });
         res.json({ done: "ok" });
         break;
 
@@ -982,7 +980,7 @@ class website {
 
       case "/api/EXT/Updates":
         if (!this.website.EXTStatus["EXT-Updates"].hello) return res.status(404).send("Not Found");
-        let updates = this.filterObject(this.website.EXTStatus["EXT-Updates"].module, "canBeUpdated", true);
+        var updates = this.filterObject(this.website.EXTStatus["EXT-Updates"].module, "canBeUpdated", true);
         if (!updates.length) return res.status(404).send("Not Found");
         log("[API] Request send updates");
         this.sendSocketNotification("SendNoti", "EXT_UPDATES-UPDATE");
@@ -1038,10 +1036,10 @@ class website {
 
       case "/api/EXT/Spotify":
         if (!this.website.EXTStatus["EXT-Spotify"].hello) return res.status(404).send("Not Found");
-        let query = req.body["query"];
-        let type = req.body["type"];
-        let ArrayType = [ "artist", "album", "playlist", "track" ];
-        if (!query || typeof(query) !== "string" || !type || ArrayType.indexOf(type) === -1) return res.status(400).send("Bad Request");
+        var query = req.body["query"];
+        var type = req.body["type"];
+        var ArrayType = ["artist", "album", "playlist", "track"];
+        if (!query || typeof (query) !== "string" || !type || ArrayType.indexOf(type) === -1) return res.status(400).send("Bad Request");
         var pl = {
           type: type,
           query: query,
@@ -1054,8 +1052,8 @@ class website {
 
       case "/api/EXT/YouTube":
         if (!this.website.EXTStatus["EXT-YouTube"].hello) return res.status(404).send("Not Found");
-        let YTquery = req.body["query"];
-        if (!YTquery || typeof(YTquery) !== "string") return res.status(400).send("Bad Request");
+        var YTquery = req.body["query"];
+        if (!YTquery || typeof (YTquery) !== "string") return res.status(400).send("Bad Request");
         log("[API] Request send youtube search:", YTquery);
         this.sendSocketNotification("SendNoti", { noti: "EXT_YOUTUBE-SEARCH", payload: YTquery });
         res.json({ done: "ok" });
@@ -1063,8 +1061,8 @@ class website {
 
       case "/api/EXT/Screen":
         if (!this.website.EXTStatus["EXT-Screen"].hello) return res.status(404).send("Not Found");
-        let power = req.body["power"];
-        if (!power || typeof(power) !== "string") return res.status(400).send("Bad Request");
+        var power = req.body["power"];
+        if (!power || typeof (power) !== "string") return res.status(400).send("Bad Request");
         log("[API] Request send screen power:", power);
         if (power === "OFF") {
           if (!this.website.EXTStatus["EXT-Screen"].power) return res.status(409).send("Already OFF");
@@ -1082,8 +1080,8 @@ class website {
       case "/api/EXT/FreeboxTV":
         if (!this.website.EXTStatus["EXT-FreeboxTV"].hello) return res.status(404).send("Not Found");
         if (this.website.language !== "fr") return res.status(409).send("Reserved for French language");
-        let TV = req.body["TV"];
-        if (!TV || typeof(TV) !== "string") return res.status(400).send("Bad Request");
+        var TV = req.body["TV"];
+        if (!TV || typeof (TV) !== "string") return res.status(400).send("Bad Request");
         var allTV = Object.keys(this.website.freeTV);
         if (allTV.indexOf(TV) === -1) return res.status(404).send("Not Found");
         log("[API] Request send FreeboxTV channel:", TV);
@@ -1093,11 +1091,11 @@ class website {
 
       case "/api/backups/file":
         if (!req.headers["backup"]) return res.status(400).send("Bad Request");
-        let availableBackups = await this.loadBackupNames();
+        var availableBackups = await this.loadBackupNames();
         if (availableBackups.indexOf(req.headers["backup"]) === -1) return res.status(404).send("Not Found");
         log("[API] Request backup:", req.headers["backup"]);
-        let file = await this.loadBackupFile(req.headers["backup"]);
-        var resultSaveConfig = await this.saveConfig(file);
+        var file = await this.loadBackupFile(req.headers["backup"]);
+        resultSaveConfig = await this.saveConfig(file);
         log("[API] Write config result:", resultSaveConfig);
         if (resultSaveConfig.done) {
           res.json(resultSaveConfig);
@@ -1109,7 +1107,7 @@ class website {
         break;
 
       case "/api/backups/external":
-        try  {
+        try {
           console.log("[API] Receiving External backup...");
           let config = req.body["config"];
           let decoded = JSON.parse(this.decode(config));
@@ -1139,9 +1137,9 @@ class website {
         }
         break;
       case "/api/MM":
-        let notification = req.body["notification"];
-        let payload = req.body["payload"];
-        if (!notification || typeof(notification) !== "string") return res.status(400).send("Bad Request");
+        var notification = req.body["notification"];
+        var payload = req.body["payload"];
+        if (!notification || typeof (notification) !== "string") return res.status(400).send("Bad Request");
         log("Notification:", notification);
         if (payload) {
           log("With payload:", payload);
@@ -1188,8 +1186,8 @@ class website {
 
       case "/api/Assistant/query":
         if (!this.website.EXTStatus["GA_Ready"]) return res.status(404).send("Not Found");
-        let query = req.body["query"];
-        if (typeof(query) !== "string" || query.length < 5 ) return res.status(400).send("Bad Request");
+        var query = req.body["query"];
+        if (typeof (query) !== "string" || query.length < 5) return res.status(400).send("Bad Request");
         log("[API] Request MMM-GoogleAssistant query:", query);
         this.sendSocketNotification("SendNoti", { noti: "GA_ACTIVATE", payload: { type: "TEXT", key: query } });
         res.json({ done: "ok" });
@@ -1197,8 +1195,8 @@ class website {
 
       case "/api/Assistant/Alert":
         if (!this.website.EXTStatus["GA_Ready"]) return res.status(404).send("Not Found");
-        let alert = req.body["alert"];
-        if (typeof(alert) !== "string" || alert.length < 5 ) return res.status(400).send("Bad Request");
+        var alert = req.body["alert"];
+        if (typeof (alert) !== "string" || alert.length < 5) return res.status(400).send("Bad Request");
         log("[API] Request send Alert:", alert);
         this.sendSocketNotification("SendNoti", {
           noti: "GA_ALERT",
@@ -1215,8 +1213,7 @@ class website {
         break;
 
       case "/api/backups/external":
-        let config = req.body["config"];
-        try  {
+        try {
           let decoded = this.decode(req.body["config"]);
           log("[API] Receiving External backup...");
           var transformExternalBackup = await this.transformExternalBackup(decoded);
@@ -1243,11 +1240,11 @@ class website {
     switch (req.url) {
       case "/api/config/EXT":
         if (!req.headers["ext"]) return res.status(400).send("Bad Request");
-        const plugin = this.checkPluginInConfig(req.headers["ext"]);
+        var plugin = this.checkPluginInConfig(req.headers["ext"]);
         if (!plugin) return res.status(404).send("Not Found");
         log("[API] Receiving delete EXT config...", req.headers["ext"]);
-        const NewConfig = await this.configDelete(req.headers["ext"]);
-        const resultSaveConfig = await this.saveConfig(NewConfig);
+        var NewConfig = await this.configDelete(req.headers["ext"]);
+        var resultSaveConfig = await this.saveConfig(NewConfig);
         log("[API] Write config result:", resultSaveConfig);
         if (resultSaveConfig.done) {
           res.json(resultSaveConfig);
@@ -1262,12 +1259,12 @@ class website {
       case "/api/EXT":
         log("[API] Receiving delete EXT...");
         if (!req.headers["ext"]) return res.status(400).send("Bad Request");
-        const pluginName = req.headers["ext"];
+        var pluginName = req.headers["ext"];
         if (this.website.EXTInstalled.indexOf(pluginName) > -1 && this.website.EXT.indexOf(pluginName) > -1) {
           log("[API] Request delete:", pluginName);
           var modulePath = `${this.root_path}/modules/`;
           var Command = `cd ${modulePath} && rm -rfv ${pluginName}`;
-          var child = exec(Command, { cwd: modulePath }, (error, stdout, stderr) => {
+          var child = exec(Command, { cwd: modulePath }, (error) => {
             if (error) {
               console.error("[WEBSITE] [API] [DELETE] [FATAL] exec error:", error);
               res.status(500).json({ error: `Error on delete ${pluginName}` });
@@ -1287,7 +1284,7 @@ class website {
 
       case "/api/backups":
         log("[API] Receiving delete backup demand...");
-        let deleteBackup = await this.deleteBackup();
+        var deleteBackup = await this.deleteBackup();
         log("[API] Delete backup result:", deleteBackup);
         res.json(deleteBackup);
         break;
@@ -1347,7 +1344,7 @@ class website {
       console.warn(`[WEBSITE] ${api ? "[API] " : ""}[${ip}] Bad Login: missing authorization type`);
       APIResult.description = "Missing authorization type";
       return res.status(401).json(APIResult);
-    };
+    }
 
     if (params[0] !== "Basic") {
       console.warn(`[WEBSITE] ${api ? "[API] " : ""}[${ip}] Bad Login: Basic authorization type only`);
@@ -1362,7 +1359,7 @@ class website {
     }
 
     const base64Credentials = this.decode(params[1]);
-    const [ username, password ] = base64Credentials.split(":");
+    const [username, password] = base64Credentials.split(":");
 
     if (username === this.website.user.username && password === this.website.user.password) {
       const token = jwt.sign(
@@ -1405,7 +1402,6 @@ class website {
   // decode cookie for relogin
   hasValidCookie = (req) => {
     try {
-      var token = null;
       const { cookies } = req;
 
       if (!cookies || !cookies["EXT-Website"]) return null;
@@ -1429,7 +1425,7 @@ class website {
   };
 
   // decode and verify token
-  hasValidToken = (req,res,next) => {
+  hasValidToken = (req, res, next) => {
     var ip = req.headers["x-forwarded-for"] || req.connection.remoteAddress;
     try {
       const { headers } = req;
@@ -1439,7 +1435,7 @@ class website {
       if (!authorization) {
         console.warn(`[WEBSITE] [API] [${ip}] Bad Login: missing authorization type`);
         return res.status(401).send("Unauthorized");
-      };
+      }
 
       if (params[0] !== "Bearer") {
         console.warn(`[WEBSITE] [API] [${ip}] Bad Login: Bearer authorization type only`);
@@ -1512,7 +1508,7 @@ class website {
         }
       } catch (e) {
         console.error("[WEBSITE] [DELETE] Error on reading file", e.message);
-        resolve ( { error: "Error on reading file" } );
+        resolve({ error: "Error on reading file" });
       }
     });
   }
@@ -1530,7 +1526,7 @@ class website {
   readRadio () {
     return new Promise((resolve) => {
       var RadioResult = undefined;
-      const radio = this.website.MMConfig.modules.find((m) => m.module === "EXT-RadioPlayer" && !m.disabled );
+      const radio = this.website.MMConfig.modules.find((m) => m.module === "EXT-RadioPlayer" && !m.disabled);
       if (radio?.config?.streams) {
         let file = `${this.root_path}/modules/EXT-RadioPlayer/${radio.config.streams}`;
         if (fs.existsSync(file)) RadioResult = require(file);
@@ -1745,9 +1741,9 @@ class website {
             resolve(result);
           }
         });
-      } catch (e) {
-        resolve ( { error: "Invalid file" } );
-      } 
+      } catch {
+        resolve({ error: "Invalid file" });
+      }
     });
   }
 
@@ -1805,7 +1801,7 @@ class website {
           try {
             fs.unlinkSync(pathFile);
             log("Removed:", file);
-          } catch (e) {
+          } catch {
             console.error("[WEBSITE] Error occurred while trying to remove this file:", file);
           }
         }
@@ -1855,7 +1851,7 @@ class website {
             });
           });
         })
-        .catch((error) => {
+        .catch(() => {
           var info = {};
           info = {
             ip: "127.0.0.1",
@@ -1965,7 +1961,7 @@ class website {
   }
 
   /** read and search GA config **/
-  getGAConfig (config) {
+  getGAConfig () {
     var index = this.website.MMConfig.modules.map((e) => { return e.module; }).indexOf("MMM-GoogleAssistant");
     if (index > -1) return this.website.MMConfig.modules[index];
     else return {};
@@ -2169,7 +2165,7 @@ class website {
 
   filterObject (obj, filter, filterValue) {
     var result = [];
-    const FiltredObject = Object.keys(obj).reduce((acc, val) => (obj[val][filter] === filterValue ? { ...acc, [val]: obj[val] } : acc ), {} );
+    const FiltredObject = Object.keys(obj).reduce((acc, val) => (obj[val][filter] === filterValue ? { ...acc, [val]: obj[val] } : acc), {});
     if (Object.keys(FiltredObject).length) {
       result = Object.keys(FiltredObject);
     }
@@ -2194,7 +2190,7 @@ class website {
           if (semver.gt(APIResult.last, APIResult.version)) APIResult.needUpdate = true;
           resolve(APIResult);
         })
-        .catch((e) => {
+        .catch(() => {
           console.error("[WEBSITE] [API] Error on fetch last version number");
           APIResult.error = "Error on fetch last version number";
           resolve(APIResult);

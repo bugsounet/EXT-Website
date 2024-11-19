@@ -2,7 +2,10 @@
 * @bugsounet
 **/
 
-/* global $, alertify, getCurrentToken, getVersion, loadRadio, loadTranslation, loadDataInstalledEXT, doTranslateNavBar, checkWebviewTag, checkEXTStatus, loadBackupNames, loadDataInstalledEXT, forceMobileRotate */
+/* global $, alertify, getCurrentToken, getVersion, loadRadio, loadTranslation, loadDataInstalledEXT, doTranslateNavBar, checkWebviewTag, checkEXTStatus,
+  loadBackupNames, loadDataInstalledEXT, forceMobileRotate
+*/
+/* eslint-disable max-lines-per-function */
 
 // rotate rules
 /* eslint-disable-next-line */
