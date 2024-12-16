@@ -34,7 +34,7 @@
     "cookie-parser": "^1.4.7",
     "esbuild": "^0.24.0",
     "express-body-parser-error-handler": "^1.0.7",
-    "express-rate-limit": "^7.4.1",
+    "express-rate-limit": "^7.5.0",
     "express-slow-down": "^2.0.3",
     "glob": "^11.0.0",
     "http-proxy-middleware": "^3.0.3",
